@@ -413,7 +413,7 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email ID *
             </label>
-            <div className="flex space-x-2">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-3">
               <input
                 type="email"
                 name="email"
@@ -421,7 +421,7 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
                 onChange={handleInputChange}
                 required
                 disabled={otpStep}
-                className={`flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${otpStep ? 'bg-gray-100' : ''}`}
+                className={`flex-1 min-w-0 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${otpStep ? 'bg-gray-100' : ''}`}
                 placeholder="student@email.com"
               />
               {!otpStep && (
@@ -429,7 +429,7 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
                   type="button"
                   onClick={handleSendOtp}
                   disabled={loading}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="w-full sm:w-auto h-12 px-5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center"
                 >
                   {loading ? 'Sending...' : 'Send OTP'}
                 </button>

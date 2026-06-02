@@ -266,13 +266,13 @@ const RunningClasses = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mt-auto">
-                  <span className="px-4 py-1.5 min-w-[90px] text-center bg-[#00875A]/10 text-[#00875A] text-[12px] font-bold rounded-full uppercase tracking-wider border border-[#00875A]/20">
+                <div className="flex items-center justify-between mt-auto gap-3">
+                  <span className="inline-flex h-11 min-w-[90px] items-center justify-center bg-[#00875A]/10 text-[#00875A] text-[12px] font-bold rounded-xl uppercase tracking-wider border border-[#00875A]/20">
                     {cls.status || 'Active'}
                   </span>
                   <button
                     onClick={handleDemoClick}
-                    className="px-6 py-2.5 bg-gradient-to-r from-[#ffb800] to-[#ff7a00] text-[#1e3a8a] rounded-xl font-black text-sm hover:shadow-xl hover:scale-105 transition-all active:scale-95 shadow-md shadow-orange-500/20 whitespace-nowrap"
+                    className="inline-flex h-11 min-w-[90px] items-center justify-center px-6 bg-gradient-to-r from-[#ffb800] to-[#ff7a00] text-[#1e3a8a] rounded-xl font-black text-sm hover:shadow-xl hover:scale-105 transition-all active:scale-95 shadow-md shadow-orange-500/20 whitespace-nowrap"
                   >
                     Free Demo
                   </button>

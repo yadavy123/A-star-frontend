@@ -139,18 +139,20 @@ const Home = () => {
                 </button>
               </div>
               {/* Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-4 mt-8">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-yellow-400">95%</div>
-                  <div className="text-xs text-gray-300">A*/A Grades</div>
-                </div>
-                <div className="text-center border-l border-r border-yellow-400 border-opacity-30 px-4">
-                  <div className="text-lg font-bold text-yellow-400">500+</div>
-                  <div className="text-xs text-gray-300">Students Taught</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-yellow-400">8+</div>
-                  <div className="text-xs text-gray-300">Years Experience</div>
+              <div className="mt-8 overflow-x-auto py-2">
+                <div className="flex min-w-full gap-4 sm:justify-center sm:min-w-0">
+                  <div className="min-w-[140px] shrink-0 text-center">
+                    <div className="text-lg font-bold text-yellow-400">95%</div>
+                    <div className="text-xs text-gray-300">A*/A Grades</div>
+                  </div>
+                  <div className="min-w-[140px] shrink-0 text-center border-l border-r border-yellow-400 border-opacity-30 px-4">
+                    <div className="text-lg font-bold text-yellow-400">500+</div>
+                    <div className="text-xs text-gray-300">Students Taught</div>
+                  </div>
+                  <div className="min-w-[140px] shrink-0 text-center">
+                    <div className="text-lg font-bold text-yellow-400">8+</div>
+                    <div className="text-xs text-gray-300">Years Experience</div>
+                  </div>
                 </div>
               </div>
             </div>

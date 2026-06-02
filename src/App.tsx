@@ -57,7 +57,7 @@ function AdminRoute({ children }: { children: JSX.Element }) {
   }
 
   if (!isAuthenticated || !isAdmin) {
-    return <Navigate to="/admin-login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;

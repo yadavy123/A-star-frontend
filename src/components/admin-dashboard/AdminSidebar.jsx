@@ -30,8 +30,7 @@ export default function AdminSidebar({ currentView, setCurrentView, sidebarOpen,
   const handleLogout = () => {
     if (confirm('Are you sure you want to logout?')) {
       logout()
-      window.history.pushState({}, '', '/')
-      window.dispatchEvent(new PopStateEvent('popstate'))
+      window.location.href = '/'
     }
   }
 
