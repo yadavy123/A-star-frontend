@@ -26,6 +26,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
         if (!email.trim()) {
             validationErrors.email = 'Email Address is required.';
+        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
+            validationErrors.email = 'Please enter a valid email address.';
         }
         if (!password) {
             validationErrors.password = 'Password is required.';

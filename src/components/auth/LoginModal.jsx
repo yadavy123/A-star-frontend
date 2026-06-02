@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Eye, EyeOff, Mail } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -15,10 +15,33 @@ export default function LoginModal({ isOpen, onClose, onOpenSignup, onOpenForgot
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [resendTimer, setResendTimer] = useState(0)
+
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const handleRequestOTP = async () => {
     if (!loginData.email) {
       setError('Please enter your email first.')
+      return
+    }
+    if (!emailRegex.test(loginData.email)) {
+      setError('Please enter a valid email address.')
       return
     }
     setError('')
@@ -26,6 +49,7 @@ export default function LoginModal({ isOpen, onClose, onOpenSignup, onOpenForgot
     try {
       await requestAdminLoginOTP(loginData.email)
       setOtpSent(true)
+      setResendTimer(300)
       toast.success('OTP sent to your email!')
     } catch (err) {
       setError(err.message || 'Failed to send OTP. Please check your email or try password login.')
@@ -146,10 +170,17 @@ export default function LoginModal({ isOpen, onClose, onOpenSignup, onOpenForgot
 
             {loginMode === 'otp' && otpSent && (
                <div>
-                  <label className="block text-sm font-semibold mb-2 text-blue-900 flex justify-between">
-                     <span>Enter 6-Digit OTP</span>
-                     <button type="button" onClick={handleRequestOTP} className="text-xs text-blue-600 hover:underline">Resend OTP</button>
-                  </label>
+                   <label className="block text-sm font-semibold mb-2 text-blue-900 flex justify-between">
+                      <span>Enter 6-Digit OTP</span>
+                      <button
+                        type="button"
+                        onClick={handleRequestOTP}
+                        disabled={resendTimer > 0}
+                        className={`text-xs transition-colors ${resendTimer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:underline'}`}
+                      >
+                        {resendTimer > 0 ? `Resend OTP in ${formatTime(resendTimer)}` : 'Resend OTP'}
+                      </button>
+                   </label>
                   <input
                      type="text"
                      maxLength={6}

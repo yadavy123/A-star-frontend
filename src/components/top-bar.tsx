@@ -1,11 +1,20 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Phone } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Phone, LogOut, LayoutDashboard, User } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext.tsx";
 import "./component.css";
 
 const TopBar = () => {
   const [open, setOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { isAuthenticated, user, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <div className="sticky top-0 z-50 bg-[#003366] text-white shadow-md">
@@ -63,12 +72,43 @@ const TopBar = () => {
           >
             Schedule Demo
           </Link>
-          <Link
-            to="/login"
-            className="text-xs text-[#FFD600] font-bold hover:text-white transition ml-2"
-          >
-            Login
-          </Link>
+          {isAuthenticated && user ? (
+            <div className="relative ml-2">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                onBlur={() => setTimeout(() => setShowUserMenu(false), 150)}
+                className="flex items-center gap-1.5 text-xs text-[#FFD600] font-bold hover:text-white transition"
+              >
+                <User className="h-3.5 w-3.5" />
+                <span className="max-w-[100px] truncate">{user.fullName?.split(' ')[0]}</span>
+              </button>
+              {showUserMenu && (
+                <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 z-50">
+                  {isAdmin && (
+                    <button
+                      onClick={() => { setShowUserMenu(false); navigate('/admin-dashboard'); }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-blue-50 transition"
+                    >
+                      <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+                    </button>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-red-50 transition"
+                  >
+                    <LogOut className="h-3.5 w-3.5" /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="text-xs text-[#FFD600] font-bold hover:text-white transition ml-2"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -107,7 +147,14 @@ const TopBar = () => {
             <Link to="/contact" className="block text-white text-xs hover:text-[#FFD600]">Contact Us</Link>
             <Link to="/running-classes" className="block text-white text-xs hover:text-[#FFD600]">Running Classes</Link>
             <Link to="/blog" className="block text-white text-xs hover:text-[#FFD600]">Blogs</Link>
-            <Link to="/login" className="block text-[#FFD600] text-xs font-semibold">Login</Link>
+            {isAuthenticated && user ? (
+              <>
+                <Link to={isAdmin ? '/admin-dashboard' : '/'} className="block text-[#FFD600] text-xs font-semibold">{user.fullName}</Link>
+                <button onClick={handleLogout} className="block text-white text-xs hover:text-[#FFD600] w-full text-left">Logout</button>
+              </>
+            ) : (
+              <Link to="/login" className="block text-[#FFD600] text-xs font-semibold">Login</Link>
+            )}
             {/* Sign Up removed from mobile menu as well */}
             {false && (
               <Link to="/signup" className="block bg-white text-[#003366] px-3 py-1 rounded text-xs font-semibold">

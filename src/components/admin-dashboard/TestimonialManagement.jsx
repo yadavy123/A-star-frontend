@@ -12,6 +12,7 @@ import {
   createTestimonialAdmin,
   exportTestimonialsToCSV
 } from '../../api/api/testimonialApi.js';
+import ScrollableCard from './ScrollableCard'
 import { getPublicTeachers } from '../../api/api/teacherApi';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 
@@ -280,22 +281,22 @@ export default function TestimonialManagement() {
   return (
     <div className="w-full">
       {/* Page Header */}
-      <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 mb-6 flex justify-between items-center">
+      <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-blue-900">Testimonial Management</h1>
           <p className="text-gray-500 text-sm mt-1">Review, approve, and manage student testimonials</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-3">
           <button 
             onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-3 border-2 border-blue-900 text-blue-900 rounded-xl font-bold hover:bg-blue-50 transition-all shadow-sm"
+            className="inline-flex h-11 items-center gap-2 px-4 rounded-xl border-2 border-blue-900 bg-white text-blue-900 font-bold hover:bg-blue-50 transition-all shadow-sm"
           >
             <Upload size={20} className="rotate-180" /> Export CSV
           </button>
           {!isAdding && (
             <button 
               onClick={() => { setEditingId(null); resetForm(); setIsAdding(true); }}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-900 text-white rounded-xl font-bold hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/20"
+              className="inline-flex h-11 items-center gap-2 px-6 rounded-xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/20"
             >
               <Plus size={20} /> Add Testimonial
             </button>
@@ -429,7 +430,7 @@ export default function TestimonialManagement() {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <ScrollableCard className="rounded-xl border border-gray-200 shadow-sm bg-white">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-blue-900 text-white text-left">
@@ -501,7 +502,7 @@ export default function TestimonialManagement() {
               })}
             </tbody>
           </table>
-        </div>
+        </ScrollableCard>
       )}
 
       {/* View Message Modal */}

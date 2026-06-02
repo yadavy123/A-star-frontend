@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 export default function ForgotPasswordModal({ isOpen, onClose, onOpenLogin }) {
   const [step, setStep] = useState(1) // 1: Email, 2: OTP, 3: New Password
@@ -7,9 +7,30 @@ export default function ForgotPasswordModal({ isOpen, onClose, onOpenLogin }) {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [resendTimer, setResendTimer] = useState(0)
+
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleSendOTP = (e) => {
     e.preventDefault()
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      alert('Please enter a valid email address.')
+      return
+    }
     setIsLoading(true)
     
     // Simulate sending OTP
@@ -18,6 +39,7 @@ export default function ForgotPasswordModal({ isOpen, onClose, onOpenLogin }) {
       alert(`OTP has been sent to: ${email}`)
       setIsLoading(false)
       setStep(2)
+      setResendTimer(300)
     }, 1500)
   }
 
@@ -76,10 +98,12 @@ export default function ForgotPasswordModal({ isOpen, onClose, onOpenLogin }) {
   }
 
   const handleResendOTP = () => {
+    if (resendTimer > 0) return;
     setIsLoading(true)
     setTimeout(() => {
       alert(`OTP has been resent to: ${email}`)
       setIsLoading(false)
+      setResendTimer(300)
     }, 1000)
   }
 
@@ -202,10 +226,10 @@ export default function ForgotPasswordModal({ isOpen, onClose, onOpenLogin }) {
                   <button
                     type="button"
                     onClick={handleResendOTP}
-                    disabled={isLoading}
-                    className="text-sm font-semibold text-blue-900 hover:text-blue-700 hover:underline disabled:opacity-50"
+                    disabled={isLoading || resendTimer > 0}
+                    className={`text-sm font-semibold transition-colors ${resendTimer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-900 hover:text-blue-700 hover:underline'}`}
                   >
-                    Didn't receive code? Resend OTP
+                    {resendTimer > 0 ? `Resend OTP in ${formatTime(resendTimer)}` : "Didn't receive code? Resend OTP"}
                   </button>
                 </div>
 

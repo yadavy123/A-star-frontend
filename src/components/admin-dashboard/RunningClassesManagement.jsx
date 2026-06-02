@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import ScrollableCard from './ScrollableCard'
 import {
   getAllClassesAdmin,
   createClassAdmin,
@@ -477,7 +478,7 @@ export default function RunningClassesManagement() {
             No running classes found. Click "+ Add Running Class" to get started.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+          <ScrollableCard>
             <table className="w-full min-w-[800px] divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -540,23 +541,25 @@ export default function RunningClassesManagement() {
                         </span>
                       </td>
                       <td className="px-4 py-4 text-center">
-                        <button
-                          className="p-2 rounded-full text-blue-600 hover:bg-blue-100 transition-colors"
-                          onClick={() => {
-                            setSelectedClassForDetails(c);
-                            setShowClassDetailsModal(true);
-                          }}
-                          title="View Details"
-                        >
-                          <Eye size={18} />
-                        </button>
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            className="p-2 rounded-full text-blue-600 hover:bg-blue-100 transition-colors min-w-[44px] whitespace-nowrap"
+                            onClick={() => {
+                              setSelectedClassForDetails(c);
+                              setShowClassDetailsModal(true);
+                            }}
+                            title="View Details"
+                          >
+                            <Eye size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
-          </div>
+          </ScrollableCard>
         )}
 
         <div className="mt-6 border-t pt-4">
@@ -725,7 +728,7 @@ export default function RunningClassesManagement() {
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="text-2xl font-bold">{selectedClassForDetails.title}</h2>
-                  <p className="text-blue-100 mt-1">{selectedClassForDetails.category} | {selectedClassForDetails.status}</p>
+                  <p className="text-white/80 mt-1 font-semibold">{selectedClassForDetails.category} | {selectedClassForDetails.status}</p>
                 </div>
                 <button
                   onClick={() => setShowClassDetailsModal(false)}

@@ -150,6 +150,10 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
       toast.error('Please enter your email address to receive OTP');
       return;
     }
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
 
     setOtpTimer(300); // 5 minutes
 

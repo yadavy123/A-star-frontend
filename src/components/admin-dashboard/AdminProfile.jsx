@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Lock, Mail, Phone, MapPin, Save, X, Eye, EyeOff, Upload } from 'lucide-react'
-import { getMe } from '../../api/api/accountApi.js'
+import { getMe, changePassword } from '../../api/api/accountApi.js'
 import toast from 'react-hot-toast'
 
 export default function AdminProfile({ adminData }) {
@@ -45,6 +45,8 @@ export default function AdminProfile({ adminData }) {
     confirmPassword: ''
   })
 
+  const [passwordLoading, setPasswordLoading] = useState(false)
+
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
@@ -77,22 +79,35 @@ export default function AdminProfile({ adminData }) {
     setIsEditing(false)
   }
 
-  const handleUpdatePassword = () => {
+  const handleUpdatePassword = async () => {
     if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
-      alert('Please fill all password fields')
+      toast.error('Please fill all password fields')
       return
     }
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('New passwords do not match')
+      toast.error('New passwords do not match')
       return
     }
     if (passwordData.newPassword.length < 8) {
-      alert('Password must be at least 8 characters long')
+      toast.error('Password must be at least 8 characters long')
       return
     }
-    alert('Password updated successfully!')
-    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
-    setShowChangePasswordForm(false)
+
+    setPasswordLoading(true)
+    try {
+      await changePassword({
+        oldPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      })
+      toast.success('Password updated successfully!')
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      setShowChangePasswordForm(false)
+    } catch (error) {
+      const errMsg = error?.message || error?.error || 'Failed to update password. Please try again.'
+      toast.error(errMsg)
+    } finally {
+      setPasswordLoading(false)
+    }
   }
 
   const handleImageUpload = (e) => {
@@ -416,10 +431,11 @@ export default function AdminProfile({ adminData }) {
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={handleUpdatePassword}
-                    className="flex-1 px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-all"
+                    disabled={passwordLoading}
+                    className="flex-1 px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-50"
                     style={{ backgroundColor: '#28a745' }}
                   >
-                    <Save size={20} /> Update Password
+                    {passwordLoading ? 'Updating...' : <><Save size={20} /> Update Password</>}
                   </button>
                   <button
                     onClick={() => {

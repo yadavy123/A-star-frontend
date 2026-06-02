@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ScrollableCard from './ScrollableCard'
 import { Star, Trash2, Check, X, AlertCircle, Eye, ChevronLeft, ChevronRight, Filter, User, BookOpen, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getAllReviewsAdmin, approveReview, rejectReview, deleteReview } from '../../api/api/reviewApi';
@@ -154,7 +155,7 @@ export default function ReviewManagement() {
             <p className="text-lg font-medium">No reviews found for this status.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <ScrollableCard>
             <table className="w-full min-w-[1000px] divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -166,83 +167,97 @@ export default function ReviewManagement() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {reviews.map((review) => (
-                  <tr key={review.id} className="hover:bg-blue-50/30 transition-colors">
-                    <td className="px-4 py-4">
-                      <div className="text-sm font-bold text-blue-900">{review.studentName}</div>
-                      <div className="text-[10px] text-gray-500 font-medium flex items-center gap-1 mt-1 uppercase tracking-tight">
-                        <BookOpen size={10} /> {review.gradeOrClass}
-                      </div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">{new Date(review.submittedAt || review.createdAt).toLocaleDateString()}</div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-xs text-gray-600 line-clamp-2 italic leading-relaxed max-w-xs">
-                        "{review.reviewText}"
-                      </p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-gray-400 uppercase w-12">Overall</span>
-                          {renderStars(review.overallRating)}
+                {reviews.flatMap((review, index) => {
+                  const rows = [
+                    <tr key={review.id} className="hover:bg-blue-50/30 transition-colors">
+                      <td className="px-4 py-4">
+                        <div className="text-sm font-bold text-blue-900">{review.studentName}</div>
+                        <div className="text-[10px] text-gray-500 font-medium flex items-center gap-1 mt-1 uppercase tracking-tight">
+                          <BookOpen size={10} /> {review.gradeOrClass}
                         </div>
-                        <div className="flex items-center gap-2 opacity-60">
-                          <span className="text-[9px] font-bold text-gray-400 uppercase w-12">Teaching</span>
-                          {renderStars(review.teachingQuality)}
+                        <div className="text-[10px] text-gray-400 mt-0.5">{new Date(review.submittedAt || review.createdAt).toLocaleDateString()}</div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="text-xs text-gray-600 line-clamp-2 italic leading-relaxed max-w-xs">
+                          "{review.reviewText}"
+                        </p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase w-12">Overall</span>
+                            {renderStars(review.overallRating)}
+                          </div>
+                          <div className="flex items-center gap-2 opacity-60">
+                            <span className="text-[9px] font-bold text-gray-400 uppercase w-12">Teaching</span>
+                            {renderStars(review.teachingQuality)}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-black border uppercase shadow-sm ${getStatusStyle(review.status)}`}>
-                        {review.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => setViewModal(review)}
-                          className="p-2 rounded-full text-blue-600 hover:bg-blue-100 transition-colors"
-                          title="View Details"
-                        >
-                          <Eye size={18} />
-                        </button>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-black border uppercase shadow-sm ${getStatusStyle(review.status)}`}>
+                          {review.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center justify-center gap-2 flex-nowrap">
+                          <button
+                            onClick={() => setViewModal(review)}
+                            className="p-2 rounded-full text-blue-600 hover:bg-blue-100 transition-colors min-w-[44px] whitespace-nowrap"
+                            title="View Details"
+                          >
+                            <Eye size={18} />
+                          </button>
 
-                        {review.status?.toUpperCase() === 'PENDING' && (
-                          <>
-                            <button
-                              onClick={() => handleApprove(review.id)}
-                              disabled={actionLoading === review.id}
-                              className="p-2 rounded-full text-green-600 hover:bg-green-100 transition-colors"
-                              title="Approve"
-                            >
-                              <Check size={18} />
-                            </button>
-                            <button
-                              onClick={() => handleReject(review.id)}
-                              disabled={actionLoading === review.id}
-                              className="p-2 rounded-full text-orange-600 hover:bg-orange-100 transition-colors"
-                              title="Reject"
-                            >
-                              <X size={18} />
-                            </button>
-                          </>
-                        )}
+                          {review.status?.toUpperCase() === 'PENDING' && (
+                            <>
+                              <button
+                                onClick={() => handleApprove(review.id)}
+                                disabled={actionLoading === review.id}
+                                className="p-2 rounded-full text-green-600 hover:bg-green-100 transition-colors min-w-[44px] whitespace-nowrap"
+                                title="Approve"
+                              >
+                                <Check size={18} />
+                              </button>
+                              <button
+                                onClick={() => handleReject(review.id)}
+                                disabled={actionLoading === review.id}
+                                className="p-2 rounded-full text-orange-600 hover:bg-orange-100 transition-colors min-w-[44px] whitespace-nowrap"
+                                title="Reject"
+                              >
+                                <X size={18} />
+                              </button>
+                            </>
+                          )}
 
-                        <button
-                          onClick={() => handleDelete(review.id)}
-                          disabled={actionLoading === review.id}
-                          className="p-2 rounded-full text-red-500 hover:bg-red-100 transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <button
+                            onClick={() => handleDelete(review.id)}
+                            disabled={actionLoading === review.id}
+                            className="p-2 rounded-full text-red-500 hover:bg-red-100 transition-colors min-w-[44px] whitespace-nowrap"
+                            title="Delete"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ];
+
+                  if ((index + 1) % 4 === 0 && index !== reviews.length - 1) {
+                    rows.push(
+                      <tr key={`divider-${review.id}-${index}`} className="bg-transparent">
+                        <td colSpan={5} className="px-0 py-4">
+                          <div className="border-t border-gray-300 mx-4"></div>
+                        </td>
+                      </tr>
+                    );
+                  }
+
+                  return rows;
+                })}
               </tbody>
             </table>
-          </div>
+          </ScrollableCard>
         )}
 
         {/* Pagination */}
@@ -273,7 +288,7 @@ export default function ReviewManagement() {
 
       {/* View Modal */}
       {viewModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
             <div className="bg-linear-to-r from-blue-900 to-indigo-900 text-white p-5 md:p-6 shrink-0">

@@ -144,6 +144,11 @@ export const SubmitBlogPage = () => {
             return;
         }
 
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.authorEmail)) {
+            toast.error('Please enter a valid email address.');
+            return;
+        }
+
         setLoading(true);
         try {
             const response = await blogApi.startSubmission({

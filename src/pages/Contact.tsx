@@ -100,6 +100,13 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
+      // Email format validation
+      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.emailAddress)) {
+        toast.error('Please enter a valid email address.');
+        setIsSubmitting(false);
+        return;
+      }
+
       // Strict phone validation: must be exactly 10 digits
       const phone = formData.phoneNumber || '';
       if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {

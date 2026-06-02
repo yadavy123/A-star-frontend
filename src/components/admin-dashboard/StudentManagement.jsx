@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react'
+import ScrollableCard from './ScrollableCard'
 import Pagination from '../ui/Pagination'
 
 const SAMPLE_STUDENTS = [
@@ -89,7 +90,7 @@ export default function StudentManagement() {
   };
 
   return (
-    <div className=" sm:space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
         <div className="bg-white  border-gray-100 rounded-xl p-2 sm:p-6">
@@ -151,9 +152,10 @@ export default function StudentManagement() {
             </div>
           </div>
           {/* Students Table */}
-          <div className="bg-white rounded-xl shadow-md overflow-hidden -mx-2 sm:mx-0">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-160">
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            {/* Table wrapped with ScrollableCard to show bottom scrollbar per-card */}
+            <ScrollableCard>
+              <table className="w-full min-w-full table-auto">
                 <thead>
                   <tr className="border-b-2 border-gray-100" style={{ backgroundColor: '#fefce8' }}>
                     <th className="text-left py-3 sm:py-4 px-3 sm:px-6 font-bold text-blue-900 text-xs sm:text-sm">Student ID</th>
@@ -161,7 +163,7 @@ export default function StudentManagement() {
                     <th className="text-left py-3 sm:py-4 px-3 sm:px-6 font-bold text-blue-900 text-xs sm:text-sm">Email</th>
                     <th className="text-left py-3 sm:py-4 px-3 sm:px-6 font-bold text-blue-900 text-xs sm:text-sm">Phone</th>
                     <th className="text-left py-3 sm:py-4 px-3 sm:px-6 font-bold text-blue-900 text-xs sm:text-sm">Status</th>
-                    <th className="text-left py-3 sm:py-4 px-3 sm:px-6 font-bold text-blue-900 text-xs sm:text-sm">Actions</th>
+                    <th className="text-right py-3 sm:py-4 px-3 sm:px-6 font-bold text-blue-900 text-xs sm:text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -187,15 +189,15 @@ export default function StudentManagement() {
                             <option value="pending">Pending</option>
                           </select>
                         </td>
-                        <td className="py-4 px-6">
-                          <div className="flex gap-2 flex-wrap">
+                        <td className="py-4 px-6 text-right">
+                          <div className="flex justify-end gap-2 flex-nowrap">
                             <button
-                              className="px-3 py-1 rounded-lg text-xs font-semibold text-white hover:opacity-90 bg-blue-900"
+                              className="min-w-[88px] px-3 py-2 rounded-lg text-xs font-semibold text-white text-center hover:opacity-90 bg-blue-900 whitespace-nowrap"
                             >
                               View
                             </button>
                             <button
-                              className="px-3 py-1 rounded-lg text-xs font-semibold text-white hover:opacity-90"
+                              className="min-w-[88px] px-3 py-2 rounded-lg text-xs font-semibold text-white text-center hover:opacity-90 whitespace-nowrap"
                               style={{ backgroundColor: '#dc3545' }}
                               onClick={() => handleDeleteStudent(student.id)}
                             >
@@ -208,7 +210,7 @@ export default function StudentManagement() {
                   )}
                 </tbody>
               </table>
-            </div>
+            </ScrollableCard>
             {/* Pagination */}
             <Pagination
               currentPage={currentPage}

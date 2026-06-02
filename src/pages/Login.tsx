@@ -37,7 +37,7 @@ const Login = () => {
 
   const validateEmail = (value: string) => {
     if (!value.trim()) return 'Email is required.';
-    if (!/\S+@\S+\.\S+/.test(value.trim())) return 'Please enter a valid email address.';
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value.trim())) return 'Please enter a valid email address.';
     return undefined;
   };
 

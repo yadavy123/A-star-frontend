@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ScrollableCard from './ScrollableCard'
 import {
   MessageSquare, Search, Trash2, Mail, Phone,
   User, Clock, CheckCircle, Eye, Plus, X,
@@ -182,10 +183,10 @@ export default function ContactRequests() {
         <p className="text-gray-500 text-sm mt-1">Manage website inquiries and contact subjects</p>
       </div>
 
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200 overflow-x-auto">
         <button
           onClick={() => setActiveTab('messages')}
-          className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${
+          className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'messages' ? 'border-blue-900 text-blue-900' : 'border-transparent text-gray-500 hover:text-blue-900'
           }`}
         >
@@ -193,7 +194,7 @@ export default function ContactRequests() {
         </button>
         <button
           onClick={() => setActiveTab('subjects')}
-          className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${
+          className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'subjects' ? 'border-blue-900 text-blue-900' : 'border-transparent text-gray-500 hover:text-blue-900'
           }`}
         >
@@ -201,7 +202,7 @@ export default function ContactRequests() {
         </button>
         <button
           onClick={() => setActiveTab('settings')}
-          className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${
+          className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'settings' ? 'border-blue-900 text-blue-900' : 'border-transparent text-gray-500 hover:text-blue-900'
           }`}
         >
@@ -240,7 +241,8 @@ export default function ContactRequests() {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <table className="w-full text-left">
+            <ScrollableCard>
+              <table className="w-full text-left">
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-6 py-4 font-semibold text-gray-600 text-sm">Sender</th>
@@ -269,19 +271,21 @@ export default function ContactRequests() {
                         {STATUS_CONFIG[msg.status]?.label}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button
-                        onClick={() => { setSelectedMessage(msg); if (msg.status === 'UNREAD') handleStatusUpdate(msg.id, 'READ'); }}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteMessage(msg.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2 flex-nowrap">
+                        <button
+                          onClick={() => { setSelectedMessage(msg); if (msg.status === 'UNREAD') handleStatusUpdate(msg.id, 'READ'); }}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition min-w-[44px] whitespace-nowrap"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteMessage(msg.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition min-w-[44px] whitespace-nowrap"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -307,15 +311,16 @@ export default function ContactRequests() {
                 </button>
               </div>
             )}
-          </div>
+          </ScrollableCard>
         </div>
+      </div>
       ) : activeTab === 'subjects' ? (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="font-bold text-lg text-blue-900">Manage Inquiry Subjects</h3>
             <button
               onClick={() => setShowSubjectForm(true)}
-              className="flex items-center gap-2 bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition shadow-sm"
+              className="inline-flex items-center justify-center h-11 gap-2 bg-blue-900 text-white px-4 rounded-lg hover:bg-blue-800 transition shadow-sm"
             >
               <Plus className="w-4 h-4" /> Add Subject
             </button>
@@ -323,17 +328,21 @@ export default function ContactRequests() {
 
           {showSubjectForm && (
             <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 animate-in fade-in slide-in-from-top-2">
-              <form onSubmit={handleCreateSubject} className="flex gap-3">
+              <form onSubmit={handleCreateSubject} className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <input
                   type="text"
                   placeholder="Subject Name (e.g. Technical Support)"
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
-                  className="flex-1 px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20"
+                  className="flex-1 min-w-0 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20"
                   autoFocus
                 />
-                <button type="submit" className="bg-blue-900 text-white px-6 py-2 rounded-lg font-bold">Save</button>
-                <button type="button" onClick={() => { setShowSubjectForm(false); setNewSubject(''); }} className="px-4 py-2 text-gray-500">Cancel</button>
+                <button type="submit" className="inline-flex items-center justify-center h-11 px-6 rounded-lg bg-blue-900 text-white font-bold hover:bg-blue-800 transition">
+                  Save
+                </button>
+                <button type="button" onClick={() => { setShowSubjectForm(false); setNewSubject(''); }} className="inline-flex items-center justify-center h-11 px-5 rounded-lg text-gray-500 border border-gray-200 hover:bg-gray-100 transition">
+                  Cancel
+                </button>
               </form>
             </div>
           )}

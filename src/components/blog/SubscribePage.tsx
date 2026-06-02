@@ -44,7 +44,12 @@ export const SubscribePage = () => {
     };
 
     const handleSubscribe = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); setLoading(true);
+        e.preventDefault();
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+            toast.error('Please enter a valid email address.');
+            return;
+        }
+        setLoading(true);
         try { 
             await blogApi.requestSubscriptionOtp({ email }); 
             toast.success('OTP sent to your email!'); 
@@ -77,7 +82,12 @@ export const SubscribePage = () => {
     };
 
     const handleUnsubscribe = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); setLoading(true);
+        e.preventDefault();
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+            toast.error('Please enter a valid email address.');
+            return;
+        }
+        setLoading(true);
         try { await blogApi.unsubscribe({ email }); toast.success('Unsubscribed'); setEmail(''); setStep('subscribe'); }
         catch (err) { toast.error(getApiErrorMessage(err, 'Failed')); }
         finally { setLoading(false); }

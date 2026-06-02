@@ -4,6 +4,7 @@ import { getAdminAnswers, approveAnswer, rejectAnswer, deleteAnswer } from '../.
 import { getCategories } from '../../api/api/categoryApi'
 import RichDescriptionEditor from '../RichDescriptionEditor'
 import toast from 'react-hot-toast'
+import ScrollableCard from './ScrollableCard'
 import { Search, Filter, MessageSquare, CheckCircle, XCircle, Trash2, Eye, ChevronLeft, ChevronRight, AlertCircle, Plus, X } from 'lucide-react'
 
 export default function QuestionManagement() {
@@ -221,8 +222,8 @@ export default function QuestionManagement() {
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-white rounded-xl shadow-md p-4 flex flex-col md:flex-row gap-4">
-        <div className="flex-1 relative">
+      <div className="bg-white rounded-xl shadow-md p-4 flex flex-col gap-4 md:flex-row md:items-center">
+        <div className="flex-1 min-w-0 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
@@ -232,10 +233,10 @@ export default function QuestionManagement() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto min-w-0">
           {activeTab === 'questions' && (
             <select
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none"
+              className="block w-full sm:w-auto max-w-full min-w-0 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
@@ -246,7 +247,7 @@ export default function QuestionManagement() {
             </select>
           )}
           <select
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none"
+            className="block w-full sm:w-auto max-w-full min-w-0 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
           >
@@ -264,7 +265,7 @@ export default function QuestionManagement() {
 
       {/* Content Table */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-        <div className="overflow-x-auto">
+        <ScrollableCard>
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
@@ -346,7 +347,7 @@ export default function QuestionManagement() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollableCard>
 
         {/* Pagination */}
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
@@ -374,8 +375,8 @@ export default function QuestionManagement() {
       {/* Create Question Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between bg-gradient-to-r from-purple-700 to-blue-700 p-6 rounded-t-2xl">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-full sm:max-w-2xl max-h-[90vh] overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gradient-to-r from-purple-700 to-blue-700 p-6 rounded-t-2xl">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <Plus className="w-6 h-6" />
                 Create New Question
@@ -390,7 +391,7 @@ export default function QuestionManagement() {
                 <select
                   value={createForm.categoryId}
                   onChange={(e) => setCreateForm(f => ({ ...f, categoryId: e.target.value }))}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
+                  className="block w-full max-w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
                 >
                   <option value="">All Categories</option>
                   {categories.map(cat => (

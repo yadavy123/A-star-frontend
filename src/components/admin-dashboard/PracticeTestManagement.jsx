@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import ScrollableCard from './ScrollableCard'
 
 const DEFAULT_TESTS = [
   { id: 1, name: 'Calculus Test 1', subject: 'Mathematics', duration: 60, questions: 30, difficulty: 'Medium' },
@@ -114,7 +115,7 @@ export default function PracticeTestManagement() {
         {tests.length === 0 ? (
           <div className="text-gray-600 text-center py-8">No practice tests found.</div>
         ) : (
-          <div className="overflow-x-auto">
+          <ScrollableCard>
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -146,7 +147,7 @@ export default function PracticeTestManagement() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </ScrollableCard>
         )}
       </div>
     </div>

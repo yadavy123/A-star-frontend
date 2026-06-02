@@ -51,7 +51,7 @@ export default function AdminSidebar({ currentView, setCurrentView, sidebarOpen,
       )}
 
       <aside
-        className={`fixed left-0 top-0 h-full w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col z-40 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed left-0 top-0 h-full w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col z-50 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         {/* Sidebar Header - Hidden on desktop to prevent overlap with main dashboard header */}

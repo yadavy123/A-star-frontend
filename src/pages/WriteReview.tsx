@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Star, CheckCircle, Loader2, ArrowLeft, Mail } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { submitReview, sendReviewOtp, verifyReviewOtp } from '../api/api/reviewApi'
@@ -9,6 +9,7 @@ export default function WriteReview() {
   const [otpLoading, setOtpLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [resendTimer, setResendTimer] = useState(0)
 
   const [formData, setFormData] = useState({
     studentName: '',
@@ -36,6 +37,22 @@ export default function WriteReview() {
       resultImprovement: 5
     }
   })
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -71,9 +88,15 @@ export default function WriteReview() {
     };
   };
 
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   const sendOtp = async () => {
     if (!formData.email.trim()) {
       toast.error('Please enter your email to verify.');
+      return;
+    }
+    if (!emailRegex.test(formData.email.trim())) {
+      toast.error('Please enter a valid email address.');
       return;
     }
     setOtpLoading(true);
@@ -81,6 +104,7 @@ export default function WriteReview() {
       await sendReviewOtp(formData.email.trim());
       toast.success('OTP sent to ' + formData.email);
       setStep('otp');
+      setResendTimer(300);
     } catch (error: any) {
       toast.error(error?.data?.message || error?.message || 'Failed to send OTP');
     } finally {
@@ -228,9 +252,13 @@ export default function WriteReview() {
                       className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-900 focus:outline-none text-lg font-bold text-center tracking-[0.3em]"
                       placeholder="000000" maxLength={6} autoFocus />
                   </div>
-                  <button type="button" onClick={sendOtp} disabled={otpLoading}
-                    className="text-xs text-blue-700 hover:underline font-medium">
-                    Resend OTP
+                  <button
+                    type="button"
+                    onClick={sendOtp}
+                    disabled={otpLoading || resendTimer > 0}
+                    className={`text-xs font-medium transition-colors ${resendTimer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-700 hover:underline'}`}
+                  >
+                    {resendTimer > 0 ? `Resend OTP in ${formatTime(resendTimer)}` : 'Resend OTP'}
                   </button>
                 </div>
               )}

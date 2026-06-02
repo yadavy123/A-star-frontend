@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Edit, Save, X, Search, Settings, BookOpen, GraduationCap, CheckCircle, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ScrollableCard from './ScrollableCard'
 import { demoApi } from '../../api/demoApi';
 
 export default function DemoSettings() {
@@ -207,7 +208,7 @@ export default function DemoSettings() {
                         <p className="text-gray-400 text-sm mt-1">Add your first {currentTitle.slice(0, -1).toLowerCase()} to get started</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <ScrollableCard>
                         <table className="w-full">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
@@ -234,7 +235,7 @@ export default function DemoSettings() {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </ScrollableCard>
                 )}
             </div>
         </div>

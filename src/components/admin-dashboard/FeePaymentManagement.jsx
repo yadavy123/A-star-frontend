@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import ScrollableCard from './ScrollableCard'
 
 const SAMPLE_PAYMENTS = [
   { id: 'ICFY001', fullName: 'Rahul Sharma', courseName: 'UG Mathematics', feeAmount: '5000', status: 'paid', paymentDate: '2026-02-18', phone: '+91 98765 43210', email: 'rahul@example.com', razorpayPaymentId: 'rzp_demo_001' },
@@ -95,7 +96,7 @@ export default function FeePaymentManagement() {
       </div>
       {/* Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
+        <ScrollableCard>
           <table className="min-w-full">
             <thead className="bg-blue-900">
               <tr>
@@ -123,23 +124,23 @@ export default function FeePaymentManagement() {
                       'bg-red-100 text-red-800'
                     }`}>{p.status}</span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
-                      <select value={p.status} onChange={e => handleStatusUpdate(p.id, e.target.value)}
-                        className="px-2 py-1 border rounded text-xs" style={{ borderColor: '#1e3a8a' }}>
-                        <option value="pending">Pending</option>
-                        <option value="paid">Paid</option>
-                        <option value="failed">Failed</option>
-                      </select>
-                      <button onClick={() => handleDelete(p.id)}
-                        className="px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: '#dc3545' }}>Del</button>
-                    </div>
-                  </td>
+                          <td className="px-4 py-3">
+                            <div className="flex gap-2 items-center flex-nowrap">
+                              <select value={p.status} onChange={e => handleStatusUpdate(p.id, e.target.value)}
+                                className="px-2 py-1 border rounded text-xs min-w-[88px] whitespace-nowrap" style={{ borderColor: '#1e3a8a' }}>
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                                <option value="failed">Failed</option>
+                              </select>
+                              <button onClick={() => handleDelete(p.id)}
+                                className="px-3 py-1.5 rounded text-white text-xs min-w-[72px] text-center whitespace-nowrap" style={{ backgroundColor: '#dc3545' }}>Delete</button>
+                            </div>
+                          </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollableCard>
       </div>
     </div>
   );

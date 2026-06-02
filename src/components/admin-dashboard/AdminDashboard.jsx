@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import AdminSidebar from './AdminSidebar'
@@ -106,10 +106,12 @@ export default function AdminDashboard() {
         return <AdminHome setCurrentView={setCurrentView} />
     }
   }
+
+
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 shadow-xl sticky top-0 z-50">
+      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 shadow-xl sticky top-0 z-40">
         <div className="px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
@@ -160,10 +162,10 @@ export default function AdminDashboard() {
         setSidebarOpen={setSidebarOpen}
       />
       {/* Main Content Container */}
-      <div className="flex w-full overflow-x-hidden">
+      <div className="flex w-full justify-center">
         {/* Main Content */}
         <main className={`flex-1 min-w-0 transition-all duration-300 ${sidebarOpen ? 'lg:pl-64' : ''}`}>
-          <div className="p-4 md:p-6 max-w-full overflow-x-hidden">
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
             {renderView()}
           </div>
         </main>

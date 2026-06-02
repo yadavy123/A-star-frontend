@@ -27,7 +27,7 @@ const Signup = () => {
 
     if (!email.trim()) {
       validationErrors.email = "Email is required.";
-    } else if (!/\S+@\S+\.\S+/.test(email.trim())) {
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
       validationErrors.email = "Please enter a valid email address.";
     }
 

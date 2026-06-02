@@ -32,6 +32,11 @@ export default function SignupModal({ isOpen, onClose, onOpenLogin }) {
       return
     }
 
+    if (!signupData.email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(signupData.email)) {
+      setError('Please enter a valid email address.')
+      return
+    }
+
     if (!signupData.phone || !/^\d{10}$/.test(signupData.phone)) {
       setError('Please enter a valid 10-digit mobile number')
       return
