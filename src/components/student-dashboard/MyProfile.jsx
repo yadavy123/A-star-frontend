@@ -1,3 +1,4 @@
+/** Student profile management - edit personal info, change password, manage contacts. */
 import React, { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 

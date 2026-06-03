@@ -114,19 +114,16 @@ export default function AdminProfile({ adminData }) {
     const file = e.target.files[0]
     if (!file) return
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file')
       return
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert('Image size should be less than 5MB')
       return
     }
 
-    // Simulate upload progress
     setUploadProgress(0)
     const interval = setInterval(() => {
       setUploadProgress(prev => {
@@ -138,7 +135,6 @@ export default function AdminProfile({ adminData }) {
       })
     }, 300)
 
-    // Convert to base64 and store
     const reader = new FileReader()
     reader.onload = (event) => {
       setProfileImage(event.target.result)
@@ -152,18 +148,14 @@ export default function AdminProfile({ adminData }) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6">
         <h2 className="text-2xl font-bold text-blue-900">Admin Profile</h2>
         <p className="text-gray-500 text-sm mt-1">Manage your admin account and settings</p>
       </div>
 
-      {/* Profile Card */}
       <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
-        {/* Profile Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8 pb-8 border-b-2" style={{ borderColor: '#f0f0f0' }}>
           <div className="flex items-center gap-6">
-            {/* Profile Picture Area */}
             <div className="relative group">
               {profileImage ? (
                 <img
@@ -179,7 +171,6 @@ export default function AdminProfile({ adminData }) {
                 </div>
               )}
               
-              {/* Upload Overlay */}
               <label
                 htmlFor="profile-image-input"
                 className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100"
@@ -198,7 +189,6 @@ export default function AdminProfile({ adminData }) {
                 className="hidden"
               />
 
-              {/* Upload Progress Bar */}
               {uploadProgress > 0 && uploadProgress < 100 && (
                 <div className="absolute bottom-0 left-0 right-0 rounded-full h-1" style={{ backgroundColor: '#e0e0e0' }}>
                   <div
@@ -227,10 +217,8 @@ export default function AdminProfile({ adminData }) {
           </button>
         </div>
 
-        {/* Profile Form */}
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
               <input
@@ -247,7 +235,6 @@ export default function AdminProfile({ adminData }) {
               />
             </div>
 
-            {/* Email */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Email (Read-only)</label>
               <input
@@ -259,7 +246,6 @@ export default function AdminProfile({ adminData }) {
               />
             </div>
 
-            {/* Phone */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
               <div className="flex items-center gap-2">
@@ -279,7 +265,6 @@ export default function AdminProfile({ adminData }) {
               </div>
             </div>
 
-            {/* Position */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Position *</label>
               <input
@@ -296,7 +281,6 @@ export default function AdminProfile({ adminData }) {
               />
             </div>
 
-            {/* Address */}
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700 mb-2">Address *</label>
               <div className="flex items-start gap-2">
@@ -317,7 +301,6 @@ export default function AdminProfile({ adminData }) {
             </div>
           </div>
 
-          {/* Save Button */}
           {isEditing && (
             <div className="flex gap-3 pt-6 border-t-2" style={{ borderColor: '#f0f0f0' }}>
               <button
@@ -338,7 +321,6 @@ export default function AdminProfile({ adminData }) {
         </div>
       </div>
 
-      {/* Security Section */}
       <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
         <h3 className="text-xl font-bold mb-6 text-blue-900">
           🔒 Security Settings
@@ -358,7 +340,6 @@ export default function AdminProfile({ adminData }) {
           {showChangePasswordForm && (
             <div className="mt-4 p-6 bg-gray-50 rounded-lg border-2" style={{ borderColor: '#1e3a8a' }}>
               <div className="space-y-4">
-                {/* Current Password */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Current Password *</label>
                   <div className="relative">
@@ -381,7 +362,6 @@ export default function AdminProfile({ adminData }) {
                   </div>
                 </div>
 
-                {/* New Password */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">New Password *</label>
                   <div className="relative">
@@ -404,7 +384,6 @@ export default function AdminProfile({ adminData }) {
                   </div>
                 </div>
 
-                {/* Confirm Password */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password *</label>
                   <div className="relative">
@@ -427,7 +406,6 @@ export default function AdminProfile({ adminData }) {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={handleUpdatePassword}
@@ -453,7 +431,6 @@ export default function AdminProfile({ adminData }) {
         </div>
       </div>
 
-      {/* Account Info */}
       <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
         <h3 className="text-xl font-bold mb-6 text-blue-900">
           ℹ️ Account Information

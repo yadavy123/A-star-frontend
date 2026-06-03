@@ -1,5 +1,4 @@
-﻿
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import Pagination from '../ui/Pagination';
 
 const DEFAULT_ANNOUNCEMENTS = [
@@ -26,7 +25,6 @@ export default function AnnouncementManagement() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedAnnouncements = announcements.slice(startIndex, startIndex + itemsPerPage);
 
-  // Save to localStorage so student dashboard Announcements.jsx can read them
   useEffect(() => { localStorage.setItem('icfy_announcements', JSON.stringify(announcements)) }, [announcements])
 
   const handleInputChange = (e) => {
@@ -62,6 +60,7 @@ export default function AnnouncementManagement() {
         <h2 className="text-2xl font-bold text-blue-900">Announcement Management</h2>
         <p className="text-gray-500 text-sm mt-1">Create and publish announcements</p>
       </div>
+
       <div className="bg-white rounded-xl shadow-md p-6">
         <button
           className="mb-4 px-4 py-2 rounded bg-blue-900 text-white font-bold"
@@ -73,32 +72,17 @@ export default function AnnouncementManagement() {
         >
           {showForm ? 'Cancel' : 'Add Announcement'}
         </button>
+
         {showForm && (
           <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleInputChange}
-              placeholder="Title"
-              className="w-full px-4 py-2 border rounded"
-              required
-            />
-            <textarea
-              name="message"
-              value={form.message}
-              onChange={handleInputChange}
-              placeholder="Message"
-              className="w-full px-4 py-2 border rounded"
-              required
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-blue-900 text-white font-bold"
-            >
+            <input name="title" value={form.title} onChange={handleInputChange} placeholder="Title" className="w-full px-4 py-2 border rounded" required />
+            <textarea name="message" value={form.message} onChange={handleInputChange} placeholder="Message" className="w-full px-4 py-2 border rounded" required />
+            <button type="submit" className="px-4 py-2 rounded bg-blue-900 text-white font-bold">
               {editId ? 'Update' : 'Create'}
             </button>
           </form>
         )}
+
         {announcements.length === 0 ? (
           <div className="text-gray-600 text-center py-8">No announcements found.</div>
         ) : (
@@ -108,22 +92,17 @@ export default function AnnouncementManagement() {
                 <div>
                   <div className="font-bold text-lg">{a.title}</div>
                   <div className="text-gray-700">{a.message}</div>
-                  <div className="text-xs text-gray-400">{a.createdAt ? new Date(a.createdAt).toLocaleString() : ''}</div>
+                  <div className="text-xs text-gray-400">{a.createdAt ? new Date(a.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</div>
                 </div>
                 <div className="flex gap-2 mt-2 md:mt-0">
-                  <button
-                    className="px-3 py-1 rounded bg-blue-900 text-white"
-                    onClick={() => handleEdit(a)}
-                  >Edit</button>
-                  <button
-                    className="px-3 py-1 rounded bg-red-600 text-white"
-                    onClick={() => handleDelete(a.id)}
-                  >Delete</button>
+                  <button className="px-3 py-1 rounded bg-blue-900 text-white" onClick={() => handleEdit(a)}>Edit</button>
+                  <button className="px-3 py-1 rounded bg-red-600 text-white" onClick={() => handleDelete(a.id)}>Delete</button>
                 </div>
               </li>
             ))}
           </ul>
         )}
+
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

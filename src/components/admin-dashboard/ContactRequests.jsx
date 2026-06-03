@@ -170,10 +170,7 @@ export default function ContactRequests() {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric', month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit'
-    });
+    return new Date(dateString).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -200,7 +197,7 @@ export default function ContactRequests() {
         >
           Contact Subjects
         </button>
-        <button
+        {/* <button
           onClick={() => setActiveTab('settings')}
           className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'settings' ? 'border-blue-900 text-blue-900' : 'border-transparent text-gray-500 hover:text-blue-900'
@@ -208,6 +205,14 @@ export default function ContactRequests() {
         >
           Contact Settings
         </button>
+        <button
+          onClick={() => setActiveTab('comments')}
+          className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 whitespace-nowrap ${
+            activeTab === 'comments' ? 'border-blue-900 text-blue-900' : 'border-transparent text-gray-500 hover:text-blue-900'
+          }`}
+        >
+          Comments ({comments.length})
+        </button> */}
       </div>
 
       {activeTab === 'messages' ? (
@@ -362,99 +367,8 @@ export default function ContactRequests() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-md p-6 border">
-          <h3 className="text-xl font-bold text-gray-800 mb-6">Contact Information Settings</h3>
-          <form onSubmit={handleUpdateSettings} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
-                <input
-                  type="text"
-                  value={settings.phoneNumber || ''}
-                  onChange={(e) => setSettings({ ...settings, phoneNumber: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20"
-                  placeholder="+91-XXXXXXXXXX"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">WhatsApp Number</label>
-                <input
-                  type="text"
-                  value={settings.whatsappNumber || ''}
-                  onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20"
-                  placeholder="+91-XXXXXXXXXX"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  value={settings.emailAddress || ''}
-                  onChange={(e) => setSettings({ ...settings, emailAddress: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20"
-                  placeholder="contact@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Office Hours</label>
-                <input
-                  type="text"
-                  value={settings.officeHours || ''}
-                  onChange={(e) => setSettings({ ...settings, officeHours: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20"
-                  placeholder="Mon-Fri: 9AM - 6PM"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Office Address</label>
-                <textarea
-                  value={settings.officeAddress || ''}
-                  onChange={(e) => setSettings({ ...settings, officeAddress: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20 h-24"
-                  placeholder="Enter full office address..."
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Google Maps Embed URL</label>
-                <input
-                  type="text"
-                  value={settings.googleMapsUrl || ''}
-                  onChange={(e) => setSettings({ ...settings, googleMapsUrl: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20"
-                  placeholder="https://www.google.com/maps/embed?..."
-                />
-              </div>
-            </div>
-
-            <div className="pt-4 border-t">
-              <h4 className="font-bold text-gray-800 mb-4">Social Media Links</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {['facebook', 'instagram', 'linkedin', 'twitter'].map((social) => (
-                  <div key={social}>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1 capitalize">{social} URL</label>
-                    <input
-                      type="text"
-                      value={settings[`${social}Url`] || ''}
-                      onChange={(e) => setSettings({ ...settings, [`${social}Url`]: e.target.value })}
-                      className="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-900/20"
-                      placeholder={`https://${social}.com/...`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-6">
-              <button
-                type="submit"
-                disabled={savingSettings}
-                className="bg-blue-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-800 transition shadow-lg disabled:opacity-50"
-              >
-                {savingSettings ? 'Saving...' : 'Save All Settings'}
-              </button>
-            </div>
-          </form>
+        <div className="bg-gray-50 p-8 rounded-xl text-center">
+          <p className="text-gray-500">This section is not available.</p>
         </div>
       )}
 

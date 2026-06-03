@@ -1,3 +1,4 @@
+/** Enrolled courses page - view registered courses with progress and materials. */
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import Pagination from '../ui/Pagination'

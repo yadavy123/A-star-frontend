@@ -21,14 +21,14 @@ export default function AdminHome({ setCurrentView }) {
   const stats = useMemo(getStats, [])
 
   const statCards = [
-    { label: 'Total Students', value: stats.students, color: '#1e3a8a', bg: '#eff6ff', id: 'students' },
-    { label: 'Active Classes', value: stats.classes, color: '#1e3a8a', bg: '#eff6ff', id: 'running-classes' },
+    // { label: 'Total Students', value: stats.students, color: '#1e3a8a', bg: '#eff6ff', id: 'students' },
+    // { label: 'Active Classes', value: stats.classes, color: '#1e3a8a', bg: '#eff6ff', id: 'running-classes' },
     { label: 'Total Payments', value: stats.payments, color: '#28a745', bg: '#f0fff4', id: 'fee-payment' },
     { label: 'Revenue', value: `₹${stats.totalRevenue.toLocaleString()}`, color: '#28a745', bg: '#f0fff4', id: 'fee-payment' },
     { label: 'Demo Requests', value: stats.demoRequests, color: stats.pendingDemos > 0 ? '#ffc107' : '#1e3a8a', bg: '#fefce8', id: 'demo-requests' },
     { label: 'Pending Enrollments', value: stats.pendingEnrollments, color: stats.pendingEnrollments > 0 ? '#dc3545' : '#1e3a8a', bg: '#fff5f5', id: 'running-classes' },
-    { label: 'Homework Tasks', value: stats.homework, color: '#1e3a8a', bg: '#eff6ff', id: 'homework' },
-    { label: 'Announcements', value: stats.announcements, color: '#eab308', bg: '#fefce8', id: 'announcements' },
+    // { label: 'Homework Tasks', value: stats.homework, color: '#1e3a8a', bg: '#eff6ff', id: 'homework' },
+    // { label: 'Announcements', value: stats.announcements, color: '#eab308', bg: '#fefce8', id: 'announcements' },
   ]
 
   const menuCards = [
@@ -38,9 +38,9 @@ export default function AdminHome({ setCurrentView }) {
     { id: 'fee-payment', label: 'Fee Payments', icon: DollarSign, description: 'Track payment records from frontend' },
     { id: 'demo-requests', label: 'Demo Requests', icon: FileText, description: 'Manage demo class bookings' },
     { id: 'contact-requests', label: 'Contact Requests', icon: MessageSquare, description: 'Manage website contact inquiries' },
-    { id: 'homework', label: 'Homework', icon: ClipboardList, description: 'Assign & manage homework tasks' },
-    { id: 'practice-tests', label: 'Practice Tests', icon: FlaskConical, description: 'Create & manage tests' },
-    { id: 'announcements', label: 'Announcements', icon: Bell, description: 'Post announcements to students' },
+    // { id: 'homework', label: 'Homework', icon: ClipboardList, description: 'Assign & manage homework tasks' },
+    // { id: 'practice-tests', label: 'Practice Tests', icon: FlaskConical, description: 'Create & manage tests' },
+    // { id: 'announcements', label: 'Announcements', icon: Bell, description: 'Post announcements to students' },
     { id: 'questions', label: 'Q&A Management', icon: HelpCircle, description: 'Answer student questions' },
     { id: 'categories', label: 'Categories', icon: Folder, description: 'Manage categories' },
     { id: 'feedback', label: 'Feedback', icon: MessageSquare, description: 'View & respond to reviews' },
@@ -52,13 +52,11 @@ export default function AdminHome({ setCurrentView }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-      {/* Page Header */}
       <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 mb-6">
         <h1 className="text-2xl font-bold text-blue-900">Admin Dashboard</h1>
         <p className="text-gray-500 text-sm mt-1">Welcome back! Here's a live overview of A Star Classes.</p>
       </div>
 
-      {/* Live Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {statCards.map(s => (
           <button key={s.label} onClick={() => setCurrentView(s.id)}
@@ -70,7 +68,6 @@ export default function AdminHome({ setCurrentView }) {
         ))}
       </div>
 
-      {/* Management Sections */}
       <h2 className="text-lg font-bold mb-4 text-blue-900">Management Sections</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {menuCards.map(card => (

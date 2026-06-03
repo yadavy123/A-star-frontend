@@ -1,3 +1,4 @@
+/** Learning progress tracking with subject-wise stats and charts. */
 import React from 'react'
 
 export default function MyProgress() {

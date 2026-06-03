@@ -10,10 +10,8 @@ const SAMPLE_STUDENTS = [
 
 const loadStudents = () => {
   try {
-    // Check if admin has manually managed students
     const adminStudents = JSON.parse(localStorage.getItem('icfy_admin_students') || 'null')
     if (adminStudents && adminStudents.length > 0) return adminStudents
-    // Map icfy_users (registered via signup) to student format
     const registered = JSON.parse(localStorage.getItem('icfy_users') || '[]')
     const mapped = registered
       .filter(u => u.role !== 'admin')
@@ -31,16 +29,16 @@ const loadStudents = () => {
 
 export default function StudentManagement() {
   const [students, setStudents] = useState(loadStudents);
-  
-  // Persist to localStorage whenever students changes
-  useEffect(() => {
-    localStorage.setItem('icfy_admin_students', JSON.stringify(students))
-  }, [students])
   const [showAddModal, setShowAddModal] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 100
+
+  // Persist to localStorage whenever students changes
+  useEffect(() => {
+    localStorage.setItem('icfy_admin_students', JSON.stringify(students))
+  }, [students])
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -66,7 +64,6 @@ export default function StudentManagement() {
       enrollmentDate: new Date().toISOString().split('T')[0],
     }
     setStudents(prev => [...prev, newStudent])
-    // Also register in icfy_users so student can log in
     const users = JSON.parse(localStorage.getItem('icfy_users') || '[]')
     users.push({
       fullName: newStudent.name, email: newStudent.email,
@@ -91,7 +88,6 @@ export default function StudentManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
         <div className="bg-white  border-gray-100 rounded-xl p-2 sm:p-6">
         <h2 className="text-xl sm:text-2xl font-bold text-blue-900">Student Management</h2>
@@ -106,7 +102,6 @@ export default function StudentManagement() {
       </div>
       {true ? (
         <>
-          {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             <div className="bg-white rounded-xl shadow-md p-2 sm:p-3 border-l-4 border-blue-900">
               <h3 className="text-xs sm:text-sm font-semibold text-gray-600 mb-1">Total Students</h3>
@@ -129,7 +124,6 @@ export default function StudentManagement() {
               <p className="text-xl sm:text-2xl md:text-3xl font-bold text-amber-700">{students.filter(s => s.status === 'pending').length}</p>
             </div>
           </div>
-          {/* Search and Filter */}
           <div className="bg-white rounded-xl shadow-md p-2 sm:p-3 md:p-2 ">
             <div className="flex flex-col md:flex-row gap-3 sm:gap-4">
               <input
@@ -151,9 +145,7 @@ export default function StudentManagement() {
               </select>
             </div>
           </div>
-          {/* Students Table */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            {/* Table wrapped with ScrollableCard to show bottom scrollbar per-card */}
             <ScrollableCard>
               <table className="w-full min-w-full table-auto">
                 <thead>
@@ -211,7 +203,6 @@ export default function StudentManagement() {
                 </tbody>
               </table>
             </ScrollableCard>
-            {/* Pagination */}
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -225,7 +216,6 @@ export default function StudentManagement() {
       ) : (
         <div className="text-center py-8 text-gray-600">No students found.</div>
       )}
-      {/* Add Student Modal */}
       {showAddModal && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"

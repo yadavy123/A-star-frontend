@@ -1,3 +1,4 @@
+/** Student dashboard layout with sidebar navigation and view routing. */
 import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'

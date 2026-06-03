@@ -55,6 +55,7 @@ export default function PracticeTestManagement() {
         <h2 className="text-2xl font-bold text-blue-900">Practice Test Management</h2>
         <p className="text-gray-500 text-sm mt-1">Create and manage practice tests</p>
       </div>
+
       <div className="bg-white rounded-xl shadow-md p-4 md:p-8">
         <button
           className="mb-4 px-4 py-2 rounded bg-blue-900 text-white font-bold"
@@ -66,52 +67,19 @@ export default function PracticeTestManagement() {
         >
           {showForm ? 'Cancel' : 'Add Practice Test'}
         </button>
+
         {showForm && (
           <form onSubmit={handleSubmit} className="space-y-4 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleInputChange}
-              placeholder="Test Name"
-              className="w-full px-4 py-2 border rounded"
-              required
-            />
-            <input
-              name="subject"
-              value={form.subject}
-              onChange={handleInputChange}
-              placeholder="Subject"
-              className="w-full px-4 py-2 border rounded"
-              required
-            />
-            <input
-              name="duration"
-              type="number"
-              value={form.duration}
-              onChange={handleInputChange}
-              placeholder="Duration (minutes)"
-              className="w-full px-4 py-2 border rounded"
-              min={0}
-              required
-            />
-            <input
-              name="questions"
-              type="number"
-              value={form.questions}
-              onChange={handleInputChange}
-              placeholder="No. of Questions"
-              className="w-full px-4 py-2 border rounded"
-              min={0}
-              required
-            />
-            <button
-              type="submit"
-              className="col-span-full px-4 py-2 rounded bg-blue-900 text-white font-bold"
-            >
+            <input name="name" value={form.name} onChange={handleInputChange} placeholder="Test Name" className="w-full px-4 py-2 border rounded" required />
+            <input name="subject" value={form.subject} onChange={handleInputChange} placeholder="Subject" className="w-full px-4 py-2 border rounded" required />
+            <input name="duration" type="number" value={form.duration} onChange={handleInputChange} placeholder="Duration (minutes)" className="w-full px-4 py-2 border rounded" min={0} required />
+            <input name="questions" type="number" value={form.questions} onChange={handleInputChange} placeholder="No. of Questions" className="w-full px-4 py-2 border rounded" min={0} required />
+            <button type="submit" className="col-span-full px-4 py-2 rounded bg-blue-900 text-white font-bold">
               {editId ? 'Update' : 'Create'}
             </button>
           </form>
         )}
+
         {tests.length === 0 ? (
           <div className="text-gray-600 text-center py-8">No practice tests found.</div>
         ) : (
@@ -133,15 +101,11 @@ export default function PracticeTestManagement() {
                     <td className="px-4 py-2">{t.subject}</td>
                     <td className="px-4 py-2">{t.duration} min</td>
                     <td className="px-4 py-2">{t.questions}</td>
-                    <td className="px-4 py-2 flex gap-2">
-                      <button
-                        className="px-3 py-1 rounded bg-blue-900 text-white text-sm"
-                        onClick={() => handleEdit(t)}
-                      >Edit</button>
-                      <button
-                        className="px-3 py-1 rounded bg-red-600 text-white text-sm"
-                        onClick={() => handleDelete(t.id)}
-                      >Delete</button>
+                    <td className="px-4 py-2">
+                      <div className="flex gap-2">
+                        <button className="px-3 py-1 rounded bg-blue-900 text-white text-sm" onClick={() => handleEdit(t)}>Edit</button>
+                        <button className="px-3 py-1 rounded bg-red-600 text-white text-sm" onClick={() => handleDelete(t.id)}>Delete</button>
+                      </div>
                     </td>
                   </tr>
                 ))}

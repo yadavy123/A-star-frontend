@@ -1,3 +1,4 @@
+/** Student announcements page - view announcements with subject filter. */
 import React, { useState, useEffect } from 'react'
 import Pagination from '../ui/Pagination'
 
@@ -15,7 +16,7 @@ const loadAnnouncements = () => {
       // Map admin format to student display format
       const mapped = saved.map(a => ({
         ...a,
-        date: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-IN') : 'Recent',
+        date: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : 'Recent',
         postedBy: 'Admin',
         category: a.category || 'general',
         priority: a.priority || 'medium',

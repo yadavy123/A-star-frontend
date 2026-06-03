@@ -35,7 +35,6 @@ export default function ScrollableCard({ children, className = '' }) {
         {children}
       </div>
 
-      {/* bottom tiny scrollbar positioned inside the card so page scroll remains intact */}
       <div
         ref={bottomRef}
         style={{ position: 'absolute', left: 0, right: 0, bottom: 6, height: 12, overflowX: 'auto', WebkitOverflowScrolling: 'touch', pointerEvents: 'auto' }}

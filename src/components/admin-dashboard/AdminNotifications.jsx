@@ -1,5 +1,4 @@
 ﻿import React, { useState, useEffect } from 'react'
-// import { notificationApi } from '../../api/notificationApi' // API file not created - using mock data
 import { useAuth } from '../../context/AuthContext'
 
 export default function AdminNotifications() {
@@ -29,13 +28,9 @@ export default function AdminNotifications() {
   const fetchNotifications = async () => {
     try {
       setLoading(true)
-      // API file not created - using mock data directly
       try {
-        // const response = await notificationApi.getAdminNotifications()
-        // setNotifications(response.data.notifications || response.data)
         throw new Error('API not implemented')
       } catch {
-        // Fallback to mock data
         setNotifications([
           {
             id: 1,
@@ -170,7 +165,6 @@ export default function AdminNotifications() {
     }
   }
 
-  // Filter notifications
   const filteredNotifications = filter === 'all'
     ? notifications
     : filter === 'sent'
@@ -238,13 +232,11 @@ export default function AdminNotifications() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6">
         <h2 className="text-2xl font-bold text-blue-900">Notification Management</h2>
         <p className="text-gray-500 text-sm mt-1">Create and manage notifications for students</p>
       </div>
 
-      {/* Filter Tabs */}
       <div className="bg-white rounded-xl shadow-md p-4 flex flex-wrap gap-2">
         {['all', 'sent', 'scheduled', 'reminder', 'assignment', 'info', 'announcement'].map(f => (
           <button
@@ -263,7 +255,6 @@ export default function AdminNotifications() {
         ))}
       </div>
 
-      {/* Main Content */}
       <div className="bg-white rounded-xl shadow-md p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold text-blue-900">
@@ -415,7 +406,6 @@ export default function AdminNotifications() {
           </form>
         )}
 
-        {/* Notifications List */}
         {paginatedNotifications.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
             <p className="text-lg">No notifications found</p>
@@ -454,8 +444,8 @@ export default function AdminNotifications() {
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 mt-2">
-                      Created: {new Date(notification.createdAt).toLocaleString()}
-                      {notification.sentAt && ` | Sent: ${new Date(notification.sentAt).toLocaleString()}`}
+                      Created: {new Date(notification.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                      {notification.sentAt && ` | Sent: ${new Date(notification.sentAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}`}
                     </p>
                   </div>
 
@@ -489,7 +479,6 @@ export default function AdminNotifications() {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t">
             <button

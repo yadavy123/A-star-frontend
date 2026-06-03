@@ -1,3 +1,4 @@
+/** Class schedule view - weekly timetable with enrolled class details. */
 import React, { useState } from 'react'
 
 export default function MySchedule() {

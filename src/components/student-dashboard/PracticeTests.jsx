@@ -1,3 +1,4 @@
+/** Practice tests page - take timed tests, view scores and attempt history. */
 import React, { useState, useEffect } from 'react'
 import Pagination from '../ui/Pagination'
 
@@ -68,7 +69,7 @@ export default function PracticeTests() {
     let correct = 0
     questions.forEach((q, i) => { if (answers[i] === q.correct) correct++ })
     const pct = Math.round((correct / questions.length) * 100)
-    const result = { score: pct, raw: correct, total: questions.length, date: new Date().toLocaleDateString('en-IN') }
+    const result = { score: pct, raw: correct, total: questions.length, date: new Date().toLocaleDateString('en-GB') }
     const newDone = { ...completed, [activeTest.id]: result }
     setCompleted(newDone)
     localStorage.setItem(STORAGE_DONE, JSON.stringify(newDone))

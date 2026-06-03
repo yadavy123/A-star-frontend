@@ -80,7 +80,6 @@ export const SubscribersPage = ({ onBack }) => {
                 </div>
             </div>
 
-            {/* Status Filter */}
             <div className="flex gap-2 mb-6">
                 {[
                     { value: '', label: 'All' },
@@ -98,14 +97,12 @@ export const SubscribersPage = ({ onBack }) => {
                 ))}
             </div>
 
-            {/* Desktop Header */}
             <div className="hidden md:grid grid-cols-12 gap-3 mb-3 px-4 py-3 border-b border-gray-300 font-semibold text-sm text-gray-700">
                 <div className="col-span-5">Email</div>
                 <div className="col-span-3">Status</div>
                 <div className="col-span-4">Subscription Date</div>
             </div>
 
-            {/* Subscribers List */}
             {loading ? (
                 <div className="py-20 text-center"><Spinner size="lg" /></div>
             ) : subscribers.length === 0 ? (
@@ -141,7 +138,7 @@ export const SubscribersPage = ({ onBack }) => {
                                     const d = sub.createdAt || sub.subscribedAt;
                                     if (!d) return 'N/A';
                                     const date = new Date(d);
-                                    return isNaN(date.getTime()) ? 'N/A' : format(date, 'MMM dd, yyyy HH:mm');
+                                    return isNaN(date.getTime()) ? 'N/A' : format(date, 'dd/MM/yy HH:mm');
                                 })()}
                             </div>
                         </Card>
@@ -149,7 +146,6 @@ export const SubscribersPage = ({ onBack }) => {
                 </div>
             )}
 
-            {/* Pagination */}
             {pagination.totalPages > 1 && (
                 <div className="mt-8 flex items-center justify-between">
                     <button

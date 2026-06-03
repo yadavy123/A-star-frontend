@@ -12,7 +12,6 @@ export default function ReviewManagement() {
   const [viewModal, setViewModal] = useState(null);
   const [pagination, setPagination] = useState({ page: 0, size: 100, totalPages: 0, totalElements: 0 });
 
-  // Fetch reviews from API
   useEffect(() => {
     fetchReviews();
   }, [selectedStatus, pagination.page]);
@@ -114,13 +113,11 @@ export default function ReviewManagement() {
 
   return (
     <div className="space-y-6 max-w-full overflow-x-hidden">
-      {/* Header Section */}
       <div className="bg-white border-b-2 border-blue-900 rounded-xl p-4 md:p-6">
         <h2 className="text-xl md:text-2xl font-bold text-blue-900">Student Review Moderation</h2>
         <p className="text-gray-500 text-xs md:text-sm mt-1">Approve, reject, or delete student reviews from the public website</p>
       </div>
 
-      {/* Filter Bar */}
       <div className="bg-white rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-blue-900 font-bold text-sm">
           <Filter size={18} />
@@ -142,7 +139,6 @@ export default function ReviewManagement() {
         </div>
       </div>
 
-      {/* Main Table Card */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center text-blue-900">
@@ -175,7 +171,7 @@ export default function ReviewManagement() {
                         <div className="text-[10px] text-gray-500 font-medium flex items-center gap-1 mt-1 uppercase tracking-tight">
                           <BookOpen size={10} /> {review.gradeOrClass}
                         </div>
-                        <div className="text-[10px] text-gray-400 mt-0.5">{new Date(review.submittedAt || review.createdAt).toLocaleDateString()}</div>
+                        <div className="text-[10px] text-gray-400 mt-0.5">{new Date(review.submittedAt || review.createdAt).toLocaleDateString('en-GB')}</div>
                       </td>
                       <td className="px-4 py-4">
                         <p className="text-xs text-gray-600 line-clamp-2 italic leading-relaxed max-w-xs">
@@ -260,7 +256,6 @@ export default function ReviewManagement() {
           </ScrollableCard>
         )}
 
-        {/* Pagination */}
         {!loading && pagination.totalPages > 1 && (
           <div className="px-4 py-4 bg-gray-50 border-t flex items-center justify-between flex-wrap gap-4">
             <span className="text-xs font-bold text-gray-500">
@@ -286,11 +281,9 @@ export default function ReviewManagement() {
         )}
       </div>
 
-      {/* View Modal */}
       {viewModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
-            {/* Modal Header */}
             <div className="bg-linear-to-r from-blue-900 to-indigo-900 text-white p-5 md:p-6 shrink-0">
               <div className="flex justify-between items-start">
                 <div>
@@ -307,10 +300,8 @@ export default function ReviewManagement() {
               </div>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 md:p-8 overflow-y-auto flex-1 custom-scrollbar">
               <div className="space-y-8">
-                {/* Review Text */}
                 <div className="bg-blue-50/50 rounded-2xl p-5 md:p-6 border border-blue-100 relative">
                   <span className="absolute -top-3 left-6 bg-blue-900 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Student Message</span>
                   <p className="text-gray-700 italic text-base md:text-lg leading-relaxed font-medium">
@@ -318,7 +309,6 @@ export default function ReviewManagement() {
                   </p>
                 </div>
 
-                {/* Ratings Grid */}
                 <div>
                   <h4 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-5 flex items-center gap-3">
                     Detailed Performance Ratings
@@ -351,7 +341,6 @@ export default function ReviewManagement() {
                   </div>
                 </div>
 
-                {/* Meta Info */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
                   <div>
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Overall Score</p>
@@ -369,17 +358,16 @@ export default function ReviewManagement() {
                       <p className="text-[10px] text-red-500 mt-1 font-bold italic">Reason: {viewModal.rejectionReason}</p>
                     )}
                     {viewModal.submittedAt && (
-                      <p className="text-[10px] text-gray-500 mt-1 font-medium">Submitted: {new Date(viewModal.submittedAt).toLocaleDateString()}</p>
+                      <p className="text-[10px] text-gray-500 mt-1 font-medium">Submitted: {new Date(viewModal.submittedAt).toLocaleDateString('en-GB')}</p>
                     )}
                     {viewModal.publishedAt && (
-                      <p className="text-[10px] text-green-600 mt-0.5 font-medium">Published: {new Date(viewModal.publishedAt).toLocaleDateString()}</p>
+                      <p className="text-[10px] text-green-600 mt-0.5 font-medium">Published: {new Date(viewModal.publishedAt).toLocaleDateString('en-GB')}</p>
                     )}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Modal Footer */}
             <div className="p-4 md:p-6 bg-gray-50 border-t shrink-0 flex flex-wrap items-center justify-center sm:justify-end gap-3">
               <button
                 onClick={() => setViewModal(null)}

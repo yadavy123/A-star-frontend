@@ -6,20 +6,19 @@ export default function AdminSidebar({ currentView, setCurrentView, sidebarOpen,
 
   const menuItems = [
     { id: 'home', label: 'Dashboard' },
-    { id: 'students', label: 'Students' },
-    { id: 'courses', label: 'Courses' },
+    // { id: 'students', label: 'Students' },
+    // { id: 'courses', label: 'Courses' },
     { id: 'running-classes', label: 'Running Classes' },
     { id: 'fee-payment', label: 'Fee Payments' },
     { id: 'demo-settings', label: 'Demo Settings' },
     { id: 'demo-requests', label: 'Demo Requests' },
     { id: 'contact-requests', label: 'Contact Requests' },
-    { id: 'homework', label: 'Homework' },
-    { id: 'practice-tests', label: 'Practice Tests' },
+    // { id: 'homework', label: 'Homework' },
+    // { id: 'practice-tests', label: 'Practice Tests' },
     { id: 'questions', label: 'Q&A Management' },
     { id: 'categories', label: 'Categories' },
-    { id: 'announcements', label: 'Announcements' },
+    // { id: 'announcements', label: 'Announcements' },
     { id: 'notifications', label: 'Notifications' },
-    // { id: 'feedback', label: 'Feedback' },
     { id: 'testimonials', label: 'Testimonials' },
     { id: 'reviews', label: 'Student Reviews' },
     { id: 'tutors', label: 'Tutors' },
@@ -41,7 +40,6 @@ export default function AdminSidebar({ currentView, setCurrentView, sidebarOpen,
 
   return (
     <>
-      {/* Mobile overlay backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-30 lg:hidden"
@@ -53,7 +51,6 @@ export default function AdminSidebar({ currentView, setCurrentView, sidebarOpen,
         className={`fixed left-0 top-0 h-full w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col z-50 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
-        {/* Sidebar Header - Hidden on desktop to prevent overlap with main dashboard header */}
         <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 px-5 py-4 flex items-center justify-between shrink-0 lg:hidden">
           <div>
             <p className="text-white font-bold text-base">A Star Classes</p>
@@ -69,7 +66,6 @@ export default function AdminSidebar({ currentView, setCurrentView, sidebarOpen,
           </button>
         </div>
 
-        {/* Menu Items */}
         <nav className="flex-1 overflow-y-auto py-2">
           {menuItems.map((item) => (
             <button
@@ -85,7 +81,6 @@ export default function AdminSidebar({ currentView, setCurrentView, sidebarOpen,
           ))}
         </nav>
 
-        {/* Logout Button */}
         <div className="px-5 py-4 border-t border-gray-200 shrink-0">
           <button
             onClick={handleLogout}

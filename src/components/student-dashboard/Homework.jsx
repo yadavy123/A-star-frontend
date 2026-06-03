@@ -1,3 +1,4 @@
+/** Homework assignments view - filter by subject, track completion. */
 import React, { useState, useEffect } from 'react'
 import Pagination from '../ui/Pagination'
 
@@ -76,7 +77,7 @@ export default function Homework() {
 
   const handleSubmitHomework = (e) => {
     e.preventDefault()
-    const submittedDate = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    const submittedDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })
     const updatedHomework = homework.map(h =>
       h.id === selectedHomework.id
         ? { ...h, status: 'submitted', submittedDate, submittedFile: selectedFile ? selectedFile.name : '' }

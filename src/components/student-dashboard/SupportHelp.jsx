@@ -1,3 +1,4 @@
+/** Support and help page with FAQs, contact form, and resources. */
 import React, { useState } from 'react'
 import Pagination from '../ui/Pagination'
 

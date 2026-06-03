@@ -143,7 +143,7 @@ export const BlogDetailPage = () => {
 
                 <div className="flex flex-wrap items-center gap-3 text-text-tertiary text-sm mb-6">
                     <span className="flex items-center gap-1"><User className="w-4 h-4" />{blog.authorName}</span>
-                    {blog.publishedAt && <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{format(new Date(blog.publishedAt), 'MMMM dd, yyyy')}</span>}
+                    {blog.publishedAt && <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{format(new Date(blog.publishedAt), 'dd/MM/yy')}</span>}
                     <span className="flex items-center gap-1"><Eye className="w-4 h-4" />{blog.viewsCount} views</span>
                 </div>
 
@@ -210,7 +210,7 @@ export const BlogDetailPage = () => {
                                         </div>
                                         <div>
                                             <p className="font-medium text-text-primary text-sm">{c.name}</p>
-                                            <p className="text-xs text-text-tertiary">{c.createdAt && format(new Date(c.createdAt), 'MMM dd, yyyy HH:mm')}</p>
+                                            <p className="text-xs text-text-tertiary">{c.createdAt && format(new Date(c.createdAt), 'dd/MM/yy HH:mm')}</p>
                                         </div>
                                     </div>
                                     <p className="text-text-secondary text-sm">{c.commentText}</p>

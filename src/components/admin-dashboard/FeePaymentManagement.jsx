@@ -19,13 +19,11 @@ export default function FeePaymentManagement() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [search, setSearch] = useState('');
 
-  // Reload from localStorage when component mounts (picks up new payments from frontend)
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('feePayments') || 'null')
     if (saved && saved.length > 0) setPayments(saved)
   }, [])
 
-  // Save status updates back to localStorage
   const handleStatusUpdate = (id, status) => {
     const updated = payments.map(p => p.id === id ? { ...p, status } : p)
     setPayments(updated)
@@ -40,7 +38,6 @@ export default function FeePaymentManagement() {
   }
 
   const filtered = payments.filter(p => {
-    // Normalize Razorpay's 'Success' as 'paid' for filtering
     const normalizedStatus = (p.status === 'Success') ? 'paid' : p.status
     const matchStatus = filterStatus === 'all' || normalizedStatus === filterStatus
     const matchSearch = !search ||
@@ -60,7 +57,6 @@ export default function FeePaymentManagement() {
         <h2 className="text-2xl font-bold text-blue-900"> Fee Payment Management</h2>
         <p className="text-gray-500 text-sm mt-1">Track and manage student fee payments (auto-synced from frontend)</p>
       </div>
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[
           { label: 'Total Records', value: payments.length, color: '#1e3a8a', bg: '#eff6ff' },
@@ -74,7 +70,6 @@ export default function FeePaymentManagement() {
           </div>
         ))}
       </div>
-      {/* Filters */}
       <div className="bg-white rounded-xl shadow-md p-4 flex flex-col md:flex-row gap-3">
         <input
           type="text"
@@ -94,7 +89,6 @@ export default function FeePaymentManagement() {
           ))}
         </div>
       </div>
-      {/* Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <ScrollableCard>
           <table className="min-w-full">
@@ -115,7 +109,7 @@ export default function FeePaymentManagement() {
                   <td className="px-4 py-3 text-sm">{p.email || '-'}</td>
                   <td className="px-4 py-3 text-sm">{p.courseName || p.course || '-'}</td>
                   <td className="px-4 py-3 font-bold">₹{Number(p.feeAmount || p.amount || 0).toLocaleString()}</td>
-                  <td className="px-4 py-3 text-sm">{p.paymentDate ? new Date(p.paymentDate).toLocaleDateString('en-IN') : (p.date || '-')}</td>
+                  <td className="px-4 py-3 text-sm">{p.paymentDate ? new Date(p.paymentDate).toLocaleDateString('en-GB') : (p.date || '-')}</td>
                   <td className="px-4 py-3 font-mono text-xs text-gray-500">{p.razorpayPaymentId || '-'}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-bold ${

@@ -23,6 +23,15 @@ export default function TutorManagement() {
     const [resizeDimensions, setResizeDimensions] = useState({ width: 800, height: 800 });
     const [resizePreview, setResizePreview] = useState(null);
     const canvasRef = useRef(null);
+    const [formData, setFormData] = useState({
+        fullName: '',
+        mainSubject: '',
+        speciality: '',
+        category: 'IGCSE',
+        photoUrl: '',
+        bio: '',
+    });
+
     useEffect(() => {
         if (!resizePreview || !canvasRef.current) return;
         const img = new Image();
@@ -38,14 +47,6 @@ export default function TutorManagement() {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         };
     }, [resizePreview, resizeDimensions]);
-    const [formData, setFormData] = useState({
-        fullName: '',
-        mainSubject: '',
-        speciality: '',
-        category: 'IGCSE',
-        photoUrl: '',
-        bio: '',
-    });
 
     const categories = ['All', 'IGCSE', 'IGCSE & AS/A Level'];
 
@@ -62,7 +63,6 @@ export default function TutorManagement() {
         setLoading(true);
         try {
             const data = await getAllTeachersAdmin();
-            // Handle both Page object { content: [] } and direct array []
             const tutorList = data?.content || (Array.isArray(data) ? data : []);
             setTutors(tutorList);
         } catch (error) {
@@ -174,7 +174,6 @@ export default function TutorManagement() {
             return;
         }
 
-        // Create a clean payload to ensure backend field compatibility
         const payload = {
             fullName: formData.fullName,
             mainSubject: formData.mainSubject,
@@ -263,7 +262,6 @@ export default function TutorManagement() {
 
     return (
         <div className="w-full">
-            {/* Header */}
             <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-blue-900">Tutor Management</h1>
@@ -277,7 +275,6 @@ export default function TutorManagement() {
                 </button>
             </div>
 
-            {/* Filters & Search */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -301,7 +298,6 @@ export default function TutorManagement() {
                 </div>
             </div>
 
-            {/* Add/Edit Form */}
             {(isAdding || editingId) && (
                 <div className="bg-white p-6 rounded-xl shadow-lg border border-blue-100 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
                     <div className="flex items-center justify-between mb-6">
@@ -389,7 +385,6 @@ export default function TutorManagement() {
                 </div>
             )}
 
-            {/* Resize Modal */}
             {resizeModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setResizeModal(null)} />
@@ -501,7 +496,6 @@ export default function TutorManagement() {
                 </div>
             )}
 
-            {/* Tutors Grid */}
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-20">
                     <div className="w-12 h-12 border-4 border-blue-900 border-t-transparent rounded-full animate-spin"></div>

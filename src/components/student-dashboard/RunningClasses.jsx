@@ -1,3 +1,4 @@
+/** Running classes page - view enrolled classes with subject filter. */
 import React, { useState, useEffect } from 'react'
 import { runningClassesApi } from '../../api/runningClassesApi'
 import Pagination from '../ui/Pagination'

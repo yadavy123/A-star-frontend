@@ -204,11 +204,7 @@ const Reviews = () => {
                                                         </div>
                                                     </div>
                                                     <p className="text-gray-400 text-xs sm:text-sm font-medium tracking-tight">
-                                                        {new Date(review.submittedAt || review.publishedAt || review.createdAt).toLocaleDateString('en-US', {
-                                                            month: 'long',
-                                                            day: 'numeric',
-                                                            year: 'numeric'
-                                                        })}
+                                                        {new Date(review.submittedAt || review.publishedAt || review.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                                                     </p>
                                                 </div>
                                             </div>

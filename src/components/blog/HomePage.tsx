@@ -109,7 +109,7 @@ export const HomePage = () => {
                                                     </div>
                                                     <span className="flex items-center gap-1">
                                                         <Clock className="w-3.5 h-3.5" />
-                                                        {blog.publishedAt && format(new Date(blog.publishedAt), 'MMM dd')}
+                                                        {blog.publishedAt && format(new Date(blog.publishedAt), 'dd/MM/yy')}
                                                     </span>
                                                 </div>
                                             </div>
@@ -135,7 +135,7 @@ export const HomePage = () => {
                                                     </div>
                                                     <span className="flex items-center gap-1">
                                                         <Clock className="w-3.5 h-3.5" />
-                                                        {blog.publishedAt && format(new Date(blog.publishedAt), 'MMM dd')}
+                                                        {blog.publishedAt && format(new Date(blog.publishedAt), 'dd/MM/yy')}
                                                     </span>
                                                 </div>
                                             </div>

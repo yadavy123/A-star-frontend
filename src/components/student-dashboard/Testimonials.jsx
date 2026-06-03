@@ -1,3 +1,4 @@
+/** Testimonials page - browse, search, and filter student testimonials. */
 import React, { useState } from 'react'
 import Pagination from '../ui/Pagination'
 

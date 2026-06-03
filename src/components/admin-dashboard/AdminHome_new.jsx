@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { FileText, Clock, Users, CheckCircle, Eye } from 'lucide-react';
+
 const Card = ({ className = '', children, onClick }) => (
   <div className={`bg-white rounded-xl shadow border border-gray-200 ${className}`} onClick={onClick}>{children}</div>
 );
@@ -7,7 +8,6 @@ import { adminApi } from '../../api/blogApi';
 import toast from 'react-hot-toast';
 
 export const AdminHome = ({ setCurrentView }) => {
-    // Initialize with cached stats or fallback data for instant render
     const [stats, setStats] = useState(() => {
         const cached = localStorage.getItem('adminStats');
         return cached ? JSON.parse(cached) : { total: 0, pending: 0, published: 0, subscribers: 0 };
@@ -17,11 +17,9 @@ export const AdminHome = ({ setCurrentView }) => {
     useEffect(() => {
         let mounted = true;
         
-        // Load stats in background without blocking UI
         const loadStats = async () => {
             setIsUpdating(true);
             try {
-                // Fetch all data in parallel with timeout
                 const timeoutPromise = new Promise((_, reject) => 
                     setTimeout(() => reject(new Error('Timeout')), 5000)
                 );
@@ -57,7 +55,6 @@ export const AdminHome = ({ setCurrentView }) => {
                     localStorage.setItem('adminStats', JSON.stringify(newStats));
                 }
             } catch (err) {
-                // Keep existing stats on error
                 if (!stats.total) {
                     setStats({ total: 3, pending: 1, published: 2, subscribers: 4 });
                 }
@@ -66,7 +63,6 @@ export const AdminHome = ({ setCurrentView }) => {
             }
         };
 
-        // Load stats with small delay to avoid blocking
         const timer = setTimeout(loadStats, 100);
         
         return () => {

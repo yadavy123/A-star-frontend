@@ -1,3 +1,4 @@
+/** Student question submission form with subject selector and file upload. */
 import React, { useState } from 'react'
 import Pagination from '../ui/Pagination'
 

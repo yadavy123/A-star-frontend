@@ -25,7 +25,6 @@ export default function TestimonialManagement() {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [teachers, setTeachers] = useState([]);
-  
   const [formData, setFormData] = useState({
     text: '',
     mediaUrl: ''
@@ -81,7 +80,6 @@ export default function TestimonialManagement() {
     }
 
     setMediaFile(file);
-    // When media is selected, type will be set to URL during upload/submit
     setFormData(prev => ({ ...prev, type: 'URL' }));
 
     const reader = new FileReader();
@@ -207,7 +205,6 @@ export default function TestimonialManagement() {
         await setPrimaryTestimonial(id);
         toast.success('Testimonial set as primary');
       }
-      // Re-fetch to get actual primary status from backend
       await fetchTestimonials();
     } catch (error) {
       console.error('Error updating primary:', error);
@@ -249,7 +246,6 @@ export default function TestimonialManagement() {
       : testimonials.filter((t) => t.status === selectedStatus);
 
   const statusBadge = (status) => {
-    // Force status to APPROVED for display as requested by user
     const s = 'APPROVED';
     const map = {
       APPROVED: 'bg-green-100 text-green-800',
@@ -280,7 +276,6 @@ export default function TestimonialManagement() {
 
   return (
     <div className="w-full">
-      {/* Page Header */}
       <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-blue-900">Testimonial Management</h1>
@@ -304,7 +299,6 @@ export default function TestimonialManagement() {
         </div>
       </div>
 
-      {/* Add/Edit Testimonial In-line Form */}
       {isAdding && (
         <div className="bg-white p-6 rounded-xl shadow-lg border border-blue-100 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex items-center justify-between mb-6">
@@ -406,7 +400,6 @@ export default function TestimonialManagement() {
         </div>
       )}
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
           <div key={s.label} className={`rounded-xl p-4 text-center font-semibold ${s.color}`}>
@@ -415,8 +408,6 @@ export default function TestimonialManagement() {
           </div>
         ))}
       </div>
-
-      {/* Filter Tabs Removed */}
 
       {loading ? (
         <div className="text-center py-12">
@@ -505,7 +496,6 @@ export default function TestimonialManagement() {
         </ScrollableCard>
       )}
 
-      {/* View Message Modal */}
       {viewModal && (
         <div
           className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"

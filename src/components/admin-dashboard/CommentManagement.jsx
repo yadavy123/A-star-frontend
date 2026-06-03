@@ -11,7 +11,7 @@ const formatDate = (d) => {
     if (!d) return 'N/A';
     try {
         const date = new Date(d);
-        return isNaN(date.getTime()) ? 'N/A' : format(date, 'MMM dd, yyyy HH:mm');
+        return isNaN(date.getTime()) ? 'N/A' : format(date, 'dd/MM/yy HH:mm');
     } catch { return 'N/A'; }
 };
 
@@ -34,7 +34,6 @@ const BlogStatusDot = ({ status }) => {
 };
 
 export const CommentManagement = ({ onBack }) => {
-    // ── Blog list state ──────────────────────────────────────────
     const [blogs, setBlogs] = useState([]);
     const [blogsLoading, setBlogsLoading] = useState(true);
     const [blogSearch, setBlogSearch] = useState('');
@@ -42,7 +41,6 @@ export const CommentManagement = ({ onBack }) => {
     const [blogPagination, setBlogPagination] = useState({ totalPages: 0, totalElements: 0 });
     const BLOG_PAGE_SIZE = 15;
 
-    // ── Selected blog & its comments ────────────────────────────
     const [selectedBlog, setSelectedBlog] = useState(null);
     const [comments, setComments] = useState([]);
     const [commentsLoading, setCommentsLoading] = useState(false);
@@ -50,12 +48,10 @@ export const CommentManagement = ({ onBack }) => {
     const [commentPagination, setCommentPagination] = useState({ totalPages: 0, totalElements: 0 });
     const COMMENT_PAGE_SIZE = 20;
 
-    // ── Action state ─────────────────────────────────────────────
     const [actionLoading, setActionLoading] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [viewComment, setViewComment] = useState(null);
 
-    // ── Fetch all blogs ──────────────────────────────────────────
     const fetchBlogs = useCallback(async (page = 0) => {
         setBlogsLoading(true);
         try {
@@ -76,7 +72,6 @@ export const CommentManagement = ({ onBack }) => {
 
     useEffect(() => { fetchBlogs(0); }, [fetchBlogs]);
 
-    // ── Fetch comments for a blog ────────────────────────────────
     const fetchComments = useCallback(async (blogId, page = 0) => {
         setCommentsLoading(true);
         try {
@@ -89,8 +84,6 @@ export const CommentManagement = ({ onBack }) => {
                     totalElements: r.data?.totalElements || 0,
                 });
             } else {
-                // If the backend has a specific admin endpoint for a blog's comments, we'd use it here.
-                // For now, this fetches public comments.
                 const r = await blogApi.getComments(blogId, { page, size: COMMENT_PAGE_SIZE });
                 setComments(r.data?.content || []);
                 setCommentPage(r.data?.page ?? page);
@@ -126,15 +119,11 @@ export const CommentManagement = ({ onBack }) => {
         setComments([]);
     };
 
-    // ── Actions ──────────────────────────────────────────────────
-
-
     const handleApprove = async (comment) => {
         setActionLoading(comment.id);
         try {
             await adminApi.approveComment(comment.id);
             toast.success('Comment approved!');
-            // Remove it from the pending list if we are in the pending queue
             if (selectedBlog?.id === 'pending') {
                 setComments(prev => prev.filter(c => c.id !== comment.id));
             } else {
@@ -170,7 +159,6 @@ export const CommentManagement = ({ onBack }) => {
         }
     };
 
-    // ── Filtered blogs: only those with comments, optionally by search ──
     const filteredBlogs = blogs.filter(b =>
         (b.commentsCount > 0) &&
         (
@@ -180,13 +168,9 @@ export const CommentManagement = ({ onBack }) => {
         )
     );
 
-    // ─────────────────────────────────────────────────────────────
-    // RENDER: Comments panel (when a blog is selected)
-    // ─────────────────────────────────────────────────────────────
     if (selectedBlog) {
         return (
             <div className="min-h-screen" style={{ backgroundColor: '#ffffff' }}>
-                {/* Sticky header */}
                 <div className="bg-white shadow-sm sticky top-18 z-40 px-6 py-4 flex items-center justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-3 min-w-0">
                         <button onClick={closeBlog}
@@ -268,7 +252,6 @@ export const CommentManagement = ({ onBack }) => {
                         </div>
                     )}
 
-                    {/* Comment Pagination */}
                     {commentPagination.totalPages > 1 && (
                         <div className="mt-6 flex items-center justify-between">
                             <button
@@ -288,7 +271,6 @@ export const CommentManagement = ({ onBack }) => {
                     )}
                 </div>
 
-                {/* View Comment Modal */}
                 {viewComment && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
                         onClick={() => setViewComment(null)}>
@@ -333,7 +315,6 @@ export const CommentManagement = ({ onBack }) => {
                     </div>
                 )}
 
-                {/* Delete Confirm Modal */}
                 {deleteConfirm && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
                         onClick={() => setDeleteConfirm(null)}>
@@ -368,12 +349,8 @@ export const CommentManagement = ({ onBack }) => {
         );
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // RENDER: Blog list panel
-    // ─────────────────────────────────────────────────────────────
     return (
         <div className="min-h-screen" style={{ backgroundColor: '#ffffff' }}>
-            {/* Sticky header */}
             <div className="bg-white shadow-sm sticky top-18 z-40 px-6 py-4 flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
                     {onBack && (
@@ -394,7 +371,6 @@ export const CommentManagement = ({ onBack }) => {
             </div>
 
             <div className="max-w-5xl mx-auto px-6 py-8">
-                {/* Search */}
                 <div className="relative mb-6">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input type="text" placeholder="Search blogs by title or author..."
@@ -412,7 +388,6 @@ export const CommentManagement = ({ onBack }) => {
                     </button>
                 </div>
 
-                {/* Blogs table */}
                 {blogsLoading ? (
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
                         <div className="inline-block animate-spin rounded-full h-10 w-10 border-t-2 border-b-2"
@@ -466,7 +441,6 @@ export const CommentManagement = ({ onBack }) => {
                     </div>
                 )}
 
-                {/* Blog Pagination */}
                 {blogPagination.totalPages > 1 && (
                     <div className="mt-6 flex items-center justify-between">
                         <button

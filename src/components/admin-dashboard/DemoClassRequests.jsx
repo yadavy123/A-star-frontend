@@ -91,9 +91,7 @@ export default function DemoClassRequests() {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric', month: 'short', day: 'numeric'
-    });
+    return new Date(dateString).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
   };
 
   const formatTime = (timeString) => {
@@ -110,13 +108,11 @@ export default function DemoClassRequests() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6">
         <h2 className="text-2xl font-bold text-blue-900">Demo Class Requests</h2>
         <p className="text-gray-500 text-sm mt-1">Manage demo class schedule requests</p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map(s => (
           <div key={s.label} className="rounded-xl shadow-md p-5 border-l-4" style={{ backgroundColor: s.bg, borderLeftColor: s.color }}>
@@ -126,7 +122,6 @@ export default function DemoClassRequests() {
         ))}
       </div>
 
-      {/* Filters */}
       <div className="bg-white rounded-xl shadow-md p-4 flex flex-wrap items-center gap-2">
         {['all', 'PENDING', 'APPROVED', 'CANCELLED'].map(status => (
           <button key={status} onClick={() => { setFilterStatus(status); setPagination(prev => ({ ...prev, page: 0 })); }}
@@ -138,7 +133,6 @@ export default function DemoClassRequests() {
         ))}
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <ScrollableCard>
           <table className="w-full text-sm">
@@ -172,22 +166,22 @@ export default function DemoClassRequests() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex flex-wrap items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 min-w-[200px]">
                       <button onClick={() => setViewRequest(r)}
                         disabled={actionLoading}
-                        className="inline-flex items-center justify-center h-10 px-3 rounded text-white text-xs font-semibold whitespace-nowrap bg-blue-900 hover:bg-blue-800 disabled:opacity-50 transition">
+                        className="flex-1 inline-flex items-center justify-center h-10 px-2 rounded text-white text-xs font-semibold whitespace-nowrap bg-blue-900 hover:bg-blue-800 disabled:opacity-50 transition">
                         View
                       </button>
                       {r.status === 'PENDING' && (
                         <>
                           <button onClick={() => handleApprove(r.id)}
                             disabled={actionLoading}
-                            className="inline-flex items-center justify-center h-10 px-3 rounded text-white text-xs font-semibold whitespace-nowrap bg-green-600 hover:bg-green-700 disabled:opacity-50 transition">
+                            className="flex-1 inline-flex items-center justify-center h-10 px-2 rounded text-white text-xs font-semibold whitespace-nowrap bg-green-600 hover:bg-green-700 disabled:opacity-50 transition">
                             Approve
                           </button>
                           <button onClick={() => { setViewRequest(r); setShowCancelForm(true); }}
                             disabled={actionLoading}
-                            className="inline-flex items-center justify-center h-10 px-3 rounded text-white text-xs font-semibold whitespace-nowrap bg-red-600 hover:bg-red-700 disabled:opacity-50 transition">
+                            className="flex-1 inline-flex items-center justify-center h-10 px-2 rounded text-white text-xs font-semibold whitespace-nowrap bg-red-600 hover:bg-red-700 disabled:opacity-50 transition">
                             Decline
                           </button>
                         </>
@@ -195,13 +189,13 @@ export default function DemoClassRequests() {
                       {r.status === 'APPROVED' && (
                         <button onClick={() => { setViewRequest(r); setShowCancelForm(true); }}
                           disabled={actionLoading}
-                          className="inline-flex items-center justify-center h-10 px-3 rounded text-white text-xs font-semibold whitespace-nowrap bg-red-600 hover:bg-red-700 disabled:opacity-50 transition">
+                          className="flex-1 inline-flex items-center justify-center h-10 px-2 rounded text-white text-xs font-semibold whitespace-nowrap bg-red-600 hover:bg-red-700 disabled:opacity-50 transition">
                           Cancel
                         </button>
                       )}
                       {r.status === 'CANCELLED' && (
                         <button onClick={() => setViewRequest(r)}
-                          className="inline-flex items-center justify-center h-10 px-3 rounded text-blue-900 text-xs font-semibold whitespace-nowrap bg-blue-50 hover:bg-blue-100 transition">
+                          className="flex-1 inline-flex items-center justify-center h-10 px-2 rounded text-blue-900 text-xs font-semibold whitespace-nowrap bg-blue-50 hover:bg-blue-100 transition">
                           View Reason
                         </button>
                       )}
@@ -227,14 +221,12 @@ export default function DemoClassRequests() {
         )}
       </div>
 
-      {/* View Detail Modal */}
       {viewRequest && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={() => { setViewRequest(null); setShowCancelForm(false); setCancelReason(''); }}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>
 
-            {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-5 rounded-t-2xl bg-blue-900">
               <div>
                 <h3 className="text-xl font-bold text-white">{viewRequest.studentName}</h3>
@@ -245,7 +237,6 @@ export default function DemoClassRequests() {
               </span>
             </div>
 
-            {/* Modal Body */}
             <div className="px-6 py-5 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-50 rounded-lg p-3">
@@ -281,7 +272,6 @@ export default function DemoClassRequests() {
                 </div>
               )}
 
-              {/* Action buttons */}
               {viewRequest.status === 'PENDING' && !showCancelForm && (
                 <div className="flex gap-3 pt-2">
                   <button
@@ -331,7 +321,6 @@ export default function DemoClassRequests() {
               )}
             </div>
 
-            {/* Modal Footer */}
             <div className="px-6 py-4 border-t flex">
               <button onClick={() => { setViewRequest(null); setShowCancelForm(false); setCancelReason(''); }}
                 className="flex-1 py-2 rounded-lg text-gray-500 font-semibold text-sm border">

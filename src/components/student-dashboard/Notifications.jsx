@@ -1,3 +1,4 @@
+/** Student notifications page - view and mark notifications as read. */
 import React, { useState } from 'react'
 import Pagination from '../ui/Pagination'
 

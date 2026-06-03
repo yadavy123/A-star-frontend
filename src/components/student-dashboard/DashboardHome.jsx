@@ -1,3 +1,4 @@
+/** Student dashboard home - welcome panel with Quick Links and Stats. */
 import React from 'react'
 
 export default function DashboardHome({ studentData, setCurrentView }) {

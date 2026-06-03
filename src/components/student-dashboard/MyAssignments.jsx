@@ -1,3 +1,4 @@
+/** Assignment submission page with file upload and submission tracking. */
 import React, { useState, useEffect } from 'react'
 // import { homeworkApi } from '../../api/homeworkApi' // API file not created - using mock data
 import { useAuth } from '../../context/AuthContext'
@@ -126,7 +127,7 @@ export default function MyAssignments() {
       }
 
       // Update assignment status locally
-      const submittedDate = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+      const submittedDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })
       const updatedAssignments = assignments.map(a =>
         a.id === assignmentId
           ? { ...a, status: 'submitted', daysLeft: null, priority: null, dueDate: `Submitted on ${submittedDate}` }

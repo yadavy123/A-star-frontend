@@ -17,13 +17,12 @@ import { blogApi, adminApi } from '../../api/blogApi';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
-// Safe date formatter - handles invalid dates gracefully
 const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'N/A';
-        return format(date, 'MMM dd, yyyy HH:mm');
+        return format(date, 'dd/MM/yy HH:mm');
     } catch (err) {
         return 'N/A';
     }
@@ -41,7 +40,6 @@ export const SubscribersPage = ({ setCurrentView }) => {
             if (showLoader) setLoading(true);
             const currentSize = params.size !== undefined ? params.size : pageSize;
             
-            // Add 6 second timeout
             const timeoutPromise = new Promise((_, reject) => 
                 setTimeout(() => reject(new Error('Timeout')), 6000)
             );
@@ -71,7 +69,6 @@ export const SubscribersPage = ({ setCurrentView }) => {
     };
 
     useEffect(() => {
-        // Load in background without blocking UI
         const timer = setTimeout(() => fetchSubscribers({}, !isInitial), 100);
         return () => clearTimeout(timer);
     }, [statusFilter, pageSize]);
@@ -82,7 +79,6 @@ export const SubscribersPage = ({ setCurrentView }) => {
 
     return (
         <div className="min-h-screen" style={{ backgroundColor: '#ffffff' }}>
-            {/* Header with Back Button */}
             <div className="bg-white shadow-sm p-4 flex items-center gap-4 sticky top-18 z-40">
                 <button
                     onClick={() => {
@@ -93,7 +89,7 @@ export const SubscribersPage = ({ setCurrentView }) => {
                         }
                     }}
                     className="p-2 rounded-lg transition hover:bg-gray-100"
-                    title="Go Back to Blog Dashboard"
+                    aria-label="Go Back to Blog Dashboard"
                 >
                     <svg className="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -114,7 +110,6 @@ export const SubscribersPage = ({ setCurrentView }) => {
                     <p className="text-sm text-gray-600">Total subscribers</p>
                 </div>
             </div>
-            {/* Status Filter */}
             <div className="flex gap-2 mb-6">
                 {[
                     { value: '', label: 'All' },
@@ -131,14 +126,12 @@ export const SubscribersPage = ({ setCurrentView }) => {
                     </button>
                 ))}
             </div>
-            {/* Desktop Header */}
             <div className="hidden md:grid grid-cols-12 gap-3 mb-3 px-4 py-3 border-b border-gray-300 font-semibold text-sm text-gray-700">
                 <div className="col-span-6">Email</div>
                 <div className="col-span-3">Status</div>
                 <div className="col-span-3">Subscription Date</div>
             </div>
 
-            {/* Subscribers List */}
             {loading ? (
                 <div className="py-20 text-center"><Spinner size="lg" /></div>
             ) : subscribers.length === 0 ? (
@@ -177,7 +170,6 @@ export const SubscribersPage = ({ setCurrentView }) => {
                 </div>
             )}
 
-            {/* Pagination */}
             {pagination.totalPages > 1 && (
                 <div className="mt-8 flex items-center justify-between">
                     <button

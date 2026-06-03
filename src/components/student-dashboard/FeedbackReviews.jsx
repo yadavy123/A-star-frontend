@@ -1,3 +1,4 @@
+/** Feedback and review submission form with star rating and message. */
 import React, { useState } from 'react'
 import Pagination from '../ui/Pagination'
 

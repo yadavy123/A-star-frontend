@@ -19,7 +19,6 @@ export default function CounsellingRequests() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Reload from localStorage on mount
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('icfy_counselling_requests') || 'null')
     if (saved && saved.length > 0) setRequests(saved)
@@ -38,7 +37,7 @@ export default function CounsellingRequests() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-blue-900">💼 Free Counselling Requests</h2>
+        <h2 className="text-3xl font-bold text-blue-900">Free Counselling Requests</h2>
         <p className="text-gray-600 mt-2">Manage counselling requests from students</p>
       </div>
 

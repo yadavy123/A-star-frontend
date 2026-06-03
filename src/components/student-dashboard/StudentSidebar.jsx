@@ -1,4 +1,5 @@
-﻿import React from 'react'
+﻿/** Student sidebar navigation with menu items, profile, and logout. */
+import React from 'react'
 import { useAuth } from '../../context/AuthContext'
 
 export default function StudentSidebar({ currentView, setCurrentView, sidebarOpen, setSidebarOpen }) {

@@ -19,7 +19,6 @@ export default function HomeworkManagement() {
   const [form, setForm] = useState({ title: '', subject: '', dueDate: '', marks: 10, description: '' });
   const [editId, setEditId] = useState(null);
 
-  // Save to localStorage so student Homework.jsx can read them
   useEffect(() => { localStorage.setItem('icfy_homework', JSON.stringify(homework)) }, [homework])
 
   const handleInputChange = (e) => {
@@ -31,7 +30,7 @@ export default function HomeworkManagement() {
     if (editId) {
       setHomework(homework.map(h => h.id === editId ? { ...form, id: editId } : h));
     } else {
-      setHomework([...homework, { ...form, id: Date.now(), assignedDate: new Date().toLocaleDateString('en-IN') }]);
+      setHomework([...homework, { ...form, id: Date.now(), assignedDate: new Date().toLocaleDateString('en-GB') }]);
     }
     setForm({ title: '', subject: '', dueDate: '', marks: 10, description: '' });
     setEditId(null);
@@ -55,6 +54,7 @@ export default function HomeworkManagement() {
         <h2 className="text-2xl font-bold text-blue-900">Homework Management</h2>
         <p className="text-gray-500 text-sm mt-1">Create and review homework assignments</p>
       </div>
+
       <div className="bg-white rounded-xl shadow-md p-4 md:p-8">
         <button
           className="mb-4 px-4 py-2 rounded bg-blue-900 text-white font-bold"
@@ -66,48 +66,19 @@ export default function HomeworkManagement() {
         >
           {showForm ? 'Cancel' : 'Add Homework'}
         </button>
+
         {showForm && (
           <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleInputChange}
-              placeholder="Title"
-              className="w-full px-4 py-2 border rounded"
-              required
-            />
-            <input
-              name="subject"
-              value={form.subject}
-              onChange={handleInputChange}
-              placeholder="Subject"
-              className="w-full px-4 py-2 border rounded"
-              required
-            />
-            <input
-              name="dueDate"
-              type="date"
-              value={form.dueDate}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded"
-              required
-            />
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleInputChange}
-              placeholder="Description"
-              className="w-full px-4 py-2 border rounded"
-              required
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-blue-900 text-white font-bold"
-            >
+            <input name="title" value={form.title} onChange={handleInputChange} placeholder="Title" className="w-full px-4 py-2 border rounded" required />
+            <input name="subject" value={form.subject} onChange={handleInputChange} placeholder="Subject" className="w-full px-4 py-2 border rounded" required />
+            <input name="dueDate" type="date" value={form.dueDate} onChange={handleInputChange} className="w-full px-4 py-2 border rounded" required />
+            <textarea name="description" value={form.description} onChange={handleInputChange} placeholder="Description" className="w-full px-4 py-2 border rounded" required />
+            <button type="submit" className="px-4 py-2 rounded bg-blue-900 text-white font-bold">
               {editId ? 'Update' : 'Create'}
             </button>
           </form>
         )}
+
         {homework.length === 0 ? (
           <div className="text-gray-600 text-center py-8">No homework found.</div>
         ) : (
@@ -122,14 +93,8 @@ export default function HomeworkManagement() {
                     <p className="text-gray-700 mt-2">{h.description}</p>
                   </div>
                   <div className="flex gap-2 mt-2 md:mt-0">
-                    <button
-                      className="px-3 py-1 rounded bg-blue-900 text-white text-sm"
-                      onClick={() => handleEdit(h)}
-                    >Edit</button>
-                    <button
-                      className="px-3 py-1 rounded bg-red-600 text-white text-sm"
-                      onClick={() => handleDelete(h.id)}
-                    >Delete</button>
+                    <button className="px-3 py-1 rounded bg-blue-900 text-white text-sm" onClick={() => handleEdit(h)}>Edit</button>
+                    <button className="px-3 py-1 rounded bg-red-600 text-white text-sm" onClick={() => handleDelete(h.id)}>Delete</button>
                   </div>
                 </div>
               </div>

@@ -1,3 +1,4 @@
+/** Fee payment page with course selection, invoice, and payment history. */
 import React, { useState } from 'react'
 import Pagination from '../ui/Pagination'
 

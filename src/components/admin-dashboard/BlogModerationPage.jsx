@@ -170,17 +170,16 @@ export const BlogModerationPage = ({ onBack }) => {
         const map = { PUBLISHED: 'success', PENDING: 'warning', REJECTED: 'danger', DRAFT: 'info' };
         return <Badge variant={map[status] || 'info'}>{status}</Badge>;
     };
-    // Full-page blog view/edit
     if (viewBlog) {
         return (
             <div className="min-h-screen bg-bg-primary">
-                {/* Sticky top bar */}
                 <div className="sticky top-0 z-20 bg-bg-card/90 backdrop-blur-lg border-b border-border-primary shadow-sm">
                     <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
                         <button onClick={() => { setViewBlog(null); setIsEditing(false); }}
                             className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors">
                             <ArrowLeft className="w-4 h-4" /> Back to list
                         </button>
+                        
                         <div className="flex items-center gap-2">
                             {statusBadge(viewBlog.status)}
                             <div className="flex items-center bg-bg-tertiary rounded-lg p-0.5 ml-2">
@@ -291,7 +290,7 @@ export const BlogModerationPage = ({ onBack }) => {
                                 {viewBlog.createdAt && !isNaN(new Date(viewBlog.createdAt)) && (
                                     <span className="flex items-center gap-1.5">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
-                                        {format(new Date(viewBlog.createdAt), 'MMMM dd, yyyy')}
+                                        {format(new Date(viewBlog.createdAt), 'dd/MM/yy')}
                                     </span>
                                 )}
                             </div>
@@ -312,7 +311,6 @@ export const BlogModerationPage = ({ onBack }) => {
                                 dangerouslySetInnerHTML={{ __html: viewBlog.contentHtml || viewBlog.content || '' }} />
                         </>
                     )}
-                    {/* Comments Section */}
                     <div className="mt-10 pt-8 border-t border-border-secondary">
                         <h3 className="text-sm font-semibold text-text-tertiary uppercase tracking-wider mb-4 flex items-center gap-2">
                             <MessageSquare className="w-4 h-4" /> Comments
@@ -329,7 +327,7 @@ export const BlogModerationPage = ({ onBack }) => {
                                             <p className="text-xs font-semibold text-text-secondary mb-0.5">{c.name || 'Anonymous'}</p>
                                             <p className="text-sm text-text-primary">{c.commentText}</p>
                                             {c.createdAt && !isNaN(new Date(c.createdAt)) && (
-                                                <p className="text-xs text-text-tertiary mt-1">{format(new Date(c.createdAt), 'MMM dd, yyyy')}</p>
+                                                <p className="text-xs text-text-tertiary mt-1">{format(new Date(c.createdAt), 'dd/MM/yy')}</p>
                                             )}
                                         </div>
                                         <button onClick={() => handleDeleteComment(c.id)}
@@ -362,7 +360,7 @@ export const BlogModerationPage = ({ onBack }) => {
                 {rejectModal && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setRejectModal(null)}>
                         <div className="bg-bg-card rounded-2xl border border-border-primary shadow-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
-                            <div className="flex items-center gap-3 mb-5">
+                        <div className="flex items-center gap-3 mb-5">
                                 <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
                                     <AlertTriangle className="w-5 h-5 text-red-500" />
                                 </div>
@@ -389,7 +387,7 @@ export const BlogModerationPage = ({ onBack }) => {
                 {deleteConfirmBlog && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setDeleteConfirmBlog(null)}>
                         <div className="bg-bg-card rounded-2xl border border-border-primary shadow-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
-                            <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-3 mb-4">
                                 <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
                                     <Trash2 className="w-5 h-5 text-red-500" />
                                 </div>
@@ -415,7 +413,6 @@ export const BlogModerationPage = ({ onBack }) => {
             </div>
         );
     }
-    // Blog list view
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">
             <div className="mb-8">
@@ -455,7 +452,7 @@ export const BlogModerationPage = ({ onBack }) => {
                                     <div className="flex items-center gap-3 mt-1.5 text-xs text-text-tertiary">
                                         <span>By {blog.authorName}</span>
                                         {blog.createdAt && !isNaN(new Date(blog.createdAt)) && (
-                                            <span>{format(new Date(blog.createdAt), 'MMM dd, yyyy')}</span>
+                                            <span>{format(new Date(blog.createdAt), 'dd/MM/yy')}</span>
                                         )}
                                     </div>
                                 </div>
@@ -534,11 +531,9 @@ export const BlogModerationPage = ({ onBack }) => {
                 </div>
             )}
 
-            {/* Standalone Comments Modal */}
             {commentsModal && (
                 <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setCommentsModal(null)}>
                     <div className="bg-bg-card rounded-2xl border border-border-primary shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                        {/* Header */}
                         <div className="flex items-start justify-between px-5 py-4 border-b border-border-primary shrink-0">
                             <div className="min-w-0 pr-3">
                                 <div className="flex items-center gap-2 mb-0.5">
@@ -551,7 +546,6 @@ export const BlogModerationPage = ({ onBack }) => {
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
-                        {/* Body */}
                         <div className="overflow-y-auto flex-1 px-5 py-4">
                             {commentsLoading ? (
                                 <p className="text-text-tertiary text-sm py-8 text-center">Loading comments...</p>
@@ -571,7 +565,7 @@ export const BlogModerationPage = ({ onBack }) => {
                                                             }`}>{c.status}</span>
                                                     )}
                                                     {c.createdAt && !isNaN(new Date(c.createdAt)) && (
-                                                        <span className="text-[10px] text-text-tertiary">{format(new Date(c.createdAt), 'MMM dd, yyyy')}</span>
+                                                        <span className="text-[10px] text-text-tertiary">{format(new Date(c.createdAt), 'dd/MM/yy')}</span>
                                                     )}
                                                 </div>
                                                 <p className="text-sm text-text-primary">{c.commentText}</p>

@@ -24,7 +24,6 @@ export default function FeedbackManagement() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedFeedbacks = feedbacks.slice(startIndex, startIndex + itemsPerPage);
 
-  // Reload from localStorage on mount
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('icfy_feedback') || 'null')
     if (saved && saved.length > 0) setFeedbacks(saved)
@@ -56,7 +55,6 @@ export default function FeedbackManagement() {
         <p className="text-gray-500 text-sm mt-1">View and respond to student feedback</p>
       </div>
       <div className="bg-white rounded-xl shadow-md p-4 md:p-8">
-        {feedbacks.length === 0 ? (
           <div className="text-gray-600 text-center py-8">No feedback found.</div>
         ) : (
           <div className="space-y-4">

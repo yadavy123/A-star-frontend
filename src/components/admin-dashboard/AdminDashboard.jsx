@@ -31,11 +31,11 @@ export default function AdminDashboard() {
   const { section } = useParams()
   const navigate = useNavigate()
   const currentView = section || 'home'
+
   const setCurrentView = (view) =>
     navigate(view === 'home' ? '/admin-dashboard' : `/admin-dashboard/${view}`)
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
-  // Show loading screen while auth is being verified
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -110,7 +110,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      {/* Header */}
       <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 shadow-xl sticky top-0 z-40">
         <div className="px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -128,7 +127,6 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            {/* Notifications */}
             <button
               onClick={() => setCurrentView('notifications')}
               className="p-2 rounded-lg transition relative text-white hover:bg-white/10"
@@ -138,7 +136,6 @@ export default function AdminDashboard() {
               </svg>
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
-            {/* Admin Profile */}
             <button
               onClick={() => setCurrentView('profile')}
               className="flex items-center gap-3 hover:bg-white/10 rounded-lg px-3 py-2 transition cursor-pointer"
@@ -154,16 +151,13 @@ export default function AdminDashboard() {
           </div>
         </div>
       </header>
-      {/* Sidebar */}
       <AdminSidebar
         currentView={currentView}
         setCurrentView={setCurrentView}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
       />
-      {/* Main Content Container */}
       <div className="flex w-full justify-center">
-        {/* Main Content */}
         <main className={`flex-1 min-w-0 transition-all duration-300 ${sidebarOpen ? 'lg:pl-64' : ''}`}>
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
             {renderView()}

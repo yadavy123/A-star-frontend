@@ -9,8 +9,6 @@ export default function DemoSettings() {
     const [boards, setBoards] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('grades');
-
-    // Form states
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
@@ -112,7 +110,6 @@ export default function DemoSettings() {
 
     return (
         <div className="w-full">
-            {/* Header */}
             <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-blue-900 flex items-center gap-3">
@@ -123,7 +120,6 @@ export default function DemoSettings() {
                 </div>
             </div>
 
-            {/* Tabs */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
                 <div className="flex border-b border-gray-200">
                     <button
@@ -149,7 +145,6 @@ export default function DemoSettings() {
                 </div>
             </div>
 
-            {/* Add Form - Always Visible */}
             <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100 mb-6">
                 <div className="flex items-center gap-2 mb-4 text-blue-900 font-bold">
                     <Plus size={20} />
@@ -187,7 +182,6 @@ export default function DemoSettings() {
                 </form>
             </div>
 
-            {/* Data Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
                     <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">

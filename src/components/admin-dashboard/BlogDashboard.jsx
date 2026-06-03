@@ -19,7 +19,6 @@ export default function BlogDashboard({ setCurrentView }) {
                 const subsData = subsRes.status === 'fulfilled' ? subsRes.value.data : null;
                 const commentsData = commentsRes.status === 'fulfilled' ? commentsRes.value.data : null;
 
-                // Fetch pending & published counts separately
                 const [pendingRes, publishedRes] = await Promise.allSettled([
                     adminApi.getAdminBlogs({ status: 'PENDING', page: 0, size: 1 }),
                     adminApi.getAdminBlogs({ status: 'PUBLISHED', page: 0, size: 1 }),
@@ -53,7 +52,6 @@ export default function BlogDashboard({ setCurrentView }) {
             <h1 className="text-3xl font-bold mb-1 text-blue-900">Blog Dashboard</h1>
             <p className="text-gray-500 mb-8">Manage blog posts and newsletter subscribers</p>
 
-            {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
                 {statCards.map(s => {
                     const Icon = s.icon;
@@ -74,9 +72,7 @@ export default function BlogDashboard({ setCurrentView }) {
                 })}
             </div>
 
-            {/* Navigation Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Blog Moderation */}
                 <button onClick={() => setCurrentView('blogs')}
                     className="bg-white rounded-xl shadow-md p-6 text-left hover:shadow-xl transition-all border-2 border-transparent hover:border-blue-900 group">
                     <div className="flex items-start gap-4">
@@ -90,7 +86,6 @@ export default function BlogDashboard({ setCurrentView }) {
                     </div>
                 </button>
 
-                {/* Manage Subscribers */}
                 <button onClick={() => setCurrentView('subscribers')}
                     className="bg-white rounded-xl shadow-md p-6 text-left hover:shadow-xl transition-all border-2 border-transparent hover:border-[#7c3aed] group">
                     <div className="flex items-start gap-4">
@@ -104,7 +99,6 @@ export default function BlogDashboard({ setCurrentView }) {
                     </div>
                 </button>
 
-                {/* Comment Moderation */}
                 <button onClick={() => setCurrentView('comment-management')}
                     className="bg-white rounded-xl shadow-md p-6 text-left hover:shadow-xl transition-all border-2 border-transparent hover:border-[#e11d48] group md:col-span-2">
                     <div className="flex items-start gap-4">

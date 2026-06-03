@@ -161,7 +161,7 @@ export const BlogListPage = () => {
                                                 <span className="flex items-center gap-1"><MessageCircle className="w-3.5 h-3.5" />{blog.commentsCount}</span>
                                                 <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" />{blog.viewsCount}</span>
                                             </div>
-                                            <span>{blog.publishedAt && format(new Date(blog.publishedAt), 'MMM dd, yyyy')}</span>
+                                            <span>{blog.publishedAt && format(new Date(blog.publishedAt), 'dd/MM/yy')}</span>
                                         </div>
                                     </div>
                                 </Card>

@@ -20,11 +20,9 @@ export default function QuestionManagement() {
     totalElements: 0,
     totalPages: 0
   })
-
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [createForm, setCreateForm] = useState({ title: '', descriptionHtml: '', categoryId: '' })
   const [createLoading, setCreateLoading] = useState(false)
-
   const [activeTab, setActiveTab] = useState('questions') // 'questions' or 'answers'
   const [answers, setAnswers] = useState([])
   const [answersPagination, setAnswersPagination] = useState({
@@ -183,7 +181,6 @@ export default function QuestionManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-blue-900 flex items-center gap-3">
@@ -201,7 +198,6 @@ export default function QuestionManagement() {
         </button>
       </div>
 
-      {/* Tabs */}
       <div className="flex border-b border-gray-200">
         <button
           onClick={() => { setActiveTab('questions'); setFilterStatus('all'); }}
@@ -221,7 +217,6 @@ export default function QuestionManagement() {
         </button>
       </div>
 
-      {/* Filters & Search */}
       <div className="bg-white rounded-xl shadow-md p-4 flex flex-col gap-4 md:flex-row md:items-center">
         <div className="flex-1 min-w-0 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -263,7 +258,6 @@ export default function QuestionManagement() {
         </div>
       </div>
 
-      {/* Content Table */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
         <ScrollableCard>
           <table className="w-full text-left border-collapse">
@@ -272,7 +266,7 @@ export default function QuestionManagement() {
                 <th className="px-6 py-4 text-sm font-bold text-gray-700 uppercase tracking-wider">Details</th>
                 <th className="px-6 py-4 text-sm font-bold text-gray-700 uppercase tracking-wider">Category / User</th>
                 <th className="px-6 py-4 text-sm font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-sm font-bold text-gray-700 uppercase tracking-wider text-right">Actions</th>
+                {/* <th className="px-6 py-4 text-sm font-bold text-gray-700 uppercase tracking-wider text-right">Actions</th> */}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -293,18 +287,18 @@ export default function QuestionManagement() {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <div className="font-semibold text-gray-700">{q.categoryName || 'General'}</div>
-                      <div className="text-gray-500">{new Date(q.createdAt).toLocaleDateString()}</div>
+                      <div className="text-gray-500">{new Date(q.createdAt).toLocaleDateString('en-GB')}</div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">Question</span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    {/* <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button onClick={() => handleDeleteQuestion(q.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               ) : (
@@ -318,14 +312,14 @@ export default function QuestionManagement() {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <div className="font-semibold text-gray-700">{a.authorName || 'Student'}</div>
-                      <div className="text-gray-500">{new Date(a.createdAt).toLocaleDateString()}</div>
+                      <div className="text-gray-500">{new Date(a.createdAt).toLocaleDateString('en-GB')}</div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(a.status)}`}>
                         {a.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    {/* <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         {a.status === 'PENDING' && (
                           <>
@@ -341,7 +335,7 @@ export default function QuestionManagement() {
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               )}
@@ -349,7 +343,6 @@ export default function QuestionManagement() {
           </table>
         </ScrollableCard>
 
-        {/* Pagination */}
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
           <div className="text-sm text-gray-500">
             Showing {activeTab === 'questions' ? questions.length : answers.length} of {activeTab === 'questions' ? pagination.totalElements : answersPagination.totalElements} entries
@@ -372,7 +365,6 @@ export default function QuestionManagement() {
           </div>
         </div>
       </div>
-      {/* Create Question Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-full sm:max-w-2xl max-h-[90vh] overflow-hidden">

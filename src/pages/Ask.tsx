@@ -240,7 +240,7 @@ const Ask: React.FC = () => {
                                                 <div className="flex-1">
                                                     <div className="text-sm font-semibold text-blue-800">{q.title || 'Untitled question'}</div>
                                                     <div className="text-xs text-blue-600">
-                                                        {q.category?.name} • {new Date(q.createdAt).toLocaleString()}
+                                                        {q.category?.name} • {new Date(q.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
                                                     </div>
                                                 </div>
                                                 <span className="text-xs text-blue-500 font-medium shrink-0">
@@ -263,7 +263,7 @@ const Ask: React.FC = () => {
                                                         {answersMap[q.id].map((a) => (
                                                             <div key={a.id} className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
                                                                 <div className="text-xs text-gray-500 mb-1">
-                                                                    {a.authorName || 'Student'} • {new Date(a.createdAt).toLocaleString()}
+                                                                    {a.authorName || 'Student'} • {new Date(a.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
                                                                 </div>
                                                                 <div className="prose prose-xs max-w-none text-sm text-gray-800"
                                                                     dangerouslySetInnerHTML={{ __html: renderMathInHTML(a.contentHtml) }}
