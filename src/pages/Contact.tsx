@@ -1,30 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Send, MessageSquare, Calendar } from 'lucide-react';
-import { FaWhatsapp, FaLinkedin, FaYoutube, FaInstagram, FaFacebook, FaTwitter } from 'react-icons/fa';
+import { FaWhatsapp, FaLinkedin, FaYoutube, FaInstagram, FaFacebook } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import { getContactSubjects, submitContactForm, getContactSettingsPublic } from '../api/api/contactApi';
+import { contactApi, type ContactSubject, type ContactSettings } from '../api/contactApi';
 import toast from 'react-hot-toast';
 import CenteredModal from '../components/CenteredModal';
-
-interface ContactSubject {
-  id: string;
-  name: string;
-  displayName?: string;
-}
-
-interface ContactSettings {
-  phoneNumber: string;
-  whatsappNumber: string;
-  emailAddress: string;
-  officeAddress: string;
-  officeHours: string;
-  googleMapsUrl: string;
-  facebookUrl: string;
-  instagramUrl: string;
-  linkedinUrl: string;
-  twitterUrl: string;
-}
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
@@ -53,16 +34,11 @@ const Contact = () => {
 
       try {
         const [subjectsData, settingsData] = await Promise.all([
-          getContactSubjects(),
-          getContactSettingsPublic()
+          contactApi.getSubjects(),
+          contactApi.getPublicSettings()
         ]);
 
-        // Handle data nesting if API returns { data: [...] }
-        const finalSubjects = Array.isArray(subjectsData)
-          ? subjectsData
-          : (subjectsData?.data || fallbackSubjects);
-
-        setSubjects(finalSubjects);
+        setSubjects(Array.isArray(subjectsData) ? subjectsData : fallbackSubjects);
         setSettings(settingsData);
       } catch (error) {
         console.error('Failed to load contact data:', error);
@@ -115,7 +91,7 @@ const Contact = () => {
         return;
       }
 
-      await submitContactForm(formData);
+      await contactApi.submitForm(formData);
 
       setSubmitted(true);
       toast.success('✅ Message sent successfully! We will contact you soon.');
@@ -387,7 +363,7 @@ const Contact = () => {
             </div>
 
             {/* Contact Information */}
-            <div className="space-y-8">
+            {!isDirect && <div className="space-y-8">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Contact Information</h2>
                 <p className="text-gray-600 mb-8">
@@ -472,12 +448,13 @@ const Contact = () => {
                   </a>
                 </div>
               </div>
-            </div>
+            </div>}
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
+      {!isDirect && (
       <section className="py-8 md:py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
@@ -513,7 +490,7 @@ const Contact = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section>)}
     </div>
   );
 };

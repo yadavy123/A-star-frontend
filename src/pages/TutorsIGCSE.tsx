@@ -1,9 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import TutorCard from '../components/TutorCard';
 import teachers from '../assets/teachers';
 
 const TutorsIGCSE = () => {
-    // Use the images available in src/assets as the teacher list
+    const navigate = useNavigate();
     const tutors = teachers.map((t) => ({
         name: t.name,
         subject: 'Subject',
@@ -41,7 +42,7 @@ const TutorsIGCSE = () => {
                 <div className="mt-16 text-center bg-white rounded-lg shadow-lg p-8">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">Ready to Excel in IGCSE?</h2>
                     <p className="text-gray-600 mb-6">Get personalized tutoring from our expert educators and achieve your academic goals.</p>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
+                    <button onClick={() => navigate('/contact?mode=direct')} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
                         Book a Free Trial Session
                     </button>
                 </div>

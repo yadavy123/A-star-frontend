@@ -90,10 +90,11 @@ async function getGrades(): Promise<Grade[]> {
     }
 
     try {
-        const response = await makeApiCall<{ data: Grade[] }>('GET', '/api/public/demo/settings/grades');
-        const grades = response.data;
-        localStorage.setItem(DEMO_GRADES_STORAGE_KEY, JSON.stringify(grades));
-        return grades;
+        const response = await makeApiCall<Grade[]>('GET', '/api/public/demo/settings/grades');
+        const grades = Array.isArray(response) ? response : (response as Record<string, unknown>)?.data || [];
+        const gradesArr = Array.isArray(grades) ? grades : [];
+        localStorage.setItem(DEMO_GRADES_STORAGE_KEY, JSON.stringify(gradesArr));
+        return gradesArr;
     } catch (error) {
         console.error('Failed to fetch grades:', error);
         // Fallback to local data
@@ -145,8 +146,9 @@ async function getBoards(): Promise<Board[]> {
     }
 
     try {
-        const response = await makeApiCall<{ data: Board[] }>('GET', '/api/public/demo/settings/boards');
-        const boards = filterDemoBoards(response.data);
+        const response = await makeApiCall<Board[]>('GET', '/api/public/demo/settings/boards');
+        const boardsRaw = Array.isArray(response) ? response : (response as Record<string, unknown>)?.data || [];
+        const boards = filterDemoBoards(Array.isArray(boardsRaw) ? boardsRaw : []);
         localStorage.setItem(DEMO_BOARDS_STORAGE_KEY, JSON.stringify(boards));
         return boards;
     } catch (error) {

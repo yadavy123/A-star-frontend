@@ -1,0 +1,140 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="UTF-8">
+<title>Bug Report - Contact API</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.5; margin: 2.5cm; }
+h1 { color: #1a56db; font-size: 22pt; border-bottom: 2px solid #1a56db; padding-bottom: 8px; }
+h2 { color: #1e40af; font-size: 16pt; margin-top: 24px; margin-bottom: 8px; }
+h3 { color: #2563eb; font-size: 13pt; margin-top: 18px; margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th { background-color: #1a56db; color: white; padding: 8px 10px; text-align: left; font-weight: bold; border: 1px solid #1a56db; }
+td { padding: 6px 10px; border: 1px solid #ccc; }
+tr:nth-child(even) { background-color: #f0f4ff; }
+code { background-color: #f1f5f9; padding: 2px 6px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 10pt; }
+.badge-ok { background-color: #16a34a; color: white; padding: 2px 8px; border-radius: 10px; font-size: 9pt; font-weight: bold; }
+.badge-missing { background-color: #dc2626; color: white; padding: 2px 8px; border-radius: 10px; font-size: 9pt; font-weight: bold; }
+.info { background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px 14px; margin: 10px 0; }
+.note { background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 10px 14px; margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<h1>Bug Report — Contact API Endpoints</h1>
+
+<table style="width: auto; border: none;">
+<tr style="background: none;"><td style="border: none; font-weight: bold; width: 120px;">Date:</td><td style="border: none;">03 June 2026</td></tr>
+<tr style="background: none;"><td style="border: none; font-weight: bold;">Project:</td><td style="border: none;">A* Classes Frontend</td></tr>
+<tr style="background: none;"><td style="border: none; font-weight: bold;">Prepared for:</td><td style="border: none;">Backend Team</td></tr>
+</table>
+
+<hr style="border: 1px solid #1a56db; margin: 20px 0;">
+
+<h2>Issue 1: Admin Contact Subjects (GET) — Missing Endpoint</h2>
+
+<h3>Problem</h3>
+<p><code>GET /api/admin/contact/subjects</code> returns <strong>HTTP 500</strong> with error:</p>
+<code>"An unexpected error occurred: Request method 'GET' is not supported"</code>
+
+<h3>Root Cause</h3>
+<p>Backend only supports <code>POST /api/admin/contact/subjects</code> (for creating subjects). There is no GET endpoint to list subjects under the admin path.</p>
+
+<h3>Fix Applied (Frontend)</h3>
+<p>Changed <code>getAdminSubjects()</code> in <code>src/api/contactApi.ts</code> to use the public listing endpoint instead:</p>
+<table>
+<tr><th>Before</th><th>After</th></tr>
+<tr><td><code>GET /api/admin/contact/subjects</code></td><td><code>GET /api/public/contact/subjects</code></td></tr>
+</table>
+
+<div class="note"><strong>Note:</strong> The public endpoint works and returns all subjects. Admin can still create/delete subjects via POST/DELETE.</div>
+
+<h2>Issue 2: Admin Contact Subjects (POST) — Wrong URL Path</h2>
+
+<h3>Problem</h3>
+<p><code>POST /admin/api/contact/subjects</code> returns <strong>HTTP 500</strong> with error:</p>
+<code>"An unexpected error occurred: No static resource admin/api/contact/subjects"</code>
+
+<h3>Root Cause</h3>
+<p>The correct backend path pattern for admin endpoints is <code>/api/admin/contact/...</code>, not <code>/admin/api/contact/...</code>.</p>
+
+<h3>Fix Applied (Frontend)</h3>
+<p>Reverted all admin paths in <code>src/api/contactApi.ts</code> from <code>/admin/api/contact/...</code> back to <code>/api/admin/contact/...</code>.</p>
+
+<h3>All Admin Endpoints — Status</h3>
+<table>
+<tr><th>Function</th><th>Method</th><th>Path</th><th>Swagger Status</th></tr>
+<tr><td><code>getAdminSubjects</code></td><td>GET</td><td><code>/api/public/contact/subjects</code></td><td><span class="badge-ok">Exists</span> (public)</td></tr>
+<tr><td><code>createAdminSubject</code></td><td>POST</td><td><code>/api/admin/contact/subjects</code></td><td><span class="badge-ok">Exists</span></td></tr>
+<tr><td><code>deleteAdminSubject</code></td><td>DELETE</td><td><code>/api/admin/contact/subjects/{id}</code></td><td><span class="badge-ok">Exists</span></td></tr>
+<tr><td><code>getAdminMessages</code></td><td>GET</td><td><code>/api/admin/contact/messages</code></td><td><span class="badge-ok">Exists</span></td></tr>
+<tr><td><code>updateAdminMessageStatus</code></td><td>PUT</td><td><code>/api/admin/contact/messages/{id}/status</code></td><td><span class="badge-ok">Exists</span></td></tr>
+<tr><td><code>deleteAdminMessage</code></td><td>DELETE</td><td><code>/api/admin/contact/messages/{id}</code></td><td><span class="badge-ok">Exists</span></td></tr>
+<tr style="background: #fee2e2;"><td><code>getAdminSettings</code></td><td>GET</td><td><code>/api/admin/contact/settings</code></td><td><span class="badge-missing">Not in Swagger</span></td></tr>
+<tr style="background: #fee2e2;"><td><code>updateAdminSettings</code></td><td>PUT</td><td><code>/api/admin/contact/settings</code></td><td><span class="badge-missing">Not in Swagger</span></td></tr>
+</table>
+
+<h2>Issue 3: Contact Settings — Backend Endpoints Missing</h2>
+
+<h3>Problem</h3>
+<p>Both <code>GET /api/public/contact/settings</code> and <code>GET /api/admin/contact/settings</code> return <strong>HTTP 500</strong>.</p>
+
+<h3>Root Cause</h3>
+<p>The backend does not have contact settings endpoints at all. The Swagger specification shows settings only for Demo (boards/grades), not for Contact.</p>
+
+<div class="info"><strong>No frontend fix possible.</strong> Backend team needs to implement these endpoints.</div>
+
+<h3>Required Backend Endpoints</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Purpose</th></tr>
+<tr><td>GET</td><td><code>/api/admin/contact/settings</code></td><td>Admin — Get contact settings</td></tr>
+<tr><td>PUT</td><td><code>/api/admin/contact/settings</code></td><td>Admin — Update contact settings</td></tr>
+<tr><td>GET</td><td><code>/api/public/contact/settings</code></td><td>Public — Get contact settings</td></tr>
+</table>
+
+<hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+<h2>Swagger Reference</h2>
+<p><strong>URL:</strong> <code>https://api.astarclasses.com/swagger-ui/index.html</code><br>
+<strong>API Spec:</strong> <code>https://api.astarclasses.com/v3/api-docs</code></p>
+
+<h3>Contact Endpoints Present in Swagger</h3>
+<table>
+<tr><th>#</th><th>Method</th><th>Path</th><th>Description</th></tr>
+<tr><td>1</td><td>GET</td><td><code>/api/public/contact/subjects</code></td><td>List active subjects (public dropdown)</td></tr>
+<tr><td>2</td><td>POST</td><td><code>/api/public/contact/message</code></td><td>Submit contact form (no OTP)</td></tr>
+<tr><td>3</td><td>POST</td><td><code>/api/admin/contact/subjects</code></td><td>Create a new contact subject</td></tr>
+<tr><td>4</td><td>DELETE</td><td><code>/api/admin/contact/subjects/{id}</code></td><td>Delete a contact subject</td></tr>
+<tr><td>5</td><td>GET</td><td><code>/api/admin/contact/messages</code></td><td>View paginated/filtered messages</td></tr>
+<tr><td>6</td><td>PUT</td><td><code>/api/admin/contact/messages/{id}/status</code></td><td>Update message status (READ/RESOLVED)</td></tr>
+<tr><td>7</td><td>DELETE</td><td><code>/api/admin/contact/messages/{id}</code></td><td>Delete a message permanently</td></tr>
+</table>
+
+<hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+<h2>Recommendations for Backend Team</h2>
+<ol>
+<li><strong>Add <code>GET /api/admin/contact/subjects</code></strong> — So admin panel doesn't rely on public endpoint for subject listing</li>
+<li><strong>Import all Contact Settings endpoints</strong> (GET/PUT admin, GET public) — Currently missing from backend entirely</li>
+<li><strong>Old JS API (<code>src/api/api/contactApi.js</code>)</strong> still uses <code>/admin/api/contact/...</code> paths — These will also 500 if called. Should be updated to <code>/api/admin/contact/...</code></li>
+</ol>
+
+<hr style="border: 1px solid #1a56db; margin: 30px 0 10px 0;">
+
+<table style="width: 100%; border: none;">
+<tr style="background: none;">
+<td style="border: none; font-size: 9pt; color: #666;">Bug-Report-Contact-API.doc — Generated 03 June 2026</td>
+<td style="border: none; text-align: right; font-size: 9pt; color: #666;">Page 1 of 1</td>
+</tr>
+</table>
+
+</body>
+</html>
