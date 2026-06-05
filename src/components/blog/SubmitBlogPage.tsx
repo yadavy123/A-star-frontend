@@ -1,13 +1,45 @@
 import { useState, useEffect, useCallback, useRef, type ChangeEvent, type DragEvent, type FormEvent, type SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { blogApi, getIsLocalMode } from '../../api/blogApi.ts';
+import { blogApi } from '../../api/blogApi.ts';
 import { Card, Input, TextArea, Button } from '../ui/index.tsx';
 import { ContentEditor } from '../editor/ContentEditor';
-import { PenTool, Mail, CheckCircle, ArrowRight, Save, X, Image as ImageIcon, ArrowLeft } from 'lucide-react';
+import { PenTool, Mail, CheckCircle, ArrowRight, Save, X, Image as ImageIcon, ArrowLeft, Loader } from 'lucide-react';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
+import { requestUserOTP, verifyUserOTP } from '../../api/api/authApi.js';
 import toast from 'react-hot-toast';
 
 const DRAFT_KEY = 'blogpost_draft';
+
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
+const MAX_IMAGE_SIZE_MB = 1;
+const FEATURED_IMAGE_DIMENSIONS = { width: 1200, height: 630 };
+const TARGET_ASPECT_RATIO = 16 / 9;
+const ASPECT_RATIO_TOLERANCE = 0.15;
+
+const checkImageDimensions = (file: File): Promise<{ width: number; height: number; aspectRatio: number }> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve({ width: img.naturalWidth, height: img.naturalHeight, aspectRatio: img.naturalWidth / img.naturalHeight });
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to load image'));
+        };
+        img.src = url;
+    });
+};
+
+type ImagePreviewItem = {
+    id: string;
+    previewUrl: string;
+    cloudinaryUrl: string | null;
+    file: File | null;
+    uploading: boolean;
+    error: string | null;
+};
 
 type SubmitFormData = {
     authorName: string;
@@ -30,11 +62,16 @@ const emptyForm: SubmitFormData = {
     title: '', excerpt: '', content: '', tags: '', featuredImageUrl: '',
 };
 
+const TOTAL_STEPS = 4;
+
 const getApiErrorMessage = (error: unknown, fallback: string) => {
-    if (typeof error === 'object' && error !== null && 'response' in error) {
-        const response = (error as { response?: { data?: { message?: string } } }).response;
-        if (response?.data?.message) {
-            return response.data.message;
+    if (typeof error === 'object' && error !== null) {
+        if ('response' in error) {
+            const response = (error as { response?: { data?: { message?: string } } }).response;
+            if (response?.data?.message) return response.data.message;
+        }
+        if ('message' in error && typeof (error as Record<string, unknown>).message === 'string') {
+            return (error as Record<string, string>).message;
         }
     }
 
@@ -45,21 +82,31 @@ const getApiErrorMessage = (error: unknown, fallback: string) => {
     return fallback;
 };
 
+const stepLabels: Record<number, string> = {
+    1: 'Write',
+    2: 'Verify',
+    3: 'Upload',
+    4: 'Submit',
+};
+
 export const SubmitBlogPage = () => {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<SubmitFormData>(emptyForm);
     const [otp, setOtp] = useState('');
     const [draftSavedAt, setDraftSavedAt] = useState<Date | null>(null);
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<ImagePreviewItem[]>([]);
     const [isDragOver, setIsDragOver] = useState(false);
     const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const imagePreviewsRef = useRef<ImagePreviewItem[]>([]);
 
+    useEffect(() => {
+        imagePreviewsRef.current = imagePreviews;
+    }, [imagePreviews]);
 
     const [resendTimer, setResendTimer] = useState(0);
 
-    // Check for saved draft on mount
     useEffect(() => {
         try {
             const saved = localStorage.getItem(DRAFT_KEY);
@@ -72,7 +119,6 @@ export const SubmitBlogPage = () => {
         } catch { /* ignore corrupt data */ }
     }, []);
 
-    // Timer logic
     useEffect(() => {
         let interval: NodeJS.Timeout;
         if (resendTimer > 0) {
@@ -89,7 +135,6 @@ export const SubmitBlogPage = () => {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    // Auto-save every 30 seconds when on step 1
     useEffect(() => {
         if (step !== 1) return;
         autoSaveTimer.current = setInterval(() => {
@@ -105,16 +150,20 @@ export const SubmitBlogPage = () => {
         };
     }, [step, formData]);
 
-    // Sync image previews with form data
+    const getCloudinaryUrls = useCallback((items: ImagePreviewItem[]): string => {
+        return items
+            .map(item => item.cloudinaryUrl)
+            .filter((url): url is string => url !== null)
+            .join(',');
+    }, []);
+
     useEffect(() => {
-        if (formData.featuredImageUrl) {
-            // Split by comma if multiple, or just take one
-            const urls = formData.featuredImageUrl.split(',').filter(Boolean);
-            setImagePreviews(urls);
-        } else {
-            setImagePreviews([]);
+        const cloudUrls = getCloudinaryUrls(imagePreviews);
+        const currentFeatured = formData.featuredImageUrl;
+        if (cloudUrls !== currentFeatured) {
+            setFormData(f => ({ ...f, featuredImageUrl: cloudUrls }));
         }
-    }, [formData.featuredImageUrl]);
+    }, [imagePreviews, getCloudinaryUrls, formData.featuredImageUrl]);
 
     const saveDraft = useCallback((silent = false) => {
         try {
@@ -134,7 +183,11 @@ export const SubmitBlogPage = () => {
 
     const handleStep1 = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Validate phone number
+
+        if (!formData.authorName.trim()) {
+            toast.error('Please enter your name.');
+            return;
+        }
         if (!formData.authorMobile || formData.authorMobile.length !== 10) {
             toast.error('Mobile number must be exactly 10 digits.');
             return;
@@ -143,98 +196,119 @@ export const SubmitBlogPage = () => {
             toast.error('Please enter a valid 10-digit mobile number (digits only).');
             return;
         }
-
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.authorEmail)) {
             toast.error('Please enter a valid email address.');
             return;
         }
-
-        setLoading(true);
-        try {
-            const response = await blogApi.startSubmission({
-                authorName: formData.authorName, authorEmail: formData.authorEmail, authorMobile: formData.authorMobile,
-                title: formData.title, excerpt: formData.excerpt, contentHtml: formData.content,
-                tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
-                featuredImageUrl: imagePreviews[0] || null, // Send primary as featured
-                additionalImages: imagePreviews.slice(1), // Send others as additional if backend supports
-            });
-
-            const data = response?.data || {};
-            if (!data.success) {
-                throw new Error(data.message || 'Failed to send OTP');
-            }
-
-            const otpMessage = 'OTP sent to your email!';
-            toast.success(otpMessage);
-            setStep(2);
-            setResendTimer(300); // 5 minutes
-        } catch (err) {
-            toast.error(getApiErrorMessage(err, 'Submission failed'));
+        if (!formData.title.trim()) {
+            toast.error('Please enter a blog title.');
+            return;
         }
-        finally { setLoading(false); }
+        if (!formData.excerpt.trim()) {
+            toast.error('Please enter an excerpt.');
+            return;
+        }
+        if (!formData.content.trim()) {
+            toast.error('Please write some content.');
+            return;
+        }
+
+        setStep(2);
+        await sendOtp(false);
     };
 
-    const handleResendOtp = async () => {
-        if (resendTimer > 0) return;
+    const [otpTimer, setOtpTimer] = useState(0);
+
+    const sendOtp = async (isResend = false) => {
+        try {
+            const result = await requestUserOTP(formData.authorEmail, isResend);
+            if (result.success === false) {
+                toast.error(result.message || 'Failed to send OTP');
+                return;
+            }
+            toast.success('OTP sent to your email!');
+            setOtpTimer(300);
+        } catch (err) {
+            toast.error(getApiErrorMessage(err, 'Failed to send OTP'));
+        }
+    };
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (otpTimer > 0) {
+            interval = setInterval(() => {
+                setOtpTimer((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [otpTimer]);
+
+    const handleOtpSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!otp || otp.length !== 6) {
+            toast.error('Please enter a valid 6-digit OTP.');
+            return;
+        }
         setLoading(true);
         try {
-            const response = await blogApi.startSubmission({
-                authorName: formData.authorName, authorEmail: formData.authorEmail, authorMobile: formData.authorMobile,
-                title: formData.title, excerpt: formData.excerpt, contentHtml: formData.content,
-                tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
-                featuredImageUrl: imagePreviews[0] || null,
-                additionalImages: imagePreviews.slice(1),
+            await verifyUserOTP({
+                email: formData.authorEmail,
+                otp,
+                name: formData.authorName,
+                mobile: formData.authorMobile,
             });
-            const data = response?.data || {};
-            if (!data.success) throw new Error(data.message || 'Failed to resend OTP');
-            toast.success('OTP resent successfully!');
-            setResendTimer(300); // 5 minutes
+            toast.success('Email verified! You can now upload images.');
+            setStep(3);
         } catch (err) {
-            toast.error(getApiErrorMessage(err, 'Failed to resend OTP'));
+            const msg = getApiErrorMessage(err, 'Verification failed');
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleStep2 = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); setLoading(true);
-        try {
-            const response = await blogApi.verifySubmission({ email: formData.authorEmail, otp });
-            const data = response?.data || {};
-            if (!data.success) {
-                throw new Error(data.message || 'Invalid OTP');
-            }
-            toast.success('Email verified!'); setStep(3);
-        }
-        catch (err) { toast.error(getApiErrorMessage(err, 'Invalid OTP')); }
-        finally { setLoading(false); }
+    const handleResendOtp = async () => {
+        if (otpTimer > 0) return;
+        await sendOtp(true);
     };
 
-    const handleStep3 = async () => {
+    const handleImageStepNext = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setStep(4);
+    };
+
+    const handleFinalSubmit = async () => {
         setLoading(true);
         try {
+            const cloudUrls = getCloudinaryUrls(imagePreviews);
             await blogApi.finishSubmission({
                 ...formData,
                 email: formData.authorEmail,
-                contentHtml: formData.content, // Map content to contentHtml for backend
+                contentHtml: formData.content,
                 tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
-                featuredImageUrl: imagePreviews[0] || null,
-                additionalImages: imagePreviews.slice(1)
+                featuredImageUrl: cloudUrls || null,
             });
-            clearDraft(); // Clear draft on successful submission
-            toast.success('Blog submitted!'); setStep(4);
+            clearDraft();
+            toast.success('Blog submitted!'); setStep(5);
         }
         catch (err) { toast.error(getApiErrorMessage(err, 'Failed to finalize')); }
         finally { setLoading(false); }
     };
 
+    useEffect(() => {
+        return () => {
+            imagePreviewsRef.current.forEach(item => {
+                if (item.previewUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(item.previewUrl);
+                }
+            });
+        };
+    }, []);
+
     const update = (field: keyof SubmitFormData) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         let value = e.target.value;
-        // Phone number validation - only allow 10 digits
         if (field === 'authorMobile') {
-            // Remove all non-digit characters
             const digitsOnly = value.replace(/\D/g, '');
-            // Limit to 10 digits
             value = digitsOnly.slice(0, 10);
         }
         setFormData({ ...formData, [field]: value });
@@ -243,76 +317,80 @@ export const SubmitBlogPage = () => {
     const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
-        
-        Array.from(files).forEach(file => {
-            processImageFile(file);
-        });
-
-        // Reset file input for re-upload
+        Array.from(files).forEach(file => processImageFile(file));
         e.target.value = '';
     };
 
     const processImageFile = async (file: File) => {
-        if (!file.type.startsWith('image/')) {
-            toast.error(`"${file.name}" is not a valid image file`);
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+            toast.error(`"${file.name}" is not supported. Only JPG and PNG formats are allowed.`);
             return;
         }
 
         const fileSizeMB = file.size / (1024 * 1024);
-        if (fileSizeMB > 5) {
-            toast.error(`"${file.name}" is ${fileSizeMB.toFixed(1)}MB. Max allowed is 5MB`);
+        if (fileSizeMB > MAX_IMAGE_SIZE_MB) {
+            toast.error(`"${file.name}" is ${fileSizeMB.toFixed(1)}MB. Max allowed is ${MAX_IMAGE_SIZE_MB}MB`);
             return;
         }
 
-        const toastId = `upload-${Date.now()}`;
-        toast.loading(`Processing ${file.name}...`, { id: toastId });
+        let dims;
+        try {
+            dims = await checkImageDimensions(file);
+        } catch {
+            toast.error(`"${file.name}" — could not read image dimensions.`);
+            return;
+        }
+
+        const ratioDiff = Math.abs(dims.aspectRatio - TARGET_ASPECT_RATIO);
+        if (ratioDiff > ASPECT_RATIO_TOLERANCE) {
+            toast.error(`"${file.name}" has ${dims.width}×${dims.height}px (${dims.aspectRatio.toFixed(2)}:1). Only 16:9 ratio images are allowed — please upload a 16:9 image (recommended ${FEATURED_IMAGE_DIMENSIONS.width}×${FEATURED_IMAGE_DIMENSIONS.height}px).`);
+            return;
+        }
+
+        const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        const localUrl = URL.createObjectURL(file);
+
+        const item: ImagePreviewItem = {
+            id,
+            previewUrl: localUrl,
+            cloudinaryUrl: null,
+            file,
+            uploading: true,
+            error: null,
+        };
+
+        setImagePreviews(prev => [...prev, item]);
 
         try {
             const url = await uploadToCloudinary(file);
-            setImagePreviews(prev => {
-                const next = [...prev, url];
-                setFormData(f => ({ ...f, featuredImageUrl: next.join(',') }));
-                return next;
-            });
-            toast.success(`Image uploaded!`, { id: toastId });
+            setImagePreviews(prev =>
+                prev.map(p => p.id === id ? { ...p, previewUrl: url, cloudinaryUrl: url, uploading: false } : p)
+            );
+            toast.success(`"${file.name}" uploaded successfully!`);
         } catch {
-            // Cloudinary failed — fall back to base64
-            try {
-                const dataUrl = await readFileAsDataUrl(file);
-                setImagePreviews(prev => {
-                    const next = [...prev, dataUrl];
-                    setFormData(f => ({ ...f, featuredImageUrl: next.join(',') }));
-                    return next;
-                });
-                toast.success(`Image added (local)`, { id: toastId });
-            } catch {
-                toast.error(`Failed to process ${file.name}`, { id: toastId });
-            }
+            setImagePreviews(prev =>
+                prev.map(p => p.id === id ? { ...p, uploading: false, error: 'Upload failed, keeping local copy' } : p)
+            );
+            toast.error(`Failed to upload "${file.name}". Add via URL instead.`);
         }
-    };
-
-    const readFileAsDataUrl = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                if (typeof reader.result === 'string') resolve(reader.result);
-                else reject(new Error('Failed to read file'));
-            };
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(file);
-        });
     };
 
     const handleUrlChange = (url: string) => {
         if (!url.trim()) return;
         try {
             new URL(url);
-            setImagePreviews(prev => {
-                const next = [...prev, url.trim()];
-                setFormData(f => ({ ...f, featuredImageUrl: next.join(',') }));
-                return next;
-            });
-            toast.success('URL added');
+            const trimmed = url.trim();
+            const id = `url-${Date.now()}`;
+            const item: ImagePreviewItem = {
+                id,
+                previewUrl: trimmed,
+                cloudinaryUrl: trimmed,
+                file: null,
+                uploading: false,
+                error: null,
+            };
+            setImagePreviews(prev => [...prev, item]);
+            toast.success('Image URL added');
         } catch {
             toast.error('Invalid URL format');
         }
@@ -320,8 +398,11 @@ export const SubmitBlogPage = () => {
 
     const removeImage = (index: number) => {
         setImagePreviews(prev => {
+            const removed = prev[index];
+            if (removed && removed.previewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(removed.previewUrl);
+            }
             const next = prev.filter((_, i) => i !== index);
-            setFormData(f => ({ ...f, featuredImageUrl: next.join(',') }));
             return next;
         });
         toast.success('Image removed');
@@ -343,11 +424,9 @@ export const SubmitBlogPage = () => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragOver(false);
-
         const files = e.dataTransfer?.files;
         if (files && files.length > 0) {
-            const file = files[0];
-            processImageFile(file);
+            processImageFile(files[0]);
         }
     };
 
@@ -366,17 +445,15 @@ export const SubmitBlogPage = () => {
             </h1>
             <p className="text-lg text-text-secondary mb-6">Share your knowledge with our community</p>
 
-
-            {/* Steps */}
             <div className="flex items-center justify-center gap-1.5 sm:gap-5 mb-12 overflow-hidden px-2">
-                {[1, 2, 3].map((s) => (
+                {[1, 2, 3, 4].map((s) => (
                     <div key={s} className="flex items-center gap-1 sm:gap-3 shrink-0">
-                        <div className={`w-7 h-7 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-xs sm:text-[17px] font-bold transition-all ${step >= s ? 'bg-[#19788f] text-white' : 'bg-[#d9dde3] text-[#667085]'
+                        <div className={`w-7 h-7 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-xs sm:text-[17px] font-bold transition-all ${step > s ? 'bg-[#19788f] text-white' : step === s ? 'bg-[#19788f] text-white' : 'bg-[#d9dde3] text-[#667085]'
                             }`}>{step > s ? '✓' : s}</div>
                         <span className={`text-[10px] sm:text-base font-semibold ${step >= s ? 'text-[#19788f]' : 'text-[#667085]'}`}>
-                            {s === 1 ? 'Write' : s === 2 ? 'Verify' : 'Submit'}
+                            {stepLabels[s]}
                         </span>
-                        {s < 3 && <div className={`w-4 sm:w-16 h-[2px] ${step > s ? 'bg-[#19788f]' : 'bg-[#c9ced6]'}`} />}
+                        {s < TOTAL_STEPS && <div className={`w-4 sm:w-16 h-[2px] ${step > s ? 'bg-[#19788f]' : 'bg-[#c9ced6]'}`} />}
                     </div>
                 ))}
             </div>
@@ -395,8 +472,7 @@ export const SubmitBlogPage = () => {
                                 </span>
                             )}
                             <button type="button" onClick={() => saveDraft(false)}
-                                className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-text-primary bg-bg-tertiary hover:bg-bg-hover px-3 py-1.5 rounded-lg transition-colors"
-                                title="Save as draft (auto-saves every 30s)">
+                                className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-text-primary bg-bg-tertiary hover:bg-bg-hover px-3 py-1.5 rounded-lg transition-colors">
                                 <Save size={14} /> Save Draft
                             </button>
                         </div>
@@ -421,27 +497,102 @@ export const SubmitBlogPage = () => {
 
                         <Input label="Tags (comma separated)" placeholder="spring-boot, java, tutorial" value={formData.tags} onChange={update('tags')} />
 
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-text-secondary">Blog Images (First image is featured)</label>
+                        <div className="rounded-xl bg-bg-secondary border border-border-primary p-4">
+                            <div className="flex items-center gap-2 text-sm text-text-secondary">
+                                <ImageIcon size={18} />
+                                <span>Images can be uploaded after verification.</span>
+                            </div>
+                        </div>
 
-                            {/* Image Gallery */}
+                        <Button type="submit" disabled={loading} className="w-full">
+                            {loading ? 'Sending OTP...' : 'Continue — Verify Email'} <ArrowRight className="w-4 h-4 inline ml-1" />
+                        </Button>
+                    </form>
+                </Card>
+            )}
+
+            {step === 2 && (
+                <Card className="text-center">
+                    <Mail className="w-12 h-12 mx-auto text-text-tertiary mb-3" />
+                    <h2 className="text-xl font-bold text-text-primary mb-1">Verify Your Email</h2>
+                    <p className="text-text-secondary mb-2 text-sm">OTP sent to <strong>{formData.authorEmail}</strong></p>
+                    <form onSubmit={handleOtpSubmit} className="max-w-xs mx-auto space-y-4">
+                        <Input
+                            placeholder="Enter 6-digit OTP"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            value={otp}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                                setOtp(val);
+                            }}
+                            className="text-center text-xl tracking-widest"
+                            maxLength={6}
+                            required
+                        />
+                        <Button type="submit" disabled={loading} className="w-full">
+                            {loading ? 'Verifying...' : 'Verify & Continue'}
+                        </Button>
+                        <div className="text-center">
+                            <button
+                                type="button"
+                                onClick={handleResendOtp}
+                                disabled={otpTimer > 0}
+                                className={`text-sm font-semibold transition-colors ${otpTimer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-[#19788f] hover:text-[#166b7f] underline'}`}
+                            >
+                                {otpTimer > 0 ? `Resend OTP in ${formatResendTimer(otpTimer)}` : 'Resend OTP'}
+                            </button>
+                        </div>
+                        <button type="button" onClick={() => setStep(1)} className="w-full pt-2 text-sm text-text-tertiary hover:text-text-primary font-medium flex items-center justify-center gap-1 transition-colors">
+                            <ArrowLeft className="w-4 h-4" /> Back to Writing
+                        </button>
+                    </form>
+                </Card>
+            )}
+
+            {step === 3 && (
+                <Card className="rounded-2xl border border-[#d7dce3] shadow-sm">
+                    <form onSubmit={handleImageStepNext} className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <ImageIcon className="w-5 h-5 text-text-secondary" />
+                            <h2 className="text-xl font-bold text-text-primary">Upload Images</h2>
+                        </div>
+                        <p className="text-sm text-text-secondary">Upload feature images or paste a URL. First image is the featured image.</p>
+
+                        <div className="space-y-3">
+                            <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 font-medium">
+                                Required: <strong>16:9 aspect ratio</strong> (e.g. {FEATURED_IMAGE_DIMENSIONS.width}×{FEATURED_IMAGE_DIMENSIONS.height}px). Only <strong>JPG</strong> / <strong>PNG</strong>, max <strong>{MAX_IMAGE_SIZE_MB}MB</strong> each.
+                            </div>
+
                             {imagePreviews.length > 0 && (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    {imagePreviews.map((url, index) => (
-                                        <div key={index} className="relative aspect-video rounded-lg overflow-hidden bg-bg-tertiary border border-border-primary group">
+                                    {imagePreviews.map((item, index) => (
+                                        <div key={item.id} className="relative h-44 rounded-lg overflow-hidden bg-bg-secondary border border-border-primary group flex items-center justify-center">
                                             <img
-                                                src={url}
+                                                src={item.previewUrl}
                                                 alt={`Preview ${index + 1}`}
-                                                className="w-full h-full object-cover"
+                                                className="max-w-full max-h-full object-contain"
                                                 onError={(e: SyntheticEvent<HTMLImageElement>) => {
                                                     e.currentTarget.src = 'https://via.placeholder.com/400x225?text=Invalid+Image';
                                                 }}
                                             />
+                                            {item.uploading && (
+                                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                                    <Loader className="w-6 h-6 text-white animate-spin" />
+                                                </div>
+                                            )}
+                                            {item.error && (
+                                                <div className="absolute top-1 left-1 bg-amber-500 text-white text-[9px] px-1.5 py-0.5 rounded font-medium">
+                                                    LOCAL ONLY
+                                                </div>
+                                            )}
                                             <button
                                                 type="button"
                                                 onClick={() => removeImage(index)}
                                                 className="absolute top-1 right-1 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all opacity-0 group-hover:opacity-100 shadow-sm"
                                                 title="Remove image"
+                                                disabled={item.uploading}
                                             >
                                                 <X size={14} />
                                             </button>
@@ -455,7 +606,6 @@ export const SubmitBlogPage = () => {
                                 </div>
                             )}
 
-                            {/* Upload Area - Drag & Drop */}
                             <div
                                 onDragOver={handleDragOver}
                                 onDragLeave={handleDragLeave}
@@ -475,23 +625,21 @@ export const SubmitBlogPage = () => {
                                             Click to upload or drag and drop
                                         </p>
                                         <p className="text-xs text-text-tertiary mt-1">
-                                            JPG, PNG, WebP up to 5MB (Multiple allowed)
+                                            JPG, PNG up to {MAX_IMAGE_SIZE_MB}MB each
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Hidden File Input */}
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/*"
+                                accept=".jpg,.jpeg,.png"
                                 multiple
                                 onChange={handleImageUpload}
                                 className="hidden"
                             />
 
-                            {/* URL Input Option */}
                             <div className="flex gap-2">
                                 <input
                                     type="url"
@@ -519,67 +667,43 @@ export const SubmitBlogPage = () => {
                             </div>
                         </div>
 
-                        <Button type="submit" disabled={loading} className="w-full">
-                            {loading ? 'Sending OTP...' : 'Submit & Verify Email'} <ArrowRight className="w-4 h-4 inline ml-1" />
-                        </Button>
-                    </form>
-                </Card>
-            )}
-
-            {step === 2 && (
-                <Card className="text-center">
-                    <Mail className="w-12 h-12 mx-auto text-text-tertiary mb-3" />
-                    <h2 className="text-xl font-bold text-text-primary mb-1">Verify Your Email</h2>
-                    <p className="text-text-secondary mb-2 text-sm">OTP sent to <strong>{formData.authorEmail}</strong></p>
-                    {/* OTP verification message */}
-                    <form onSubmit={handleStep2} className="max-w-xs mx-auto space-y-4">
-                        <Input 
-                            placeholder="Enter 6-digit OTP" 
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            value={otp} 
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                                setOtp(val);
-                            }}
-                            className="text-center text-xl tracking-widest" 
-                            maxLength={6} 
-                            required 
-                        />
-                        <Button type="submit" disabled={loading} className="w-full">{loading ? 'Verifying...' : 'Verify OTP'}</Button>
-                        <div className="text-center">
-                            <button
-                                type="button"
-                                onClick={handleResendOtp}
-                                disabled={loading || resendTimer > 0}
-                                className={`text-sm font-semibold transition-colors ${resendTimer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-[#19788f] hover:text-[#166b7f] underline'}`}
-                            >
-                                {resendTimer > 0 ? `Resend OTP in ${formatResendTimer(resendTimer)}` : 'Resend OTP'}
+                        <div className="flex gap-3">
+                            <button type="button" onClick={() => setStep(2)} className="px-4 py-2 bg-bg-tertiary hover:bg-bg-hover text-text-secondary text-sm font-medium rounded-lg transition-colors border border-border-primary">
+                                <ArrowLeft className="w-4 h-4 inline mr-1" /> Back
                             </button>
+                            <Button type="submit" className="flex-1">
+                                Continue to Submit <ArrowRight className="w-4 h-4 inline ml-1" />
+                            </Button>
                         </div>
-                        <button type="button" onClick={() => setStep(1)} className="w-full pt-2 text-sm text-text-tertiary hover:text-text-primary font-medium flex items-center justify-center gap-1 transition-colors">
-                            <ArrowLeft className="w-4 h-4" /> Back to Writing
-                        </button>
                     </form>
-                </Card>
-            )}
-
-            {step === 3 && (
-                <Card className="text-center">
-                    <CheckCircle className="w-12 h-12 mx-auto text-emerald-500 mb-3" />
-                    <h2 className="text-xl font-bold text-text-primary mb-1">Email Verified!</h2>
-                    <p className="text-text-secondary mb-6 text-sm">Click below to submit for admin review</p>
-                    <Button onClick={handleStep3} disabled={loading}>{loading ? 'Submitting...' : 'Finalize Submission'}</Button>
                 </Card>
             )}
 
             {step === 4 && (
                 <Card className="text-center">
-                    <div className="text-5xl mb-3">Submitted</div>
+                    <CheckCircle className="w-12 h-12 mx-auto text-emerald-500 mb-3" />
+                    <h2 className="text-xl font-bold text-text-primary mb-1">Ready to Submit!</h2>
+                    <p className="text-text-secondary mb-2 text-sm">
+                        {imagePreviews.length > 0
+                            ? `${imagePreviews.length} image(s) attached.`
+                            : 'No images attached.'}
+                    </p>
+                    <p className="text-text-secondary mb-6 text-sm">Click below to submit for admin review</p>
+                    <Button onClick={handleFinalSubmit} disabled={loading}>
+                        {loading ? 'Submitting...' : 'Finalize Submission'}
+                    </Button>
+                    <button type="button" onClick={() => setStep(3)} className="w-full pt-3 text-sm text-text-tertiary hover:text-text-primary font-medium flex items-center justify-center gap-1 transition-colors">
+                        <ArrowLeft className="w-4 h-4" /> Back to Images
+                    </button>
+                </Card>
+            )}
+
+            {step === 5 && (
+                <Card className="text-center">
+                    <div className="text-5xl mb-3">🎉</div>
                     <h2 className="text-2xl font-bold text-text-primary mb-1">Blog Submitted!</h2>
                     <p className="text-text-secondary text-sm mb-6">Pending admin review. You'll get an email once approved.</p>
-                    <Button variant="secondary" onClick={() => { setStep(1); setFormData(emptyForm); }}>
+                    <Button variant="secondary" onClick={() => { setStep(1); setFormData(emptyForm); setImagePreviews([]); setOtp(''); }}>
                         Submit Another
                     </Button>
                 </Card>
