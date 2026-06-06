@@ -15,7 +15,7 @@ interface SubjectPageProps {
 const SubjectPage: React.FC<SubjectPageProps> = ({ level }) => {
   const { subject } = useParams<{ subject: string }>();
 
-  const subjectData: { [key: string]: any } = {
+  const subjectData: Record<string, { name: string; description: string; image: string; color: string }> = {
     physics: {
       name: 'Physics',
       description: 'Master the fundamental laws of nature and prepare for advanced studies in physics and engineering.',

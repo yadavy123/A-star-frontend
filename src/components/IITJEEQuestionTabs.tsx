@@ -3,9 +3,15 @@ import { getQuestions } from '../api/api/questionApi';
 import { submitAnswer } from '../api/api/answerApi';
 import toast from 'react-hot-toast';
 
+type IITQuestion = {
+    id: string;
+    title: string;
+    descriptionHtml: string;
+};
+
 const IITJEEQuestionTabs: React.FC = () => {
     const [tab, setTab] = useState<'open' | 'closed'>('open');
-    const [questions, setQuestions] = useState<any[]>([]);
+    const [questions, setQuestions] = useState<IITQuestion[]>([]);
     const [loading, setLoading] = useState(true);
     const [answers, setAnswers] = useState<{ [id: string]: string }>({});
     const [submitting, setSubmitting] = useState<{ [id: string]: boolean }>({});
@@ -48,8 +54,8 @@ const IITJEEQuestionTabs: React.FC = () => {
                 delete next[id];
                 return next;
             });
-        } catch (error: any) {
-            toast.error(error.message || 'Failed to submit solution');
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to submit solution');
         } finally {
             setSubmitting(prev => ({ ...prev, [id]: false }));
         }

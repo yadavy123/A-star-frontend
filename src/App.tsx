@@ -36,6 +36,7 @@ import { useAuth } from './context/AuthContext.tsx';
 import RunningClasses from './pages/RunningClasses';
 import WriteReview from './pages/WriteReview';
 import Reviews from './pages/Reviews';
+import FeePayment from './pages/FeePayment';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -103,6 +104,7 @@ function AppLayout() {
           <Route path="/running-classes" element={<RunningClasses />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/write-review" element={<WriteReview />} />
+          <Route path="/fee-payment" element={<FeePayment />} />
           <Route
             path="/admin-dashboard"
             element={

@@ -6,7 +6,7 @@ import { getApprovedAnswersByQuestion } from '../api/api/answerApi';
 import toast from 'react-hot-toast';
 
 // Transform API question to UI question
-const transformQuestion = (q: any): UIQuestion => ({
+const transformQuestion = (q: { id: string; title: string; descriptionHtml?: string }): UIQuestion => ({
   id: q.id,
   title: q.title,
   equation: '', // Equation might be in descriptionHtml
@@ -20,7 +20,7 @@ const MathQA: React.FC = () => {
   const [questions, setQuestions] = useState<UIQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<UIQuestion | null>(null);
-  const [selectedFull, setSelectedFull] = useState<any | null>(null);
+  const [selectedFull, setSelectedFull] = useState<{ id: string; title: string; descriptionHtml?: string } | null>(null);
   const [solutions, setSolutions] = useState<{ [id: string]: { user: string; latex: string }[] }>({});
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const MathQA: React.FC = () => {
       const answers = await getApprovedAnswersByQuestion(q.id);
       setSolutions(prev => ({
         ...prev,
-        [q.id]: answers.map((a: any) => ({ user: a.authorName, latex: a.contentHtml }))
+        [q.id]: (Array.isArray(answers) ? answers : []).map((a: { authorName: string; contentHtml: string }) => ({ user: a.authorName, latex: a.contentHtml }))
       }));
     } catch (error) {
       console.error('Error fetching question details:', error);
@@ -76,8 +76,8 @@ const MathQA: React.FC = () => {
         ...prev,
         [selected.id]: [...(prev[selected.id] || []), { user: 'You', latex }],
       }));
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to submit answer');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to submit answer');
     }
   };
 

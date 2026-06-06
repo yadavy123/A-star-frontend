@@ -99,7 +99,7 @@ const RichDescriptionEditor: React.FC<RichDescriptionEditorProps> = ({ value, on
                     displayMode: true,
                 });
                 return `<div class="math-block py-4 overflow-x-auto">${rendered}</div>`;
-            } catch (e) {
+            } catch {
                 return match;
             }
         });
@@ -112,7 +112,7 @@ const RichDescriptionEditor: React.FC<RichDescriptionEditorProps> = ({ value, on
                     displayMode: false,
                 });
                 return `<span class="math-inline px-1">${rendered}</span>`;
-            } catch (e) {
+            } catch {
                 return match;
             }
         });
@@ -217,7 +217,8 @@ const RichDescriptionEditor: React.FC<RichDescriptionEditorProps> = ({ value, on
     ];
 
     // Dropdown component for symbol palettes
-    const SymbolDropdown = ({ symbols, label, isLatex = true }: { symbols: any[]; label: string; isLatex?: boolean }) => {
+    type SymbolItem = { label: string; tip: string } & ({ latex: string } | { char: string });
+    const SymbolDropdown = ({ symbols, label, isLatex = true }: { symbols: SymbolItem[]; label: string; isLatex?: boolean }) => {
         const [open, setOpen] = useState(false);
         return (
             <div className="relative inline-block">
@@ -266,16 +267,6 @@ const RichDescriptionEditor: React.FC<RichDescriptionEditorProps> = ({ value, on
     };
 
     const EditorToolbar = ({ hideExpand = false }: { hideExpand?: boolean }) => {
-        const setLink = () => {
-            const previousUrl = editor.getAttributes('link').href;
-            const url = window.prompt('URL', previousUrl);
-            if (url === null) return;
-            if (url === '') {
-                editor.chain().focus().extendMarkRange('link').unsetLink().run();
-                return;
-            }
-            editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-        };
 
         return (
             <div className="flex flex-wrap gap-1 bg-gradient-to-r from-gray-50 to-gray-100 p-2 rounded-t-lg border-b border-gray-300 items-center">

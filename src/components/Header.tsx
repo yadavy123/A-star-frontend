@@ -51,20 +51,7 @@ const Header = () => {
     { name: 'Biology', slug: 'biology' }
   ];
 
-  const counsellingRegions = [
-    { name: 'European Colleges', slug: 'europe' },
-    { name: 'American Universities', slug: 'usa' },
-    { name: 'Singapore Colleges', slug: 'singapore' },
-    { name: 'Indian Schools', slug: 'india' }
-  ];
 
-  const satTests = [
-    { name: 'SAT', slug: 'sat' },
-    { name: 'TMUA', slug: 'tmua' },
-    { name: 'AMC', slug: 'amc' },
-    { name: 'Advanced Placements', slug: 'ap' },
-    { name: 'ACT', slug: 'act' }
-  ];
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-40">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// @ts-ignore
+// @ts-expect-error: react-mathquill has no types
 import { EditableMathField } from 'react-mathquill';
 
 interface MathEditorProps {

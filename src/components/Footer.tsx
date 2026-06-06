@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, X, FileText } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, X, FileText } from 'lucide-react';
 import { FaWhatsapp, FaTwitter } from 'react-icons/fa';
 import logoImage from '../assets/A-start logo.jpeg';
 
@@ -86,14 +86,9 @@ const Footer = () => {
               <li><Link to="/testimonials" className="text-gray-300 hover:text-yellow-400 transition-colors">Testimonials</Link></li>
               <li><Link to="/tutors" className="text-gray-300 hover:text-yellow-400 transition-colors">Tutors</Link></li>
               <li>
-                <a 
-                  href="https://www.ixpoe.com/ixpoe/feepay" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-yellow-400 font-bold hover:text-yellow-300 transition-colors"
-                >
+                <Link to="/fee-payment" className="text-yellow-400 font-bold hover:text-yellow-300 transition-colors">
                   Pay Fees Online
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

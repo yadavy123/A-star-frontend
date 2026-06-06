@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module '*.PNG' {
     const src: string;
     export default src;

@@ -105,8 +105,9 @@ export default function WriteReview() {
       toast.success('OTP sent to ' + formData.email);
       setStep('otp');
       setResendTimer(300);
-    } catch (error: any) {
-      toast.error(error?.data?.message || error?.message || 'Failed to send OTP');
+    } catch (error) {
+      const err = error as { data?: { message?: string }; message?: string };
+      toast.error(err?.data?.message || err?.message || 'Failed to send OTP');
     } finally {
       setOtpLoading(false);
     }
@@ -144,26 +145,27 @@ export default function WriteReview() {
         setSubmitted(true);
         setStep('done');
         toast.success('Thank you! Your review has been submitted and will appear after admin approval.');
-      } catch (error: any) {
+      } catch (error) {
         console.error('Submit failed:', error);
-        if (error?.status === 403) {
-          toast.error('Server rejected the submission. Your review has been saved locally.');
+        const err = error as { status?: number; data?: { message?: string }; message?: string };
+        const errMsg = err?.data?.message || err?.message || '';
+        if (err?.status === 400) {
+          toast.error(errMsg || 'Validation failed. Please check your input.');
+        } else if (err?.status === 403) {
+          toast.error(errMsg || 'Server rejected the submission. Your review has been saved locally.');
           saveLocal(buildPayload());
           setSubmitted(true);
           setStep('done');
-        } else if (error?.status === 401) {
-          toast.error('Invalid or expired OTP. Please try again.');
+        } else if (err?.status === 401) {
+          toast.error(errMsg || 'Invalid or expired OTP. Please try again.');
           setStep('form');
+        } else if (errMsg && !errMsg.includes('Failed to fetch') && !errMsg.includes('NetworkError')) {
+          toast.error(errMsg);
         } else {
-          const errMsg = error?.data?.message || error?.message || '';
-          if (errMsg.includes('OTP')) {
-            toast.error(errMsg);
-          } else {
-            saveLocal(buildPayload());
-            setSubmitted(true);
-            setStep('done');
-            toast.success('Saved offline. Will sync when server is available.');
-          }
+          saveLocal(buildPayload());
+          setSubmitted(true);
+          setStep('done');
+          toast.success('Saved offline. Will sync when server is available.');
         }
       } finally {
         setSubmitting(false);

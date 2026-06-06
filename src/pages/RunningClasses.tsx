@@ -24,7 +24,7 @@ const DemoFormModal = ({ isOpen, onClose }) => {
 };
 
 const RunningClasses = () => {
-  const [classes, setClasses] = useState<any[]>([]);
+  const [classes, setClasses] = useState<{ id: string; title: string; description: string; subject: string; level: string; price?: number; startDate?: string; schedule?: string; image?: string; syllabus?: string[] }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);

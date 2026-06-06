@@ -76,8 +76,8 @@ const Signup = () => {
         setStep("verify");
         setResendTimer(300); // 5 minutes
       }
-    } catch (error: any) {
-      const errorMsg = error?.message || "Failed to send OTP. Please try again.";
+    } catch (error) {
+      const errorMsg = (error instanceof Error ? error.message : '') || "Failed to send OTP. Please try again.";
       setErrors({ form: errorMsg });
       toast.error(errorMsg);
     } finally {
@@ -112,8 +112,8 @@ const Signup = () => {
         toast.success("Signup successful! Welcome aboard.");
         navigate("/");
       }
-    } catch (error: any) {
-      const errorMsg = error?.message || "OTP verification failed. Please try again.";
+    } catch (error) {
+      const errorMsg = (error instanceof Error ? error.message : '') || "OTP verification failed. Please try again.";
       setErrors({ form: errorMsg });
       toast.error(errorMsg);
     } finally {
@@ -137,8 +137,8 @@ const Signup = () => {
         toast.success("OTP resent successfully!");
         setResendTimer(300); // 5 minutes
       }
-    } catch (error: any) {
-      const errorMsg = error?.message || "Unable to resend OTP. Please try again.";
+    } catch (error) {
+      const errorMsg = (error instanceof Error ? error.message : '') || "Unable to resend OTP. Please try again.";
       setErrors({ form: errorMsg });
       toast.error(errorMsg);
     } finally {

@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.tsx';
 import { X, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -7,6 +7,8 @@ import logoImage from '../assets/AStarClasses logo (31 March).png';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string })?.from || '/';
   const { login, requestOtp, verifyOtp } = useAuth();
   const [useOtpLogin, setUseOtpLogin] = useState(false);
   const [email, setEmail] = useState('');
@@ -70,7 +72,7 @@ const Login = () => {
     }
 
     toast.success('✅ Login successful! Welcome back.');
-    navigate(result.isAdmin ? '/admin-dashboard' : '/');
+    navigate(result.isAdmin ? '/admin-dashboard' : from);
   };
 
   const handleSendOtp = async (e: FormEvent) => {
@@ -144,7 +146,7 @@ const Login = () => {
     }
 
     toast.success('✅ Login successful!');
-    navigate(result.isAdmin ? '/admin-dashboard' : '/');
+    navigate(result.isAdmin ? '/admin-dashboard' : from);
   };
 
   return (

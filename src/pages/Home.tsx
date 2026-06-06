@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Award, BookOpen, CheckCircle, Clock, Globe, MessageSquare, TrendingUp, Users, Play, Video } from 'lucide-react';
+import { ArrowRight, Award, BookOpen, CheckCircle, Clock, Globe, MessageSquare, TrendingUp, Users } from 'lucide-react';
 import DemoForm from '../components/DemoForm';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -11,11 +11,11 @@ import { Slider } from './slider';
 import { getPublicTeachers } from '../api/api/teacherApi.js';
 
 const Home = () => {
-  const [tutors, setTutors] = useState<any[]>([]);
+  const [tutors, setTutors] = useState<{ id: string; name: string; photoUrl?: string; image?: string; subject?: string; category?: string; bio?: string; status?: string }[]>([]);
   const [showDemoModal, setShowDemoModal] = useState(false);
 
   // Determine the best image URL to show for tutors
-  const getTutorImageUrl = (tutor: any) => {
+  const getTutorImageUrl = (tutor: { photoUrl?: string; image?: string }) => {
     const photoUrl = tutor.photoUrl || tutor.image;
     if (!photoUrl) return 'https://images.unsplash.com/photo-1544717305-27a734ef1904?auto=format&fit=crop&q=80&w=400';
     if (photoUrl.startsWith('http')) return photoUrl;

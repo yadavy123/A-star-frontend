@@ -27,7 +27,7 @@ export const HomePage = () => {
             try {
                 const response = await blogApi.getBlogs({ size: 6, sort: 'popular' });
                 setBlogs(response.data.content as BlogSummary[]);
-            } catch (err) {
+            } catch {
                 setBlogs([]);
             } finally {
                 setLoading(false);

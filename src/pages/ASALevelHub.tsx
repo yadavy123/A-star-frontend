@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Users, Clock, Award, CheckCircle, TrendingUp, Target } from 'lucide-react';
+import { BookOpen, Award, CheckCircle, TrendingUp, Target } from 'lucide-react';
 
 const ASALevelHub = () => {
   const subjects = [

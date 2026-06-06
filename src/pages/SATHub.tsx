@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Target, Clock, Award, BookOpen, TrendingUp, Users, CheckCircle } from 'lucide-react';
+import { Target, Clock, BookOpen, TrendingUp, Users } from 'lucide-react';
 
 const SATHub = () => {
   const tests = [

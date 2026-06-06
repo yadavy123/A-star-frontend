@@ -8,7 +8,7 @@ interface ScientificCalculatorProps {
 
 const evaluateExpression = (expr: string): number | string => {
     try {
-        let sanitized = expr
+        const sanitized = expr
             .replace(/π/g, `(${Math.PI})`)
             .replace(/×/g, '*')
             .replace(/÷/g, '/')

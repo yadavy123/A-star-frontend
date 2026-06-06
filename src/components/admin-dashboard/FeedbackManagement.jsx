@@ -55,6 +55,7 @@ export default function FeedbackManagement() {
         <p className="text-gray-500 text-sm mt-1">View and respond to student feedback</p>
       </div>
       <div className="bg-white rounded-xl shadow-md p-4 md:p-8">
+        {feedbacks.length === 0 ? (
           <div className="text-gray-600 text-center py-8">No feedback found.</div>
         ) : (
           <div className="space-y-4">

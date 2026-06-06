@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { askApi } from '../api/askApi';
+import { useEffect, useState, useCallback } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { askApi, type AskPageResponse } from '../api/askApi';
 import RichDescriptionEditor from '../components/RichDescriptionEditor';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -19,7 +19,7 @@ type Question = {
     descriptionHtml: string;
     createdAt: string;
     slug?: string;
-    category?: Category;
+    category?: Category | null;
 };
 
 type Answer = {
@@ -59,10 +59,12 @@ const Ask: React.FC = () => {
 
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [answersMap, setAnswersMap] = useState<Record<string, Answer[]>>({});
-    const [answerText, setAnswerText] = useState('');
+    const [answerTextMap, setAnswerTextMap] = useState<Record<string, string>>({});
     const [answerLoading, setAnswerLoading] = useState(false);
     const [answerLoaders, setAnswerLoaders] = useState<Record<string, boolean>>({});
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
 
+    const location = useLocation();
     const { isAuthenticated } = useAuth();
 
     useEffect(() => {
@@ -74,12 +76,16 @@ const Ask: React.FC = () => {
     }, [selectedCategory]);
 
     const fetchCategories = async () => {
+        setCategoriesLoading(true);
         try {
             const catRes = await askApi.getCategories();
             const cats = Array.isArray(catRes.data) ? catRes.data : [];
             setCategories(cats);
         } catch (error) {
             console.error('Error fetching categories:', error);
+            toast.error('Failed to load categories');
+        } finally {
+            setCategoriesLoading(false);
         }
     };
 
@@ -93,10 +99,10 @@ const Ask: React.FC = () => {
             if (selectedCategory) params.categoryId = selectedCategory;
 
             const qsRes = await askApi.getAll(params);
-            const pageData = qsRes.data;
+            const pageData = qsRes.data as AskPageResponse;
             setQuestions(pageData?.content || []);
-            setTotalPages(pageData?.totalPages || 0);
-            setCurrentPage(pageData?.number || 0);
+            setTotalPages(pageData?.totalPages ?? 0);
+            setCurrentPage(pageData?.number ?? 0);
         } catch (error) {
             console.error('Error fetching questions:', error);
             toast.error('Failed to load questions');
@@ -125,24 +131,25 @@ const Ask: React.FC = () => {
             return;
         }
         setExpandedId(qId);
-        setAnswerText('');
         fetchAnswers(qId);
     };
 
     const handleSubmitAnswer = async (qId: string) => {
-        if (!answerText.trim()) {
+        const text = answerTextMap[qId]?.trim();
+        if (!text) {
             toast.error('Please write your answer');
             return;
         }
         setAnswerLoading(true);
         try {
-            await askApi.submitAnswer({ questionId: qId, contentHtml: answerText.trim() });
+            await askApi.submitAnswer({ questionId: qId, contentHtml: text });
             toast.success('Answer submitted for review!');
-            setAnswerText('');
+            setAnswerTextMap(prev => { const next = { ...prev }; delete next[qId]; return next; });
             setAnswersMap(prev => { const next = { ...prev }; delete next[qId]; return next; });
             fetchAnswers(qId);
-        } catch (error: any) {
-            toast.error(error?.message || 'Failed to submit answer');
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : (error as { message?: string })?.message || 'Failed to submit answer';
+            toast.error(errMsg);
         } finally {
             setAnswerLoading(false);
         }
@@ -208,9 +215,10 @@ const Ask: React.FC = () => {
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="rounded-xl border-2 border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white focus:border-purple-400 focus:ring-4 focus:ring-purple-100 outline-none transition-all"
+                            disabled={categoriesLoading}
+                            className="rounded-xl border-2 border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white focus:border-purple-400 focus:ring-4 focus:ring-purple-100 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <option value="">All Categories</option>
+                            <option value="">{categoriesLoading ? 'Loading categories...' : 'All Categories'}</option>
                             {categories.map((cat) => (
                                 <option key={cat.id} value={cat.id}>{cat.name}</option>
                             ))}
@@ -326,7 +334,7 @@ const Ask: React.FC = () => {
                                                 {isAuthenticated ? (
                                                     <div className="space-y-3">
                                                         <h4 className="text-xs font-bold text-purple-700 uppercase tracking-wider">Write Your Answer</h4>
-                                                        <RichDescriptionEditor value={answerText} onChange={setAnswerText} />
+                                                        <RichDescriptionEditor value={answerTextMap[q.id] || ''} onChange={(val) => setAnswerTextMap(prev => ({ ...prev, [q.id]: val }))} />
                                                         <div className="flex justify-end">
                                                             <button
                                                                 onClick={() => handleSubmitAnswer(q.id)}
@@ -350,6 +358,7 @@ const Ask: React.FC = () => {
                                                         <p className="text-sm text-gray-600 mb-3">Please log in to submit an answer</p>
                                                         <Link
                                                             to="/login"
+                                                            state={{ from: location.pathname }}
                                                             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md"
                                                         >
                                                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

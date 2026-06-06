@@ -78,7 +78,7 @@ export const BlogDetailPage = () => {
                 setBlog(nextBlog);
                 loadComments(nextBlog.id);
                 loadReactions(nextBlog.id);
-            } catch (err) { toast.error('Blog not found'); }
+            } catch { toast.error('Blog not found'); }
             finally { setLoading(false); }
         };
         loadBlog();
@@ -87,13 +87,13 @@ export const BlogDetailPage = () => {
     const loadComments = async (blogId: number | string) => {
         setCommentsLoading(true);
         try { const r = await blogApi.getComments(blogId, { size: 50 }); setComments(r.data.content as BlogComment[]); }
-        catch (err) { console.error('Failed to load comments'); }
+        catch { console.error('Failed to load comments'); }
         finally { setCommentsLoading(false); }
     };
 
     const loadReactions = async (blogId: number | string) => {
         try { const r = await blogApi.getReactionStatus(blogId, getVisitorKey()); setReactionStatus(r.data as ReactionStatus); }
-        catch (err) { console.error('Failed to load reactions'); }
+        catch { console.error('Failed to load reactions'); }
     };
 
     const handleReaction = async (reactionType: 'LIKE' | 'DISLIKE') => {
@@ -107,7 +107,7 @@ export const BlogDetailPage = () => {
                 likesCount: typeof nextReaction.likesCount === 'number' ? nextReaction.likesCount : prev.likesCount,
                 dislikesCount: typeof nextReaction.dislikesCount === 'number' ? nextReaction.dislikesCount : prev.dislikesCount,
             }) : prev);
-        } catch (err) { toast.error('Failed to react'); }
+        } catch { toast.error('Failed to react'); }
     };
 
     const handleComment = async (e: FormEvent<HTMLFormElement>) => {

@@ -3,13 +3,33 @@ import { makeApiCall, ApiError, type QueryRecord } from './runtimeApiBase.ts';
 const FORCE_LOCAL_ASK_API = String(import.meta.env.VITE_USE_LOCAL_ASK_API || '').toLowerCase() === 'true';
 const USE_LOCAL_MODE = FORCE_LOCAL_ASK_API;
 
+type AskCategory = { id: string; name: string; slug?: string };
+
 type AskQuestion = {
     id: string;
-    category: any;
+    category?: AskCategory | null;
     title: string;
     descriptionHtml: string;
     createdAt: string;
     slug: string;
+};
+
+export type AskPageResponse = {
+    content: AskQuestion[];
+    totalPages: number;
+    totalElements: number;
+    number: number;
+    size: number;
+};
+
+type AnswerResponse = {
+    id: string;
+    contentHtml: string;
+    authorName: string;
+    createdAt: string;
+    status: string;
+    questionTitle?: string;
+    questionId?: string;
 };
 
 const STORAGE_KEY = 'astar_ask_questions';
@@ -35,7 +55,7 @@ export const askApi = {
 
         try {
             // Using /api/questions as per Swagger "Question (Public)" tag
-            const data = await makeApiCall<any>('GET', '/api/questions', undefined, params);
+            const data = await makeApiCall<AskPageResponse>('GET', '/api/questions', undefined, params);
             return { data };
         } catch (error) {
             console.error('Failed to fetch questions:', error);
@@ -50,7 +70,7 @@ export const askApi = {
             return { data: q };
         }
         try {
-            const data = await makeApiCall<any>('GET', `/api/questions/${id}`);
+            const data = await makeApiCall<AskQuestion>('GET', `/api/questions/${id}`);
             return { data };
         } catch (error) {
             console.error('Failed to fetch question by ID:', error);
@@ -64,7 +84,7 @@ export const askApi = {
             return { data: q };
         }
         try {
-            const data = await makeApiCall<any>('GET', `/api/questions/slug/${slug}`);
+            const data = await makeApiCall<AskQuestion>('GET', `/api/questions/slug/${slug}`);
             return { data };
         } catch (error) {
             console.error('Failed to fetch question by slug:', error);
@@ -134,19 +154,27 @@ export const askApi = {
 
     // ----- Answers -----
     async getAnswers(questionId: string) {
-        const data = await makeApiCall<any[]>('GET', `/api/answers/question/${questionId}`);
-        return { data };
+        try {
+            const data = await makeApiCall<AnswerResponse[]>('GET', `/api/answers/question/${questionId}`);
+            return { data };
+        } catch (error) {
+            console.error('Failed to fetch answers:', error);
+            throw error;
+        }
     },
 
     async submitAnswer(payload: { questionId: string; contentHtml: string }) {
         try {
-            const data = await makeApiCall<any>('POST', '/api/answers', payload);
+            const data = await makeApiCall<AnswerResponse>('POST', '/api/answers', payload);
             return { data };
         } catch (err: unknown) {
             const apiErr = err as { status?: number; message?: string; response?: { data?: { message?: string } } };
             const msg = apiErr?.response?.data?.message || apiErr?.message || '';
             if (apiErr.status === 401 || apiErr.status === 403 || msg.includes('User not found')) {
-                throw new ApiError('Please log in to submit an answer', apiErr.status || 401, null);
+                localStorage.removeItem('icfy_token');
+                localStorage.removeItem('icfy_user');
+                localStorage.removeItem('icfy_role');
+                throw new ApiError('Your session has expired. Please log in again.', 401, null);
             }
             throw err;
         }
@@ -154,34 +182,39 @@ export const askApi = {
 
     // ----- Categories (Public) -----
     async getCategories() {
-        const data = await makeApiCall<any[]>('GET', '/api/categories');
-        return { data };
+        try {
+            const data = await makeApiCall<AskCategory[]>('GET', '/api/categories');
+            return { data };
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+            throw error;
+        }
     },
 
     async getCategoryById(id: string) {
-        const data = await makeApiCall<any>('GET', `/api/categories/${id}`);
+        const data = await makeApiCall<AskCategory>('GET', `/api/categories/${id}`);
         return { data };
     },
 
     async getCategoryBySlug(slug: string) {
-        const data = await makeApiCall<any>('GET', `/api/categories/slug/${slug}`);
+        const data = await makeApiCall<AskCategory>('GET', `/api/categories/slug/${slug}`);
         return { data };
     },
 
     // ----- Admin Answers -----
     async adminGetAnswers(params?: QueryRecord) {
-        const data = await makeApiCall<any>('GET', '/api/admin/answers', undefined, params);
+        const data = await makeApiCall<AnswerResponse[]>('GET', '/api/admin/answers', undefined, params);
         return { data };
     },
 
     async approveAnswer(id: string) {
-        const data = await makeApiCall<any>('PATCH', `/api/admin/answers/${id}/approve`);
+        const data = await makeApiCall<AnswerResponse>('PATCH', `/api/admin/answers/${id}/approve`);
         return { data };
     },
 
     async rejectAnswer(id: string, reason?: string) {
         const params = reason ? { reason } as QueryRecord : undefined;
-        const data = await makeApiCall<any>('PATCH', `/api/admin/answers/${id}/reject`, undefined, params);
+        const data = await makeApiCall<AnswerResponse>('PATCH', `/api/admin/answers/${id}/reject`, undefined, params);
         return { data };
     },
 
@@ -192,17 +225,17 @@ export const askApi = {
 
     // ----- Admin Categories -----
     async adminGetCategories() {
-        const data = await makeApiCall<any[]>('GET', '/api/admin/categories');
+        const data = await makeApiCall<AskCategory[]>('GET', '/api/admin/categories');
         return { data };
     },
 
     async createCategory(name: string) {
-        const data = await makeApiCall<any>('POST', '/api/admin/categories', { name });
+        const data = await makeApiCall<AskCategory>('POST', '/api/admin/categories', { name });
         return { data };
     },
 
     async updateCategory(id: string, name: string) {
-        const data = await makeApiCall<any>('PUT', `/api/admin/categories/${id}`, { name });
+        const data = await makeApiCall<AskCategory>('PUT', `/api/admin/categories/${id}`, { name });
         return { data };
     },
 

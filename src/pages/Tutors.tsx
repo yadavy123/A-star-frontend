@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, Award, Target, Users, Search, ArrowRight, GraduationCap, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-// @ts-ignore: importing from JS module without declaration
+// @ts-expect-error: importing from JS module without declaration
 import { getPublicTeachers } from '../api/api/teacherApi';
 
-const TutorCard = ({ tutor }: { tutor: any }) => {
+const TutorCard = ({ tutor }: { tutor: { id: string; name: string; photoUrl?: string; image?: string; subject?: string; bio?: string; category?: string } }) => {
     const [showModal, setShowModal] = useState(false);
     const [expanded, setExpanded] = useState(false);
 
@@ -121,7 +121,7 @@ const TutorCard = ({ tutor }: { tutor: any }) => {
 };
 
 const Tutors = () => {
-    const [tutors, setTutors] = useState<any[]>([]);
+    const [tutors, setTutors] = useState<{ id: string; name: string; photoUrl?: string; image?: string; subject?: string; bio?: string; category?: string }[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 

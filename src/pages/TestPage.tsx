@@ -5,7 +5,7 @@ import { Clock, Target, BookOpen, Award, CheckCircle, TrendingUp, Users, FileTex
 const TestPage = () => {
   const { test } = useParams<{ test: string }>();
 
-  const testData: { [key: string]: any } = {
+  const testData: Record<string, { name: string; fullName: string; description: string; image: string; sections: { name: string; description: string; duration: string; questions: string }[] }> = {
     sat: {
       name: 'SAT',
       fullName: 'SAT Reasoning Test',
@@ -279,7 +279,7 @@ const TestPage = () => {
             Test Structure & Format
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {currentTest.sections.map((section: any, index: number) => (
+            {currentTest.sections.map((section: { name: string; description: string; duration: string; questions: string }, index: number) => (
               <div key={index} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{section.name}</h3>
                 <div className="space-y-2">

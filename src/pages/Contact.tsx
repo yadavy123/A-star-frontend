@@ -95,9 +95,9 @@ const Contact = () => {
 
       setSubmitted(true);
       toast.success('✅ Message sent successfully! We will contact you soon.');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Form submission error:', error);
-      const errorMsg = error.message || 'Failed to send message. Please try again.';
+      const errorMsg = error instanceof Error ? error.message : 'Failed to send message. Please try again.';
       toast.error(`❌ ${errorMsg}`);
     } finally {
       setIsSubmitting(false);

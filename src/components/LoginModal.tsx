@@ -46,7 +46,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             } else {
                 setErrors({ form: result.message || 'Invalid credentials' });
             }
-        } catch (error) {
+        } catch {
             setErrors({ form: 'An error occurred. Please try again.' });
         } finally {
             setIsSubmitting(false);

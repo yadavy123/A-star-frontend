@@ -58,7 +58,7 @@ const ResetPassword = () => {
             try {
                 result = await userForgotPassword(email.trim());
                 setIsForAdmin(false);
-            } catch (userError) {
+            } catch {
                 // If student fails, try admin
                 result = await adminForgotPassword(email.trim());
                 setIsForAdmin(true);
@@ -76,8 +76,8 @@ const ResetPassword = () => {
                 setStep(2);
                 setResendTimer(300); // 5 minutes
             }
-        } catch (error: any) {
-            const errorMsg = error?.message || 'Unable to send reset OTP. Please try again.';
+        } catch (error) {
+            const errorMsg = (error instanceof Error ? error.message : '') || 'Unable to send reset OTP. Please try again.';
             setErrors({ form: errorMsg });
             toast.error(errorMsg);
         } finally {
@@ -128,8 +128,8 @@ const ResetPassword = () => {
                 toast.success(successMsg);
                 setTimeout(() => navigate('/login'), 1200);
             }
-        } catch (error: any) {
-            const errorMsg = error?.message || 'Unable to reset password. Please try again.';
+        } catch (error) {
+            const errorMsg = (error instanceof Error ? error.message : '') || 'Unable to reset password. Please try again.';
             setErrors({ form: errorMsg });
             toast.error(errorMsg);
         } finally {

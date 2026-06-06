@@ -254,21 +254,11 @@ function toQueryString(query?: QueryRecord): string {
 }
 
 const FORCE_LOCAL_BLOG_API = String(import.meta.env.VITE_USE_LOCAL_BLOG_API || '').toLowerCase() === 'true';
-const HAS_REMOTE_BASE = Boolean(import.meta.env.VITE_API_BASE_URL);
 
 // Persistent local mode flag for the session if a remote call fails
 const SESSION_LOCAL_FLAG = 'icfy_blog_session_local';
 
-function getInitialLocalMode() {
-    if (FORCE_LOCAL_BLOG_API) return true;
-    if (typeof window !== 'undefined' && sessionStorage.getItem(SESSION_LOCAL_FLAG) === 'true') return true;
-    return (import.meta.env.DEV && !HAS_REMOTE_BASE);
-}
-
-let isSessionLocalMode = getInitialLocalMode();
-
 export function setSessionLocalMode(value: boolean) {
-    isSessionLocalMode = value;
     if (typeof window !== 'undefined') {
         if (value) {
             sessionStorage.setItem(SESSION_LOCAL_FLAG, 'true');

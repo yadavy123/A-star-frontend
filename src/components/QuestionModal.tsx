@@ -7,7 +7,7 @@ import 'katex/dist/katex.min.css';
 
 interface QuestionModalProps {
   question: Question;
-  fullQuestion?: any;
+  fullQuestion?: { descriptionHtml?: string };
   onClose: () => void;
   onSubmitSolution: (latex: string) => void;
   solutions: { user: string; latex: string }[];

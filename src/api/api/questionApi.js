@@ -10,15 +10,7 @@ import api from './api';
  */
 export const getQuestions = async (params) => {
   try {
-    const response = await api.get('/api/questions', { 
-      params: {
-        page: params?.page || 0,
-        size: params?.size || 10,
-        sort: params?.sort || 'createdAt',
-        direction: params?.direction || 'desc',
-        categoryId: params?.categoryId
-      }
-    });
+    const response = await api.get('/api/questions', { params });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;

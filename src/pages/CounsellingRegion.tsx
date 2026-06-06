@@ -1,11 +1,11 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Clock, DollarSign, GraduationCap, FileText, Users, CheckCircle } from 'lucide-react';
+import { MapPin, Clock, DollarSign, GraduationCap, CheckCircle } from 'lucide-react';
 
 const CounsellingRegion = () => {
   const { region } = useParams<{ region: string }>();
 
-  const regionData: { [key: string]: any } = {
+  const regionData: Record<string, { name: string; title: string; description: string; topUniversities: { name: string; ranking: string; country: string }[]; timeline: { phase: string; description: string }[] }> = {
     europe: {
       name: 'European Colleges',
       description: 'Explore world-class education opportunities across Europe with affordable tuition and rich cultural experiences.',
@@ -237,7 +237,7 @@ const CounsellingRegion = () => {
             Top Universities
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentRegion.topUniversities.map((university: any, index: number) => (
+            {currentRegion.topUniversities.map((university: { name: string; ranking: string; country: string }, index: number) => (
               <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-gray-900">{university.name}</h3>
@@ -314,7 +314,7 @@ const CounsellingRegion = () => {
             Application Timeline
           </h2>
           <div className="space-y-8">
-            {currentRegion.timeline.map((phase: any, index: number) => (
+            {currentRegion.timeline.map((phase: { phase: string; description: string }, index: number) => (
               <div key={index} className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-8">
                 <div className="flex-shrink-0">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">

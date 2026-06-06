@@ -61,7 +61,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(verifiedUser));
                             return;
                         }
-                    } catch {
+                    } catch (err: unknown) {
+                        const apiErr = err as { status?: number; message?: string; data?: { message?: string } };
+                        const errMsg = apiErr?.data?.message || apiErr?.message || '';
+                        // User deleted from backend — clear stale auth
+                        if (apiErr.status === 404 && errMsg.includes('User not found')) {
+                            localStorage.removeItem(USER_STORAGE_KEY);
+                            localStorage.removeItem(TOKEN_STORAGE_KEY);
+                            localStorage.removeItem(ROLE_STORAGE_KEY);
+                            return;
+                        }
                         // Server error — keep localStorage data, don't force logout
                         const parsed = JSON.parse(storedUser) as Omit<User, 'role'>;
                         setUser({ ...parsed, role: storedRole });
@@ -112,12 +121,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 }
             }
             return { success: false, message: 'Invalid credentials' };
-        } catch (error: any) {
+        } catch (error) {
             console.error('Login failed:', error);
-            return { 
-                success: false, 
-                message: error.message || error.error || 'Invalid email or password' 
-            };
+            const msg = error instanceof Error ? error.message : (error as Record<string, string>).error || 'Invalid email or password';
+            return { success: false, message: msg };
         }
     };
 
@@ -125,8 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             const result = await requestUserOTP(email, isResend);
             return { success: true, message: result.message || 'OTP sent successfully' };
-        } catch (error: any) {
-            return { success: false, message: error.message || 'Failed to send OTP' };
+        } catch (error) {
+            return { success: false, message: error instanceof Error ? error.message : 'Failed to send OTP' };
         }
     };
 
@@ -146,8 +153,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return { success: true, isAdmin: false };
             }
             return { success: false, message: 'Invalid OTP' };
-        } catch (error: any) {
-            return { success: false, message: error.message || 'Verification failed' };
+        } catch (error) {
+            return { success: false, message: error instanceof Error ? error.message : 'Verification failed' };
         }
     };
 

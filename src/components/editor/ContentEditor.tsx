@@ -1,8 +1,8 @@
-import { useState, useRef, useCallback, useEffect, type ClipboardEvent, type KeyboardEvent, type MouseEvent, type ReactNode, type SyntheticEvent } from 'react';
+import { useState, useRef, useCallback, useEffect, type ClipboardEvent, type KeyboardEvent, type ReactNode } from 'react';
 import {
     Bold, Italic, Underline, Strikethrough, Heading1, Heading2, Heading3,
     List, ListOrdered, Code, Quote, Link as LinkIcon, Image as ImageIcon,
-    Minus, Eye, Edit3, AlignLeft, AlignCenter, AlignRight, ImageOff, Undo, Redo,
+    Minus, Eye, Edit3, AlignLeft, AlignCenter, AlignRight, Undo, Redo,
     Type, Loader2
 } from 'lucide-react';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
@@ -112,24 +112,6 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
             if (!sel) return;
             sel.removeAllRanges();
             sel.addRange(savedSelection.cloneRange());
-        }
-    };
-
-    const focusEditorWithSelection = () => {
-        const editor = editorRef.current;
-        if (!editor) return;
-
-        editor.focus();
-        const sel = window.getSelection();
-        if (!sel) return;
-
-        if (savedSelection) {
-            try {
-                sel.removeAllRanges();
-                sel.addRange(savedSelection.cloneRange());
-            } catch (e) {
-                console.error('Failed to restore selection:', e);
-            }
         }
     };
 

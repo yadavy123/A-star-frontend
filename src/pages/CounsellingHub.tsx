@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Globe, GraduationCap, FileText, Users, CheckCircle, MapPin, Trophy, Clock } from 'lucide-react';
+import { GraduationCap, FileText, Users, CheckCircle, MapPin, Trophy } from 'lucide-react';
 
 const CounsellingHub = () => {
   const navigate = useNavigate();

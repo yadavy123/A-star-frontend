@@ -29,7 +29,7 @@ export function getPreferredApiBaseUrl(): string {
     return API_BASE_URL;
 }
 
-export function setActiveApiBaseUrl(_baseUrl: string): void {
+export function setActiveApiBaseUrl(): void {
     // no-op: always uses API_BASE_URL
 }
 

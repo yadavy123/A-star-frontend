@@ -58,14 +58,12 @@ const TopBar = () => {
           <Link to="/contact" className="text-xs font-medium hover:text-[#FFD600] transition">
             Contact Us
           </Link>
-          <a
-            href="https://www.ixpoe.com/ixpoe/feepay"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/fee-payment"
             className="text-xs font-medium hover:text-[#FFD600] transition flex items-center gap-1"
           >
             Pay Fees
-          </a>
+          </Link>
           <Link
             to="/demoform"
             className="bg-[#0056b3] text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-[#007bff] transition shadow-lg shadow-blue-900/20"
@@ -142,7 +140,7 @@ const TopBar = () => {
               </a>
             </div>
             <Link to="/demoform" className="block bg-[#0056b3] text-white px-3 py-2 rounded text-xs font-semibold text-center">Schedule Demo</Link>
-            <a href="https://www.ixpoe.com/ixpoe/feepay" target="_blank" rel="noopener noreferrer" className="block bg-[#d5a928] text-white px-3 py-2 rounded text-xs font-semibold text-center">Pay Fees</a>
+            <Link to="/fee-payment" className="block bg-[#d5a928] text-white px-3 py-2 rounded text-xs font-semibold text-center">Pay Fees</Link>
             <Link to="/testimonials" className="block text-white text-xs hover:text-[#FFD600]">Testimonials</Link>
             <Link to="/contact" className="block text-white text-xs hover:text-[#FFD600]">Contact Us</Link>
             <Link to="/running-classes" className="block text-white text-xs hover:text-[#FFD600]">Running Classes</Link>
@@ -156,11 +154,6 @@ const TopBar = () => {
               <Link to="/login" className="block text-[#FFD600] text-xs font-semibold">Login</Link>
             )}
             {/* Sign Up removed from mobile menu as well */}
-            {false && (
-              <Link to="/signup" className="block bg-white text-[#003366] px-3 py-1 rounded text-xs font-semibold">
-                Sign Up
-              </Link>
-            )}
           </div>
         </div>
       )}

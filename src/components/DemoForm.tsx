@@ -100,14 +100,20 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
           demoApi.getBoards()
         ]);
 
-        const gradesData = gradesResult.status === 'fulfilled' && (Array.isArray(gradesResult.value) || (gradesResult.value as any)?.data)
-          ? (Array.isArray(gradesResult.value) ? gradesResult.value : (gradesResult.value as any).data).map((g: any) => ({ ...g, displayName: g.displayName || g.name }))
-          : fallbackGrades;
+        function extractItems<T extends { displayName?: string; name: string }>(value: unknown, fallback: T[]): T[] {
+          if (Array.isArray(value)) return value as T[];
+          if (value && typeof value === 'object' && 'data' in value) {
+            const d = (value as Record<string, unknown>).data;
+            if (Array.isArray(d)) return d as T[];
+          }
+          return fallback;
+        }
 
-        const boardsData = boardsResult.status === 'fulfilled' && (Array.isArray(boardsResult.value) || (boardsResult.value as any)?.data)
-          ? (Array.isArray(boardsResult.value) ? boardsResult.value : (boardsResult.value as any).data)
-            .map((b: any) => ({ ...b, displayName: b.displayName || b.name }))
-          : fallbackBoards;
+        const gradesData = extractItems(gradesResult.status === 'fulfilled' ? gradesResult.value : null, fallbackGrades)
+          .map(g => ({ ...g, displayName: g.displayName || g.name }));
+
+        const boardsData = extractItems(boardsResult.status === 'fulfilled' ? boardsResult.value : null, fallbackBoards)
+          .map(b => ({ ...b, displayName: b.displayName || b.name }));
 
         setGrades(gradesData);
         setBoards(boardsData);
@@ -184,9 +190,9 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
           return prev - 1;
         });
       }, 1000);
-    } catch (error: any) {
+    } catch (error) {
       console.error('OTP send error:', error);
-      const errorMsg = error.message || 'Failed to send OTP. Please try again.';
+      const errorMsg = error instanceof Error ? error.message : 'Failed to send OTP. Please try again.';
       toast.error(`❌ ${errorMsg}`);
     } finally {
       setLoading(false);
@@ -239,9 +245,9 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
       setOtp('');
       toast.success('✅ Demo scheduled successfully!');
       setIsSubmitted(true);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Demo scheduling error:', error);
-      const errorMsg = error.message || 'Failed to schedule demo. Please check your OTP and try again.';
+      const errorMsg = error instanceof Error ? error.message : 'Failed to schedule demo. Please check your OTP and try again.';
       toast.error(`❌ ${errorMsg}`);
     } finally {
       setLoading(false);

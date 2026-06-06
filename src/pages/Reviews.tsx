@@ -24,7 +24,7 @@ const ratingLabels = {
 };
 
 const Reviews = () => {
-    const [reviews, setReviews] = useState<any[]>([]);
+    const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -45,26 +45,26 @@ const Reviews = () => {
             setTotalElements(data.totalElements || content.length);
             setAvgRating(
                 content.length > 0
-                    ? Math.round((content.reduce((s: number, r: any) => s + (r.overallRating || 0), 0) / content.length) * 10) / 10
+                    ? Math.round((content.reduce((s: number, r: Review) => s + (r.overallRating || 0), 0) / content.length) * 10) / 10
                     : 0
             );
-        } catch (error: any) {
+        } catch (error) {
             console.error('Failed to fetch reviews:', error);
-            toast.error(error?.message || 'Failed to load reviews');
+            toast.error(error instanceof Error ? error.message : 'Failed to load reviews');
         } finally {
             setLoading(false);
         }
     };
 
-    const getRatingsArray = (review: any) => {
+    const getRatingsArray = (review: Review) => {
         return Object.entries(ratingLabels).map(([key, label]) => ({
             label,
             score: review[key] || 0
         })).filter(r => r.score > 0);
     };
 
-    const chunkArray = (array: any[], size: number) => {
-        const chunks: any[][] = [];
+    const chunkArray = (array: Review[], size: number) => {
+        const chunks: Review[][] = [];
         for (let i = 0; i < array.length; i += size) {
             chunks.push(array.slice(i, i + size));
         }

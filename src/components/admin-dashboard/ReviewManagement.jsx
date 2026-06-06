@@ -155,7 +155,8 @@ export default function ReviewManagement() {
             <table className="w-full min-w-[1000px] divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Student & Class</th>
+                  <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Student</th>
+                  <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Parent & Contact</th>
                   <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Review Content</th>
                   <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Ratings</th>
                   <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
@@ -167,11 +168,21 @@ export default function ReviewManagement() {
                   const rows = [
                     <tr key={review.id} className="hover:bg-blue-50/30 transition-colors">
                       <td className="px-4 py-4">
-                        <div className="text-sm font-bold text-blue-900">{review.studentName}</div>
-                        <div className="text-[10px] text-gray-500 font-medium flex items-center gap-1 mt-1 uppercase tracking-tight">
-                          <BookOpen size={10} /> {review.gradeOrClass}
-                        </div>
+                        <div className="text-sm font-bold text-blue-700">{review.studentName}</div>
                         <div className="text-[10px] text-gray-400 mt-0.5">{new Date(review.submittedAt || review.createdAt).toLocaleDateString('en-GB')}</div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col gap-1.5">
+                          <div className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                            <User size={13} className="text-amber-600 shrink-0" /> {review.parentName || 'N/A'}
+                          </div>
+                          <div className="text-xs font-semibold text-blue-800 flex items-center gap-1.5">
+                            <BookOpen size={12} className="text-amber-600 shrink-0" /> Grade: {review.gradeOrClass}
+                          </div>
+                          <div className="text-xs font-semibold text-blue-800 flex items-center gap-1.5">
+                            <Mail size={12} className="text-amber-600 shrink-0" /> {review.email || 'N/A'}
+                          </div>
+                        </div>
                       </td>
                       <td className="px-4 py-4">
                         <p className="text-xs text-gray-600 line-clamp-2 italic leading-relaxed max-w-xs">
@@ -242,7 +253,7 @@ export default function ReviewManagement() {
                   if ((index + 1) % 4 === 0 && index !== reviews.length - 1) {
                     rows.push(
                       <tr key={`divider-${review.id}-${index}`} className="bg-transparent">
-                        <td colSpan={5} className="px-0 py-4">
+                        <td colSpan={6} className="px-0 py-4">
                           <div className="border-t border-gray-300 mx-4"></div>
                         </td>
                       </tr>
@@ -284,19 +295,29 @@ export default function ReviewManagement() {
       {viewModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
-            <div className="bg-linear-to-r from-blue-900 to-indigo-900 text-white p-5 md:p-6 shrink-0">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-xl md:text-2xl font-black tracking-tight">{viewModal.studentName}</h3>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs md:text-sm text-white/80 font-medium">
-                    <span className="flex items-center gap-1.5"><User size={14} /> Parent: {viewModal.parentName || 'N/A'}</span>
-                    <span className="flex items-center gap-1.5"><BookOpen size={14} /> Grade: {viewModal.gradeOrClass}</span>
-                    <span className="flex items-center gap-1.5"><Mail size={14} /> {viewModal.email || 'N/A'}</span>
-                  </div>
+            <div className="bg-linear-to-r from-blue-900 to-indigo-900 p-3 md:p-4 shrink-0 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-amber-300/20 flex items-center justify-center">
+                  <svg className="h-4 w-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
-                <button onClick={() => setViewModal(null)} className="text-white/70 hover:text-white transition p-1">
-                  <X size={28} strokeWidth={2.5} />
-                </button>
+                <span className="text-xs font-bold text-white/60 uppercase tracking-widest">Student Review</span>
+              </div>
+              <button onClick={() => setViewModal(null)} className="text-white/70 hover:text-white transition p-1">
+                <X size={24} strokeWidth={2.5} />
+              </button>
+            </div>
+
+            <div className="bg-white border-b border-gray-200 px-5 md:px-6 py-4 shrink-0">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <span className="text-base md:text-lg font-bold text-blue-700">{viewModal.studentName}</span>
+                <span className="h-4 w-px bg-gray-200 hidden sm:block" />
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-blue-900"><User size={15} className="text-amber-500" /> Parent: {viewModal.parentName || 'N/A'}</span>
+                <span className="h-4 w-px bg-gray-200 hidden sm:block" />
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-blue-900"><BookOpen size={15} className="text-amber-500" /> Grade: {viewModal.gradeOrClass}</span>
+                <span className="h-4 w-px bg-gray-200 hidden sm:block" />
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-blue-900"><Mail size={15} className="text-amber-500" /> {viewModal.email || 'N/A'}</span>
               </div>
             </div>
 

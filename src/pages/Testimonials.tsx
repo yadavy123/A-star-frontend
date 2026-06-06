@@ -49,21 +49,6 @@ const cardBackgrounds = [
   new URL('../assets/card10PM.jpeg', import.meta.url).href,
 ];
 
-const maskPhone = (phone: string) => {
-  if (!phone) return '';
-  return phone.replace(/(\d{2})(\d{6})(\d{2})/, '$1XXXXXX$3');
-};
-
-const isMediaUrl = (url: string) => {
-  if (!url || typeof url !== 'string') return false;
-  return url.startsWith('http') && (
-    url.match(/\.(mp4|webm|ogg|mp3|wav|jpg|jpeg|png|gif|webp)/i) ||
-    url.includes('cloudinary.com') ||
-    url.includes('youtube.com') ||
-    url.includes('youtu.be')
-  );
-};
-
 const linkifyText = (text: string) => {
   if (!text) return text;
   const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -97,11 +82,8 @@ const linkifyText = (text: string) => {
 };
 
 const Testimonials = () => {
-  const categories = ['All', 'IGCSE', 'AS/A Level'] as const;
-  type Category = (typeof categories)[number];
-
-  const types = ['All', 'audio', 'video', 'whatsapp', 'text', 'image'] as const;
-  type TestimonialType = (typeof types)[number];
+  type Category = 'All' | 'IGCSE' | 'AS/A Level';
+  type TestimonialType = 'All' | 'audio' | 'video' | 'whatsapp' | 'text' | 'image';
 
   const [selectedCategory] = useState<Category>('All');
   const [selectedType] = useState<TestimonialType>('All');
@@ -136,7 +118,7 @@ const Testimonials = () => {
   };
 
   const filteredTestimonials = useMemo(() => {
-    let filtered = testimonials.filter((t) => {
+    const filtered = testimonials.filter((t) => {
       const categoryMatch = selectedCategory === 'All' || t.category === selectedCategory;
       const typeMatch = selectedType === 'All' || t.type === selectedType;
       return categoryMatch && typeMatch;

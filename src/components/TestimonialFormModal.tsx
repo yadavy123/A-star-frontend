@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { X, Star, Upload, Video, Camera, Send, AlertCircle } from 'lucide-react';
+import { X, Star, Upload, Send, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getPublicTeachers } from '../api/api/teacherApi';
 import { submitTestimonial } from '../api/api/testimonialApi';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload';
 
 const TestimonialFormModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const [teachers, setTeachers] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -97,9 +97,9 @@ const TestimonialFormModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
       toast.success('Testimonial submitted successfully! It will be visible after admin approval.');
       onClose();
       resetForm();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Submission error:', error);
-      toast.error(error.message || 'Failed to submit testimonial');
+      toast.error(error instanceof Error ? error.message : 'Failed to submit testimonial');
     } finally {
       setLoading(false);
       setUploading(false);
