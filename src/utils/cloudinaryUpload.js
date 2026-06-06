@@ -16,7 +16,6 @@ export const uploadToCloudinary = async (file) => {
     const uploadPreset = typeof import.meta.env !== 'undefined' ? import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET : undefined;
 
     if (signedError?.response?.status === 403 && cloudName && uploadPreset) {
-      console.warn('Cloudinary signature endpoint 403 — falling back to unsigned upload with preset');
       return await unsignedUpload(file, cloudName, uploadPreset);
     }
 

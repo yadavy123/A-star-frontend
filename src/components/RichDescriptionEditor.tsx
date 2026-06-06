@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { X, Maximize2, Minimize2, Eye, Edit2, Plus, Link as LinkIcon, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Quote, Code, Highlighter, CheckSquare } from 'lucide-react';
+import { X, Maximize2, Minimize2, Eye, Edit2, Plus, List, ListOrdered, Quote, Code, Highlighter, Calculator } from 'lucide-react';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import ScientificCalculator from './ScientificCalculator';
 
 interface RichDescriptionEditorProps {
     value: string;
@@ -16,7 +17,13 @@ const RichDescriptionEditor: React.FC<RichDescriptionEditorProps> = ({ value, on
     const [modalContent, setModalContent] = useState(value);
 
     const [isHtmlMode, setIsHtmlMode] = useState(false);
+    const [showCalculator, setShowCalculator] = useState(false);
     const modalEditorRef = useRef<HTMLDivElement>(null);
+
+    const handleCalculatorInsert = (value: string) => {
+        editor.chain().focus().insertContent(value).run();
+        setShowCalculator(false);
+    };
 
     const editor = useEditor({
         extensions: [
@@ -97,8 +104,8 @@ const RichDescriptionEditor: React.FC<RichDescriptionEditorProps> = ({ value, on
             }
         });
 
-        // Replace inline math ($...$) but not $$...$$
-        result = result.replace(/(?<!\$)\$([^$]+)\$(?!\$)/g, (match, formula) => {
+        // Replace inline math ($...$) — no lookahead/lookbehind so adjacent expressions like $\alpha$$\beta$ both render
+        result = result.replace(/\$([^$]+)\$/g, (match, formula) => {
             try {
                 const rendered = katex.renderToString(formula.trim(), {
                     throwOnError: false,
@@ -376,6 +383,15 @@ const RichDescriptionEditor: React.FC<RichDescriptionEditorProps> = ({ value, on
                     <SymbolDropdown symbols={mathOperators} label="Ops" />
                     <SymbolDropdown symbols={mathAdvanced} label="Adv" />
                     <SymbolDropdown symbols={writingSymbols} label="Text" isLatex={false} />
+                    
+                    <button type="button"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowCalculator(true); }}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-white text-orange-600 hover:bg-orange-50 transition-colors border border-orange-300 font-bold shadow-sm"
+                        title="Scientific Calculator"
+                    >
+                        <Calculator className="h-3.5 w-3.5" />
+                        Calc
+                    </button>
                 </div>
 
                 <div className="flex-1"></div>
@@ -663,6 +679,14 @@ const RichDescriptionEditor: React.FC<RichDescriptionEditorProps> = ({ value, on
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Scientific Calculator Modal */}
+            {showCalculator && (
+                <ScientificCalculator
+                    onInsert={handleCalculatorInsert}
+                    onClose={() => setShowCalculator(false)}
+                />
             )}
 
             {/* KaTeX and Editor styles */}

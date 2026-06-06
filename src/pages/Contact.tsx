@@ -120,8 +120,8 @@ const Contact = () => {
     {
       icon: <Mail className="h-6 w-6 text-blue-600" />,
       title: "Email Address",
-      details: [settings?.emailAddress || "info@astarclasses.com"],
-      action: `mailto:${settings?.emailAddress || "info@astarclasses.com"}`
+      details: [settings?.emailAddress || "astarclasses@ixpoe.com"],
+      action: `mailto:${settings?.emailAddress || "astarclasses@ixpoe.com"}`
     },
     {
       icon: <MapPin className="h-6 w-6 text-blue-600" />,
@@ -455,42 +455,42 @@ const Contact = () => {
 
       {/* FAQ Section */}
       {!isDirect && (
-      <section className="py-8 md:py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-8">
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                How quickly can I expect a response?
-              </h3>
-              <p className="text-gray-600">
-                We typically respond to all inquiries within 24 hours during business days.
-                For urgent matters, please call us directly or use WhatsApp.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Can I schedule a consultation outside office hours?
-              </h3>
-              <p className="text-gray-600">
-                Yes! We offer flexible scheduling including evenings and weekends.
-                Please mention your preferred time in your message and we'll accommodate.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Do you offer free consultations?
-              </h3>
-              <p className="text-gray-600">
-                Absolutely! We provide free educational consultations and demo classes
-                to help you understand our teaching methodology and course structure.
-              </p>
+        <section className="py-8 md:py-16 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-8">
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  How quickly can I expect a response?
+                </h3>
+                <p className="text-gray-600">
+                  We typically respond to all inquiries within 24 hours during business days.
+                  For urgent matters, please call us directly or use WhatsApp.
+                </p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Can I schedule a consultation outside office hours?
+                </h3>
+                <p className="text-gray-600">
+                  Yes! We offer flexible scheduling including evenings and weekends.
+                  Please mention your preferred time in your message and we'll accommodate.
+                </p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Do you offer free consultations?
+                </h3>
+                <p className="text-gray-600">
+                  Absolutely! We provide free educational consultations and demo classes
+                  to help you understand our teaching methodology and course structure.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>)}
+        </section>)}
     </div>
   );
 };

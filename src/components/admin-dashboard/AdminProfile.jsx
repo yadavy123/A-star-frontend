@@ -10,7 +10,7 @@ export default function AdminProfile({ adminData }) {
   const [profileImage, setProfileImage] = useState(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [loading, setLoading] = useState(true)
-  
+
   const [formData, setFormData] = useState({
     name: adminData.name || '',
     email: adminData.email || '',
@@ -170,7 +170,7 @@ export default function AdminProfile({ adminData }) {
                   {adminData.name.charAt(0)}
                 </div>
               )}
-              
+
               <label
                 htmlFor="profile-image-input"
                 className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100"
@@ -180,7 +180,7 @@ export default function AdminProfile({ adminData }) {
                   <span className="text-white text-xs font-semibold">Change</span>
                 </div>
               </label>
-              
+
               <input
                 id="profile-image-input"
                 type="file"
@@ -228,7 +228,7 @@ export default function AdminProfile({ adminData }) {
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none transition-all"
-                style={{ 
+                style={{
                   borderColor: isEditing ? '#1e3a8a' : '#e0e0e0',
                   backgroundColor: isEditing ? 'white' : '#ffffff'
                 }}
@@ -257,7 +257,7 @@ export default function AdminProfile({ adminData }) {
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className="flex-1 px-4 py-3 rounded-lg border-2 focus:outline-none transition-all"
-                  style={{ 
+                  style={{
                     borderColor: isEditing ? '#1e3a8a' : '#e0e0e0',
                     backgroundColor: isEditing ? 'white' : '#ffffff'
                   }}
@@ -274,7 +274,7 @@ export default function AdminProfile({ adminData }) {
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none transition-all"
-                style={{ 
+                style={{
                   borderColor: isEditing ? '#1e3a8a' : '#e0e0e0',
                   backgroundColor: isEditing ? 'white' : '#ffffff'
                 }}
@@ -292,7 +292,7 @@ export default function AdminProfile({ adminData }) {
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className="flex-1 px-4 py-3 rounded-lg border-2 focus:outline-none transition-all"
-                  style={{ 
+                  style={{
                     borderColor: isEditing ? '#1e3a8a' : '#e0e0e0',
                     backgroundColor: isEditing ? 'white' : '#ffffff'
                   }}
@@ -455,10 +455,10 @@ export default function AdminProfile({ adminData }) {
             <p className="text-sm text-gray-600 font-semibold mb-1">Member Since</p>
             <p className="text-lg font-semibold">January 2024</p>
           </div>
-          <div className="md:col-span-2">
+          {/* <div className="md:col-span-2">
             <p className="text-sm text-gray-600 font-semibold mb-1">Last Login</p>
             <p className="text-lg font-semibold">Today at 10:45 AM IST</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

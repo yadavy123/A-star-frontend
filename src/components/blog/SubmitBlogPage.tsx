@@ -15,6 +15,7 @@ const MAX_IMAGE_SIZE_MB = 1;
 const FEATURED_IMAGE_DIMENSIONS = { width: 1200, height: 630 };
 const TARGET_ASPECT_RATIO = 16 / 9;
 const ASPECT_RATIO_TOLERANCE = 0.15;
+const DEFAULT_FALLBACK_IMAGE_URL = 'https://drive.google.com/uc?export=view&id=16BWUC7BonpEG6n4oIrWVTCwagV5Vsigc';
 
 const checkImageDimensions = (file: File): Promise<{ width: number; height: number; aspectRatio: number }> => {
     return new Promise((resolve, reject) => {
@@ -28,6 +29,31 @@ const checkImageDimensions = (file: File): Promise<{ width: number; height: numb
             URL.revokeObjectURL(url);
             reject(new Error('Failed to load image'));
         };
+        img.src = url;
+    });
+};
+
+const resizeImage = (file: File, width: number, height: number): Promise<File> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { reject(new Error('Failed to get canvas context')); return; }
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((blob) => {
+                if (!blob) { reject(new Error('Failed to create blob')); return; }
+                const resizedFile = new File([blob], file.name, { type: file.type });
+                resolve(resizedFile);
+            }, file.type, 0.92);
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
         img.src = url;
     });
 };
@@ -100,6 +126,10 @@ export const SubmitBlogPage = () => {
     const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const imagePreviewsRef = useRef<ImagePreviewItem[]>([]);
+    const [resizeEnabled, setResizeEnabled] = useState(false);
+    const [resizeWidth, setResizeWidth] = useState(FEATURED_IMAGE_DIMENSIONS.width);
+    const [resizeHeight, setResizeHeight] = useState(FEATURED_IMAGE_DIMENSIONS.height);
+    const [lockAspectRatio, setLockAspectRatio] = useState(true);
 
     useEffect(() => {
         imagePreviewsRef.current = imagePreviews;
@@ -286,7 +316,7 @@ export const SubmitBlogPage = () => {
                 email: formData.authorEmail,
                 contentHtml: formData.content,
                 tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
-                featuredImageUrl: cloudUrls || null,
+                featuredImageUrl: cloudUrls || DEFAULT_FALLBACK_IMAGE_URL,
             });
             clearDraft();
             toast.success('Blog submitted!'); setStep(5);
@@ -317,7 +347,13 @@ export const SubmitBlogPage = () => {
     const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
-        Array.from(files).forEach(file => processImageFile(file));
+        imagePreviewsRef.current.forEach(item => {
+            if (item.previewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(item.previewUrl);
+            }
+        });
+        setImagePreviews([]);
+        processImageFile(files[0]);
         e.target.value = '';
     };
 
@@ -361,8 +397,17 @@ export const SubmitBlogPage = () => {
 
         setImagePreviews(prev => [...prev, item]);
 
+        let fileToUpload = file;
+        if (resizeEnabled) {
+            try {
+                fileToUpload = await resizeImage(file, resizeWidth, resizeHeight);
+            } catch {
+                toast.error('Resize failed, uploading original');
+            }
+        }
+
         try {
-            const url = await uploadToCloudinary(file);
+            const url = await uploadToCloudinary(fileToUpload);
             setImagePreviews(prev =>
                 prev.map(p => p.id === id ? { ...p, previewUrl: url, cloudinaryUrl: url, uploading: false } : p)
             );
@@ -380,6 +425,11 @@ export const SubmitBlogPage = () => {
         try {
             new URL(url);
             const trimmed = url.trim();
+            imagePreviewsRef.current.forEach(item => {
+                if (item.previewUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(item.previewUrl);
+                }
+            });
             const id = `url-${Date.now()}`;
             const item: ImagePreviewItem = {
                 id,
@@ -389,7 +439,7 @@ export const SubmitBlogPage = () => {
                 uploading: false,
                 error: null,
             };
-            setImagePreviews(prev => [...prev, item]);
+            setImagePreviews([item]);
             toast.success('Image URL added');
         } catch {
             toast.error('Invalid URL format');
@@ -426,6 +476,12 @@ export const SubmitBlogPage = () => {
         setIsDragOver(false);
         const files = e.dataTransfer?.files;
         if (files && files.length > 0) {
+            imagePreviewsRef.current.forEach(item => {
+                if (item.previewUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(item.previewUrl);
+                }
+            });
+            setImagePreviews([]);
             processImageFile(files[0]);
         }
     };
@@ -445,15 +501,15 @@ export const SubmitBlogPage = () => {
             </h1>
             <p className="text-lg text-text-secondary mb-6">Share your knowledge with our community</p>
 
-            <div className="flex items-center justify-center gap-1.5 sm:gap-5 mb-12 overflow-hidden px-2">
+            <div className="flex items-center justify-center gap-0.5 sm:gap-5 mb-12 overflow-hidden px-0">
                 {[1, 2, 3, 4].map((s) => (
-                    <div key={s} className="flex items-center gap-1 sm:gap-3 shrink-0">
-                        <div className={`w-7 h-7 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-xs sm:text-[17px] font-bold transition-all ${step > s ? 'bg-[#19788f] text-white' : step === s ? 'bg-[#19788f] text-white' : 'bg-[#d9dde3] text-[#667085]'
+                    <div key={s} className="flex items-center gap-px sm:gap-3 shrink-0">
+                        <div className={`w-5 h-5 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-[9px] sm:text-[17px] font-bold transition-all ${step > s ? 'bg-[#19788f] text-white' : step === s ? 'bg-[#19788f] text-white' : 'bg-[#d9dde3] text-[#667085]'
                             }`}>{step > s ? '✓' : s}</div>
-                        <span className={`text-[10px] sm:text-base font-semibold ${step >= s ? 'text-[#19788f]' : 'text-[#667085]'}`}>
+                        <span className={`text-[8px] sm:text-base font-semibold ${step >= s ? 'text-[#19788f]' : 'text-[#667085]'}`}>
                             {stepLabels[s]}
                         </span>
-                        {s < TOTAL_STEPS && <div className={`w-4 sm:w-16 h-[2px] ${step > s ? 'bg-[#19788f]' : 'bg-[#c9ced6]'}`} />}
+                        {s < TOTAL_STEPS && <div className={`w-1.5 sm:w-16 h-[2px] ${step > s ? 'bg-[#19788f]' : 'bg-[#c9ced6]'}`} />}
                     </div>
                 ))}
             </div>
@@ -558,11 +614,72 @@ export const SubmitBlogPage = () => {
                             <ImageIcon className="w-5 h-5 text-text-secondary" />
                             <h2 className="text-xl font-bold text-text-primary">Upload Images</h2>
                         </div>
-                        <p className="text-sm text-text-secondary">Upload feature images or paste a URL. First image is the featured image.</p>
+                        <p className="text-sm text-text-secondary">Upload one featured image or paste a URL.</p>
 
                         <div className="space-y-3">
                             <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 font-medium">
-                                Required: <strong>16:9 aspect ratio</strong> (e.g. {FEATURED_IMAGE_DIMENSIONS.width}×{FEATURED_IMAGE_DIMENSIONS.height}px). Only <strong>JPG</strong> / <strong>PNG</strong>, max <strong>{MAX_IMAGE_SIZE_MB}MB</strong> each.
+                                Required: <strong>16:9 aspect ratio</strong> (e.g. {FEATURED_IMAGE_DIMENSIONS.width}×{FEATURED_IMAGE_DIMENSIONS.height}px). Only <strong>JPG</strong> / <strong>PNG</strong>, max <strong>{MAX_IMAGE_SIZE_MB}MB</strong> each. One image per blog.
+                            </div>
+
+                            <div className="border border-border-primary rounded-xl p-4 space-y-3">
+                                <label className="flex items-center gap-2 cursor-pointer select-none">
+                                    <input
+                                        type="checkbox"
+                                        checked={resizeEnabled}
+                                        onChange={e => setResizeEnabled(e.target.checked)}
+                                        className="w-4 h-4 rounded border-border-primary text-[#19788f] focus:ring-[#19788f]"
+                                    />
+                                    <span className="text-sm font-medium text-text-primary">Resize image before upload (recommended)</span>
+                                </label>
+                                {resizeEnabled && (
+                                    <div className="grid grid-cols-2 gap-3 pl-6">
+                                        <div>
+                                            <label className="block text-xs font-medium text-text-secondary mb-1">Width (px)</label>
+                                            <input
+                                                type="number"
+                                                min={100}
+                                                max={4000}
+                                                value={resizeWidth}
+                                                onChange={e => {
+                                                    const w = Math.max(100, Number(e.target.value) || 0);
+                                                    setResizeWidth(w);
+                                                    if (lockAspectRatio) {
+                                                        setResizeHeight(Math.round(w / TARGET_ASPECT_RATIO));
+                                                    }
+                                                }}
+                                                className="input-clean w-full text-sm"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-text-secondary mb-1">Height (px)</label>
+                                            <input
+                                                type="number"
+                                                min={100}
+                                                max={4000}
+                                                value={resizeHeight}
+                                                onChange={e => {
+                                                    const h = Math.max(100, Number(e.target.value) || 0);
+                                                    setResizeHeight(h);
+                                                    if (lockAspectRatio) {
+                                                        setResizeWidth(Math.round(h * TARGET_ASPECT_RATIO));
+                                                    }
+                                                }}
+                                                className="input-clean w-full text-sm"
+                                            />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={lockAspectRatio}
+                                                    onChange={e => setLockAspectRatio(e.target.checked)}
+                                                    className="w-3.5 h-3.5 rounded border-border-primary text-[#19788f] focus:ring-[#19788f]"
+                                                />
+                                                <span className="text-xs text-text-secondary">Lock 16:9 aspect ratio</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {imagePreviews.length > 0 && (
@@ -635,7 +752,6 @@ export const SubmitBlogPage = () => {
                                 ref={fileInputRef}
                                 type="file"
                                 accept=".jpg,.jpeg,.png"
-                                multiple
                                 onChange={handleImageUpload}
                                 className="hidden"
                             />
@@ -684,13 +800,22 @@ export const SubmitBlogPage = () => {
                     <CheckCircle className="w-12 h-12 mx-auto text-emerald-500 mb-3" />
                     <h2 className="text-xl font-bold text-text-primary mb-1">Ready to Submit!</h2>
                     <p className="text-text-secondary mb-2 text-sm">
-                        {imagePreviews.length > 0
-                            ? `${imagePreviews.length} image(s) attached.`
-                            : 'No images attached.'}
+                        {imagePreviews.some(i => i.uploading)
+                            ? 'Uploading image...'
+                            : imagePreviews.length > 0
+                                ? 'Featured image attached.'
+                                : 'No image — a default image will be used.'}
                     </p>
                     <p className="text-text-secondary mb-6 text-sm">Click below to submit for admin review</p>
-                    <Button onClick={handleFinalSubmit} disabled={loading}>
-                        {loading ? 'Submitting...' : 'Finalize Submission'}
+                    <Button
+                        onClick={handleFinalSubmit}
+                        disabled={loading || imagePreviews.some(i => i.uploading)}
+                    >
+                        {loading
+                            ? 'Submitting...'
+                            : imagePreviews.some(i => i.uploading)
+                                ? 'Uploading...'
+                                : 'Finalize Submission'}
                     </Button>
                     <button type="button" onClick={() => setStep(3)} className="w-full pt-3 text-sm text-text-tertiary hover:text-text-primary font-medium flex items-center justify-center gap-1 transition-colors">
                         <ArrowLeft className="w-4 h-4" /> Back to Images

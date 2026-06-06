@@ -183,8 +183,6 @@ export default function TutorManagement() {
             photoUrl: formData.photoUrl
         };
 
-        console.log('Sending payload to backend:', payload);
-
         try {
             if (editingId) {
                 const response = await updateTeacherAdmin(editingId, payload);

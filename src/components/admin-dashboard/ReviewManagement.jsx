@@ -288,7 +288,7 @@ export default function ReviewManagement() {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl md:text-2xl font-black tracking-tight">{viewModal.studentName}</h3>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs md:text-sm text-blue-200 font-medium">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs md:text-sm text-white/80 font-medium">
                     <span className="flex items-center gap-1.5"><User size={14} /> Parent: {viewModal.parentName || 'N/A'}</span>
                     <span className="flex items-center gap-1.5"><BookOpen size={14} /> Grade: {viewModal.gradeOrClass}</span>
                     <span className="flex items-center gap-1.5"><Mail size={14} /> {viewModal.email || 'N/A'}</span>

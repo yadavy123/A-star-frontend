@@ -47,8 +47,6 @@ api.interceptors.request.use(
 // Response interceptor for handling errors
 api.interceptors.response.use(
     (response) => {
-        console.log('API Response Success:', response.status, response.config.url);
-        console.log('Response data:', response.data);
         return response;
     },
     (error) => {

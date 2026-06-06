@@ -1,4 +1,4 @@
-import { makeApiCall, type QueryRecord } from './runtimeApiBase.ts';
+import { makeApiCall, ApiError, type QueryRecord } from './runtimeApiBase.ts';
 
 const FORCE_LOCAL_ASK_API = String(import.meta.env.VITE_USE_LOCAL_ASK_API || '').toLowerCase() === 'true';
 const USE_LOCAL_MODE = FORCE_LOCAL_ASK_API;
@@ -87,23 +87,16 @@ export const askApi = {
             return { data: next };
         }
 
-        const endpoints = [
-            '/api/questions/public',
-            '/api/questions',
-            '/api/admin/questions',
-        ];
-        for (const ep of endpoints) {
-            try {
-                const data = await makeApiCall<AskQuestion>('POST', ep, payload);
-                return { data };
-            } catch (err: any) {
-                if (ep === endpoints[endpoints.length - 1]) {
-                    throw err;
-                }
-                console.warn(`POST ${ep} failed, trying next:`, err?.status || err?.message);
+        try {
+            const data = await makeApiCall<AskQuestion>('POST', '/api/admin/questions', payload);
+            return { data };
+        } catch (err: unknown) {
+            const apiErr = err as { status?: number; message?: string };
+            if (apiErr.status === 401 || apiErr.status === 403) {
+                throw new ApiError('Please log in to submit a question', apiErr.status || 401, null);
             }
+            throw err;
         }
-        throw new Error('All question creation endpoints failed');
     },
 
     async update(id: string, payload: { title: string; descriptionHtml: string; categoryId: string }) {
@@ -137,5 +130,84 @@ export const askApi = {
             console.error('Failed to delete question:', error);
             throw error;
         }
-    }
+    },
+
+    // ----- Answers -----
+    async getAnswers(questionId: string) {
+        const data = await makeApiCall<any[]>('GET', `/api/answers/question/${questionId}`);
+        return { data };
+    },
+
+    async submitAnswer(payload: { questionId: string; contentHtml: string }) {
+        try {
+            const data = await makeApiCall<any>('POST', '/api/answers', payload);
+            return { data };
+        } catch (err: unknown) {
+            const apiErr = err as { status?: number; message?: string; response?: { data?: { message?: string } } };
+            const msg = apiErr?.response?.data?.message || apiErr?.message || '';
+            if (apiErr.status === 401 || apiErr.status === 403 || msg.includes('User not found')) {
+                throw new ApiError('Please log in to submit an answer', apiErr.status || 401, null);
+            }
+            throw err;
+        }
+    },
+
+    // ----- Categories (Public) -----
+    async getCategories() {
+        const data = await makeApiCall<any[]>('GET', '/api/categories');
+        return { data };
+    },
+
+    async getCategoryById(id: string) {
+        const data = await makeApiCall<any>('GET', `/api/categories/${id}`);
+        return { data };
+    },
+
+    async getCategoryBySlug(slug: string) {
+        const data = await makeApiCall<any>('GET', `/api/categories/slug/${slug}`);
+        return { data };
+    },
+
+    // ----- Admin Answers -----
+    async adminGetAnswers(params?: QueryRecord) {
+        const data = await makeApiCall<any>('GET', '/api/admin/answers', undefined, params);
+        return { data };
+    },
+
+    async approveAnswer(id: string) {
+        const data = await makeApiCall<any>('PATCH', `/api/admin/answers/${id}/approve`);
+        return { data };
+    },
+
+    async rejectAnswer(id: string, reason?: string) {
+        const params = reason ? { reason } as QueryRecord : undefined;
+        const data = await makeApiCall<any>('PATCH', `/api/admin/answers/${id}/reject`, undefined, params);
+        return { data };
+    },
+
+    async deleteAnswer(id: string) {
+        await makeApiCall('DELETE', `/api/admin/answers/${id}`);
+        return { success: true };
+    },
+
+    // ----- Admin Categories -----
+    async adminGetCategories() {
+        const data = await makeApiCall<any[]>('GET', '/api/admin/categories');
+        return { data };
+    },
+
+    async createCategory(name: string) {
+        const data = await makeApiCall<any>('POST', '/api/admin/categories', { name });
+        return { data };
+    },
+
+    async updateCategory(id: string, name: string) {
+        const data = await makeApiCall<any>('PUT', `/api/admin/categories/${id}`, { name });
+        return { data };
+    },
+
+    async deleteCategory(id: string) {
+        await makeApiCall('DELETE', `/api/admin/categories/${id}`);
+        return { success: true };
+    },
 };

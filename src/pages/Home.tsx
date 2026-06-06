@@ -12,6 +12,7 @@ import { getPublicTeachers } from '../api/api/teacherApi.js';
 
 const Home = () => {
   const [tutors, setTutors] = useState<any[]>([]);
+  const [showDemoModal, setShowDemoModal] = useState(false);
 
   // Determine the best image URL to show for tutors
   const getTutorImageUrl = (tutor: any) => {
@@ -123,14 +124,12 @@ const Home = () => {
                 Live, interactive classes by expert faculty. Personalized doubt-clearing, proven exam strategies, and comprehensive past-paper practice to ensure your academic success.
               </p>
               <div className="flex flex-col sm:flex-row gap-2 mb-4">
-                <a
-                  href="https://wa.me/918073982848"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => setShowDemoModal(true)}
                   className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 text-center"
                 >
                   Book a Free Demo Class
-                </a>
+                </button>
                 <button
                   onClick={() => window.open('https://wa.me/918073982848', '_blank')}
                   className="border border-white hover:bg-white hover:text-black px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 text-center"
@@ -391,15 +390,13 @@ const Home = () => {
           </div>
 
           <div className="flex justify-center">
-            <a 
-              href="https://wa.me/918073982848" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => setShowDemoModal(true)}
               className="inline-flex items-center px-10 py-4 bg-green-600 text-white rounded-2xl font-bold text-lg hover:bg-green-700 transition-all shadow-xl shadow-green-600/20 active:scale-95 gap-3"
             >
               <MessageSquare className="h-6 w-6" />
-              Book a Free Demo Class (WhatsApp)
-            </a>
+              Book a Free Demo Class
+            </button>
           </div>
 
           <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
@@ -429,6 +426,23 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Demo Form Modal */}
+      {showDemoModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#1e3a8a]/40 backdrop-blur-md" onClick={() => setShowDemoModal(false)}>
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setShowDemoModal(false)}
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-all"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <DemoForm onSuccess={() => setShowDemoModal(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

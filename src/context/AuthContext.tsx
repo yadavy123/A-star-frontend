@@ -97,8 +97,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     return { success: true, isAdmin: true };
                 }
             } catch {
-                // If admin login fails, try user login
-                console.log('Admin login failed, trying user login...');
                 const result = await apiUserLogin(email, password);
                 if (result.token) {
                     const studentUser: User = {

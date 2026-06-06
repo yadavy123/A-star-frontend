@@ -50,7 +50,6 @@ export default function TestimonialManagement() {
     setLoading(true);
     try {
       const data = await getAllTestimonials();
-      console.log('Testimonials from backend:', data);
       const testimonialList = data?.content || (Array.isArray(data) ? data : []);
       setTestimonials(testimonialList);
     } catch (error) {
@@ -143,7 +142,6 @@ export default function TestimonialManagement() {
   const handleApprove = async (id) => {
     setActionLoading(id);
     try {
-      console.log('Approving testimonial:', id);
       await approveTestimonial(id);
       // Re-fetch to get the actual updated data from backend
       await fetchTestimonials();
@@ -159,7 +157,6 @@ export default function TestimonialManagement() {
   const handleReject = async (id) => {
     setActionLoading(id);
     try {
-      console.log('Rejecting testimonial:', id);
       await rejectTestimonial(id);
       // Re-fetch to get the actual updated data from backend
       await fetchTestimonials();
@@ -193,7 +190,6 @@ export default function TestimonialManagement() {
     setActionLoading(id);
     try {
       if (wasPrimary) {
-        console.log('Unsetting primary testimonial:', id);
         await updateTestimonial(id, {
           text: testimonial.text || testimonial.message || testimonial.quote || testimonial.content || '',
           mediaUrl: testimonial.mediaUrl || testimonial.videoUrl || testimonial.image || '',
@@ -201,7 +197,6 @@ export default function TestimonialManagement() {
         });
         toast.success('Primary unset');
       } else {
-        console.log('Setting primary testimonial:', id);
         await setPrimaryTestimonial(id);
         toast.success('Testimonial set as primary');
       }
@@ -269,11 +264,6 @@ export default function TestimonialManagement() {
     }
   };
 
-  const stats = [
-    { label: 'Total', count: testimonials.length, color: 'bg-blue-900 text-white' },
-    { label: 'Approved', count: testimonials.length, color: 'bg-green-100 text-green-800' },
-  ];
-
   return (
     <div className="w-full">
       <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -281,19 +271,19 @@ export default function TestimonialManagement() {
           <h1 className="text-2xl font-bold text-blue-900">Testimonial Management</h1>
           <p className="text-gray-500 text-sm mt-1">Review, approve, and manage student testimonials</p>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-3">
+        <div className="flex items-center justify-end gap-3 max-sm:w-full max-sm:gap-1.5">
           <button 
             onClick={handleExport}
-            className="inline-flex h-11 items-center gap-2 px-4 rounded-xl border-2 border-blue-900 bg-white text-blue-900 font-bold hover:bg-blue-50 transition-all shadow-sm"
+            className="max-sm:flex-1 sm:flex-none h-11 inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-5 rounded-xl border-2 border-blue-900 bg-white text-blue-900 font-bold hover:bg-blue-50 transition-all shadow-sm text-[11px] sm:text-sm"
           >
-            <Upload size={20} className="rotate-180" /> Export CSV
+            <Upload size={16} className="rotate-180 shrink-0" /> <span className="whitespace-nowrap">Export CSV</span>
           </button>
           {!isAdding && (
             <button 
               onClick={() => { setEditingId(null); resetForm(); setIsAdding(true); }}
-              className="inline-flex h-11 items-center gap-2 px-6 rounded-xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/20"
+              className="max-sm:flex-1 sm:flex-none h-11 inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-5 rounded-xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/20 text-[11px] sm:text-sm"
             >
-              <Plus size={20} /> Add Testimonial
+              <Plus size={16} className="shrink-0" /> <span className="whitespace-nowrap">Add Testimonial</span>
             </button>
           )}
         </div>
@@ -400,15 +390,6 @@ export default function TestimonialManagement() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {stats.map((s) => (
-          <div key={s.label} className={`rounded-xl p-4 text-center font-semibold ${s.color}`}>
-            <div className="text-2xl font-bold">{s.count}</div>
-            <div className="text-xs mt-1">{s.label}</div>
-          </div>
-        ))}
-      </div>
-
       {loading ? (
         <div className="text-center py-12">
           <p className="text-gray-600">Loading testimonials...</p>
@@ -427,7 +408,6 @@ export default function TestimonialManagement() {
               <tr className="bg-blue-900 text-white text-left">
                 <th className="px-4 py-3 font-semibold">#</th>
                 <th className="px-4 py-3 font-semibold">Content Preview</th>
-                <th className="px-4 py-3 font-semibold">Media</th>
                 <th className="px-4 py-3 font-semibold">Status</th>
                 <th className="px-4 py-3 font-semibold text-center">Actions</th>
               </tr>
@@ -435,8 +415,6 @@ export default function TestimonialManagement() {
             <tbody>
               {filteredTestimonials.map((t, idx) => {
                 const id = t.id || t._id;
-                const mediaUrl = t.mediaUrl || t.content || t.videoUrl || t.image;
-                const isMedia = !!mediaUrl && mediaUrl.startsWith('http');
                 
                 return (
                   <tr key={id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
@@ -445,18 +423,7 @@ export default function TestimonialManagement() {
                       <span className="line-clamp-2">{t.text || t.message || t.quote || t.content}</span>
                     </td>
                     <td className="px-4 py-3">
-                      {isMedia ? (
-                        <div className="flex items-center gap-2 text-blue-600 bg-blue-50 px-2 py-1 rounded-lg w-fit">
-                          <ImageIcon size={14} />
-                          <span className="text-[10px] font-bold uppercase">Linked Media</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 text-xs italic">Text Only</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
                       <div className="flex flex-col gap-1">
-                        {statusBadge(t.status)}
                         {t.primary && (
                           <span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter w-fit">
                             Primary

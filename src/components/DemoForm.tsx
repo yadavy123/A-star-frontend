@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Calendar, Clock, Edit3, Check } from 'lucide-react';
+import { Send, Edit3, Check } from 'lucide-react';
 import { demoApi } from '../api/demoApi';
 import toast from 'react-hot-toast';
 
@@ -53,15 +53,23 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
   const [loadingBoards, setLoadingBoards] = useState(true);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
 
-  // Auto-close success modal after 3 seconds
-  useEffect(() => {
-    if (isSubmitted) {
-      const timer = setTimeout(() => {
-        setIsSubmitted(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isSubmitted]);
+  // Reset form to initial empty state
+  const resetForm = () => {
+    setFormData({
+      studentName: '',
+      parentName: '',
+      grade: '',
+      board: '',
+      email: '',
+      mobileNumber: '',
+      preferredDate: '',
+      preferredTime: ''
+    });
+    setOtpStep(false);
+    setOtp('');
+    setIsOtpVerified(false);
+    setIsSubmitted(false);
+  };
 
   // Load grades and boards on component mount
   useEffect(() => {
@@ -160,8 +168,6 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
     setLoading(true);
     try {
       const response = await demoApi.sendDemoOtp(formData.email);
-      console.log('OTP Response:', response);
-
       // Request succeeded, show OTP field
       setOtpStep(true);
       setIsOtpVerified(false);
@@ -227,15 +233,12 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
         scheduledAt: `${formData.preferredDate}T${formData.preferredTime}:00`
       };
 
-      console.log('Submitting Demo Schedule (includes OTP verification):', demoRequest);
-
       await demoApi.scheduleDemo(demoRequest);
 
-      setIsSubmitted(true);
       setOtpStep(false);
       setOtp('');
       toast.success('✅ Demo scheduled successfully!');
-      setTimeout(() => onSuccess?.(), 3000);
+      setIsSubmitted(true);
     } catch (error: any) {
       console.error('Demo scheduling error:', error);
       const errorMsg = error.message || 'Failed to schedule demo. Please check your OTP and try again.';
@@ -250,12 +253,18 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
   return (
     <div className="demo-form max-w-md mt-10 mx-auto bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 relative">
         {isSubmitted && (
-          <div className="absolute inset-0 bg-white rounded-2xl flex flex-col items-center justify-center p-8 text-center z-10 animate-in fade-in duration-300">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-              <Check className="w-10 h-10 text-green-600" strokeWidth={3} />
+          <div className="absolute inset-0 bg-white rounded-2xl flex items-center justify-center z-10 animate-in fade-in duration-200">
+            <div className="text-center bg-white rounded-xl shadow-lg border border-gray-100 px-6 py-6 max-w-[220px] w-full">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Check className="w-5 h-5 text-green-600" strokeWidth={3} />
+              </div>
+              <h3 className="text-base font-bold text-gray-900 mb-0.5">Thank You!</h3>
+              <p className="text-xs text-gray-500 mb-3 leading-relaxed">Your demo has been scheduled. Our team will contact you shortly.</p>
+              <button type="button" onClick={() => { resetForm(); onSuccess?.(); }}
+                className="px-5 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg hover:bg-gray-800 transition-all active:scale-95">
+                OK
+              </button>
             </div>
-            <h3 className="text-2xl font-black text-gray-900 mb-2">Thank You!</h3>
-            <p className="text-gray-600 font-medium leading-relaxed">Your demo has been scheduled successfully. Our team will contact you shortly.</p>
           </div>
         )}
         <div className="text-center mb-6">
@@ -343,41 +352,35 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="relative">
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Preferred Date *
               </label>
-              <div className="relative">
-                <input
-                  type="date"
-                  name="preferredDate"
-                  value={formData.preferredDate}
-                  onChange={handleInputChange}
-                  required
-                  disabled={otpStep || isOtpVerified}
-                  min={new Date().toISOString().split('T')[0]}
-                  className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors appearance-none ${(otpStep || isOtpVerified) ? 'bg-gray-100' : ''}`}
-                />
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
+              <input
+                type="date"
+                name="preferredDate"
+                value={formData.preferredDate}
+                onChange={handleInputChange}
+                required
+                disabled={otpStep || isOtpVerified}
+                min={new Date().toISOString().split('T')[0]}
+                className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${(otpStep || isOtpVerified) ? 'bg-gray-100' : ''}`}
+              />
             </div>
 
-            <div className="relative">
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Preferred Time *
               </label>
-              <div className="relative">
-                <input
-                  type="time"
-                  name="preferredTime"
-                  value={formData.preferredTime}
-                  onChange={handleInputChange}
-                  required
-                  disabled={otpStep || isOtpVerified}
-                  className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors appearance-none ${(otpStep || isOtpVerified) ? 'bg-gray-100' : ''}`}
-                />
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
+              <input
+                type="time"
+                name="preferredTime"
+                value={formData.preferredTime}
+                onChange={handleInputChange}
+                required
+                disabled={otpStep || isOtpVerified}
+                className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${(otpStep || isOtpVerified) ? 'bg-gray-100' : ''}`}
+              />
             </div>
           </div>
 

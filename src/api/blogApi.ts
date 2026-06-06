@@ -300,8 +300,6 @@ async function request<T>(path: string, options?: RequestInit): Promise<ApiEnvel
     const candidatePaths = path.startsWith('/api/') ? [path] : [path, `/api${path}`];
     let lastError: ApiError | null = null;
 
-    console.log(`[BlogAPI] Requesting ${path}...`);
-
     for (const baseUrl of getApiBaseCandidates()) {
         for (const candidatePath of candidatePaths) {
             const fullUrl = `${baseUrl}${candidatePath}`;
@@ -319,7 +317,6 @@ async function request<T>(path: string, options?: RequestInit): Promise<ApiEnvel
                 });
             } catch (error) {
                 const message = error instanceof Error ? error.message : 'Network error';
-                console.warn(`[BlogAPI] Network error for ${fullUrl}:`, message);
                 lastError = new ApiError(message, 0, { baseUrl, candidatePath });
                 continue;
             }
@@ -330,11 +327,9 @@ async function request<T>(path: string, options?: RequestInit): Promise<ApiEnvel
 
             if (response.ok) {
                 if (!hasJson) {
-                    console.warn(`[BlogAPI] Non-JSON response for ${fullUrl}, treating as failure`);
                     lastError = new ApiError('Non-JSON response', response.status, { baseUrl, candidatePath });
                     continue;
                 }
-                console.log(`[BlogAPI] Success: ${fullUrl}`);
                 setActiveApiBaseUrl(baseUrl);
                 return { data: (payload ?? ({} as T)) as T };
             }

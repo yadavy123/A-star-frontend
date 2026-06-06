@@ -169,7 +169,7 @@ export default function StudentManagement() {
                         <td className="py-3 sm:py-4 px-3 sm:px-6 font-mono text-xs sm:text-sm">{student.id}</td>
                         <td className="py-3 sm:py-4 px-3 sm:px-6 font-semibold text-xs sm:text-sm">{student.name}</td>
                         <td className="py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm">{student.email}</td>
-                        <td className="py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm">{student.phone}</td>
+                        <td className="py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm whitespace-nowrap">{student.phone}</td>
                         <td className="py-3 sm:py-4 px-3 sm:px-6">
                           <select
                             value={student.status || 'active'}

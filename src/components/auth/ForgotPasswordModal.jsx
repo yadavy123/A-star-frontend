@@ -35,7 +35,6 @@ export default function ForgotPasswordModal({ isOpen, onClose, onOpenLogin }) {
     
     // Simulate sending OTP
     setTimeout(() => {
-      console.log('OTP sent to:', email)
       alert(`OTP has been sent to: ${email}`)
       setIsLoading(false)
       setStep(2)
@@ -49,7 +48,6 @@ export default function ForgotPasswordModal({ isOpen, onClose, onOpenLogin }) {
     
     // Simulate OTP verification
     setTimeout(() => {
-      console.log('OTP verified:', otp)
       // In real app, verify OTP with backend
       if (otp.length === 6) {
         alert('OTP verified successfully!')
@@ -79,7 +77,6 @@ export default function ForgotPasswordModal({ isOpen, onClose, onOpenLogin }) {
     
     // Simulate password reset
     setTimeout(() => {
-      console.log('Password reset for:', email)
       alert('Password reset successful! Please login with your new password.')
       handleClose()
       setIsLoading(false)
