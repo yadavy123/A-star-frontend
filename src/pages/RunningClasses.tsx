@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Clock, Users, Video, BookOpen, GraduationCap, CheckCircle2, MessageSquare, PlayCircle, ClipboardList, BarChart3, X } from 'lucide-react';
 import * as classesApi from '../api/api/runningClassesApi';
 import LoginModal from '../components/LoginModal';
 import DemoForm from '../components/DemoForm';
 import { useAuth } from '../context/AuthContext.tsx';
 
-const DemoFormModal = ({ isOpen, onClose }) => {
+const DemoFormModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   if (!isOpen) return null;
 
   return (
@@ -24,8 +24,9 @@ const DemoFormModal = ({ isOpen, onClose }) => {
 };
 
 const RunningClasses = () => {
-  const [classes, setClasses] = useState<{ id: string; title: string; description: string; subject: string; level: string; price?: number; startDate?: string; schedule?: string; image?: string; syllabus?: string[] }[]>([]);
+  const [classes, setClasses] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
+  const CATEGORY_LABELS: Record<string, string> = { UNDERGRADUATE: 'IGCSE', POST_GRADUATE: 'AS Level', PROFESSIONAL: 'A Level', Undergraduate: 'IGCSE', 'Post-Graduate': 'AS Level', Professional: 'A Level' };
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const { isAuthenticated } = useAuth();
@@ -38,25 +39,10 @@ const RunningClasses = () => {
     setLoading(true);
     try {
       const data = await classesApi.getActiveClasses({ page: 0, size: 50 });
-      // Add dummy data for demo if API returns empty
-      const fetchedClasses = data.content || [];
-      if (fetchedClasses.length === 0) {
-        setClasses([
-          { id: 'd1', title: 'UG Mathematics', subject: 'UG Mathematics', category: 'Undergraduate', instructor: 'Ms. Neha Aggarwal', schedule: 'Mon, Wed, Fri - 6:00 PM IST', description: 'Comprehensive mathematics coverage for B.Sc and B.Tech students with focus on Calculus and Linear Algebra.' },
-          { id: 'd2', title: 'UG Physics', subject: 'UG Physics', category: 'Undergraduate', instructor: 'Mr. Arvind', schedule: 'Tue, Thu - 5:30 PM IST', description: 'Advanced physics concepts with real-world applications and experimental analysis.' },
-          { id: 'd3', title: 'UG Chemistry', subject: 'UG Chemistry', category: 'Undergraduate', instructor: 'B. Aishwarya', schedule: 'Mon, Wed, Fri - 4:30 PM IST', description: 'Organic, Inorganic, and Physical Chemistry fundamentals for university level students.' },
-          { id: 'd4', title: 'Computer Science', subject: 'Computer Science Fundamentals', category: 'Undergraduate', instructor: 'Mr. Ashwin Jain', schedule: 'Tue, Thu, Sat - 7:00 PM IST', description: 'Programming, algorithms, and software design principles with practical coding sessions.' }
-        ]);
-      } else {
-        setClasses(fetchedClasses);
-      }
+      setClasses(((data as unknown as Record<string, unknown>).content as Record<string, unknown>[]) || []);
     } catch (error) {
       console.error('Error fetching running classes:', error);
-      // Fallback to dummy data on error
-      setClasses([
-        { id: 'd1', title: 'UG Mathematics', subject: 'UG Mathematics', category: 'Undergraduate', instructor: 'Ms. Neha Aggarwal', schedule: 'Mon, Wed, Fri - 6:00 PM IST', description: 'Comprehensive mathematics coverage for B.Sc and B.Tech students.' },
-        { id: 'd2', title: 'UG Physics', subject: 'UG Physics', category: 'Undergraduate', instructor: 'Mr. Arvind', schedule: 'Tue, Thu - 5:30 PM IST', description: 'Advanced physics concepts with real-world applications.' }
-      ]);
+      setClasses([]);
     } finally {
       setLoading(false);
     }
@@ -247,28 +233,28 @@ const RunningClasses = () => {
               <div key={index} className="group bg-white rounded-2xl border-l-4 border-blue-600 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full p-6">
                 <div className="flex-1">
                   <h3 className="text-xl font-black text-gray-900 mb-3">
-                    {cls.subject || cls.title}
+                    {String(cls.subject ?? cls.title ?? '')}
                   </h3>
                   <div className="mb-4">
                     <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
-                      {cls.category?.toLowerCase().replace('_', ' ') || cls.level || 'Undergraduate'}
+                      {CATEGORY_LABELS[String(cls.category)] || String(cls.category ?? '').toLowerCase().replace('_', ' ') || String(cls.level ?? '') || 'IGCSE'}
                     </span>
                   </div>
                   <p className="text-gray-500 text-sm mb-6 line-clamp-2 leading-relaxed">
-                    {cls.description}
+                    {String(cls.description ?? '')}
                   </p>
                   <div className="space-y-3 mb-8">
                     <div className="flex flex-col gap-1">
-                      <span className="text-sm font-black text-gray-900">Instructor: {cls.instructorName || cls.instructor || 'TBA'}</span>
+                      <span className="text-sm font-black text-gray-900">Instructor: {String(cls.instructorName ?? cls.instructor ?? 'TBA')}</span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-sm font-black text-gray-900">Schedule: {cls.schedule || 'TBA'}</span>
+                      <span className="text-sm font-black text-gray-900">Schedule: {String(cls.schedule ?? 'TBA')}</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-auto gap-3">
                   <span className="inline-flex h-11 min-w-[90px] items-center justify-center bg-[#00875A]/10 text-[#00875A] text-[12px] font-bold rounded-xl uppercase tracking-wider border border-[#00875A]/20">
-                    {cls.status || 'Active'}
+                    {String(cls.status ?? 'Active')}
                   </span>
                   <button
                     onClick={handleDemoClick}

@@ -47,7 +47,7 @@ const studentTestimonials = [
     id: 5,
     name: 'Aditya Singh',
     role: 'GMAT Student',
-    quote: 'Achieved 49 in GMAT Quant on my first attempt. The structured curriculum and expert guidance from iThinkLearn were invaluable throughout my preparation.',
+    quote: 'Achieved 49 in GMAT Quant on my first attempt. The structured curriculum and expert guidance from A-star class were invaluable throughout my preparation.',
     avatar: 'AS',
     color: 'from-cyan-500 to-blue-600',
     rating: 5,
@@ -67,7 +67,7 @@ const studentTestimonials = [
     id: 7,
     name: 'Karan Malhotra',
     role: 'TMUA Candidate',
-    quote: 'Secured top 10 percentile in TMUA! iThinkLearn\'s unique reasoning-focused approach prepared me for the most challenging questions in the test.',
+    quote: 'Secured top 10 percentile in TMUA! A-star class\'s unique reasoning-focused approach prepared me for the most challenging questions in the test.',
     avatar: 'KM',
     color: 'from-violet-500 to-purple-600',
     rating: 5,
@@ -89,7 +89,7 @@ const parentTestimonials = [
     id: 2,
     name: 'Mr. Ramesh Patel',
     role: 'Parent of SAT Student',
-    quote: 'Excellent teaching methodology. My daughter achieved her target SAT score and got into her dream university. Forever grateful to iThinkLearn.',
+    quote: 'Excellent teaching methodology. My daughter achieved her target SAT score and got into her dream university. Forever grateful to A-star class.',
     avatar: '👨',
     color: 'from-green-600 to-teal-700',
     rating: 5,
@@ -107,7 +107,7 @@ const parentTestimonials = [
     id: 4,
     name: 'Mr. Vijay Kumar',
     role: 'Parent of GRE Student',
-    quote: 'iThinkLearn provided the perfect environment for my daughter to prepare for GRE. The mock tests and feedback sessions were incredibly valuable.',
+    quote: 'A-star class provided the perfect environment for my daughter to prepare for GRE. The mock tests and feedback sessions were incredibly valuable.',
     avatar: '👨',
     color: 'from-orange-600 to-red-700',
     rating: 5,
@@ -141,9 +141,9 @@ export default function Testimonials() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       {/* Page Header */}
-      <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6">
-        <h2 className="text-2xl font-bold text-blue-900">Testimonials & Success Stories</h2>
-        <p className="text-gray-500 text-sm mt-1">What our students and parents say about iThinkLearn</p>
+      <div>
+        <h2 className="text-2xl font-normal text-[#0a0b0d]" style={{ lineHeight: 1.15, letterSpacing: '-0.5px' }}>Testimonials & Success Stories</h2>
+        <p className="text-[#7c828a] text-sm mt-1">What our students and parents say about A-star class</p>
       </div>
 
       {/* Stats Row */}
@@ -154,9 +154,9 @@ export default function Testimonials() {
           { label: 'Student Reviews', value: studentTestimonials.length },
           { label: 'Parent Reviews', value: parentTestimonials.length },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-            <div className="text-2xl font-bold text-blue-900">{stat.value}</div>
-            <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
+          <div key={stat.label} className="bg-white rounded-[24px] border border-[#dee1e6] p-4 text-center">
+            <div className="text-2xl font-bold text-[#0a0b0d]">{stat.value}</div>
+            <div className="text-xs text-[#7c828a] mt-1">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -167,10 +167,10 @@ export default function Testimonials() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-5 py-2 rounded-lg font-semibold text-sm transition-colors ${
+            className={`px-5 py-2 rounded-[12px] font-semibold text-sm transition-colors ${
               activeTab === tab.id
-                ? 'bg-blue-900 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-[#0052ff] text-white'
+                : 'bg-[#f7f7f7] text-[#5b616e] hover:bg-[#dee1e6]'
             }`}
           >
             {tab.label}
@@ -183,7 +183,7 @@ export default function Testimonials() {
         {paginatedTestimonials.map((testimonial) => (
           <div
             key={testimonial.id}
-            className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-blue-200 relative overflow-hidden"
+            className="group bg-white rounded-[24px] p-6 transition-all duration-300 border border-[#dee1e6] hover:border-[#0052ff] relative overflow-hidden"
           >
             {/* Background Decoration */}
             <div
@@ -196,14 +196,14 @@ export default function Testimonials() {
             {/* Exam Badge (students only) */}
             {testimonial.exam && (
               <div
-                className={`inline-flex items-center gap-1 bg-gradient-to-r ${testimonial.color} text-white text-xs font-bold px-3 py-1 rounded-full mb-4`}
+                className={`inline-flex items-center gap-1 bg-gradient-to-r ${testimonial.color} text-white text-xs font-semibold px-3 py-1 rounded-[100px] mb-4`}
               >
                 {testimonial.exam}
               </div>
             )}
 
             {/* Quote */}
-            <p className="text-gray-700 leading-relaxed mb-5 relative z-10 italic text-sm">
+            <p className="text-[#5b616e] leading-relaxed mb-5 relative z-10 italic text-sm">
               "{testimonial.quote}"
             </p>
 
@@ -211,15 +211,15 @@ export default function Testimonials() {
             <div className="flex gap-0.5 mb-4">{renderStars(testimonial.rating)}</div>
 
             {/* Author */}
-            <div className="border-t border-gray-100 pt-4 flex items-center gap-3">
+            <div className="border-t border-[#dee1e6] pt-4 flex items-center gap-3">
               <div
-                className={`w-10 h-10 rounded-full bg-gradient-to-br ${testimonial.color} flex items-center justify-center text-white font-bold text-sm shrink-0`}
+                className={`w-10 h-10 rounded-[100px] bg-gradient-to-br ${testimonial.color} flex items-center justify-center text-white font-semibold text-sm shrink-0`}
               >
                 {testimonial.avatar}
               </div>
               <div>
-                <div className="font-bold text-gray-900 text-sm">{testimonial.name}</div>
-                <div className="text-xs text-gray-500">{testimonial.role}</div>
+                <div className="font-semibold text-[#0a0b0d] text-sm">{testimonial.name}</div>
+                <div className="text-xs text-[#7c828a]">{testimonial.role}</div>
               </div>
             </div>
           </div>

@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext'
 import AdminSidebar from './AdminSidebar'
 import AdminHome from './AdminHome'
 import StudentManagement from './StudentManagement'
-import QuestionManagement from './QuestionManagement'
 import DemoClassRequests from './DemoClassRequests'
 import DemoSettings from './DemoSettings'
 import CourseManagement from './CourseManagement'
@@ -25,6 +24,7 @@ import AdminProfile from './AdminProfile'
 import AdminNotifications from './AdminNotifications'
 import ContactRequests from './ContactRequests'
 import CategoryManagement from './CategoryManagement'
+import QAManagement from './QAManagement'
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, isLoading, isAdmin } = useAuth()
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
       case 'courses':
         return <CourseManagement />
       case 'questions':
-        return <QuestionManagement />
+        return <QAManagement />
       case 'demo-requests':
         return <DemoClassRequests />
       case 'contact-requests':
@@ -110,33 +110,33 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 shadow-xl sticky top-0 z-40">
-        <div className="px-4 py-4 flex items-center justify-between">
+      <header className="bg-white border-b border-[#dee1e6] sticky top-0 z-40" style={{ height: 64 }}>
+        <div className="px-4 h-full flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-white p-2 rounded-lg hover:bg-white/10 transition"
+              className="text-[#0a0b0d] p-2 rounded-[12px] hover:bg-[#f7f7f7] transition"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <div>
-              <h1 className="text-xl font-bold text-white">A Star Classes</h1>
-              <p className="text-xs text-blue-300">Admin Portal</p>
+              <h1 className="text-lg font-semibold text-[#0a0b0d]" style={{ lineHeight: 1.25 }}>A Star Classes</h1>
+              <p className="text-xs text-[#5b616e]" style={{ lineHeight: 1.5 }}>Admin Portal</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setCurrentView('profile')}
-              className="flex items-center gap-3 hover:bg-white/10 rounded-lg px-3 py-2 transition cursor-pointer"
+              className="flex items-center gap-3 hover:bg-[#f7f7f7] rounded-[12px] px-3 py-2 transition cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg bg-yellow-500 shadow-md">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-lg bg-[#0052ff]">
                 {user?.fullName?.charAt(0) || 'A'}
               </div>
-              <div className="hidden md:block text-white">
-                <p className="font-semibold text-sm">{user?.fullName || 'Admin'}</p>
-                <p className="text-xs text-blue-300">Administrator</p>
+              <div className="hidden md:block">
+                <p className="font-semibold text-sm text-[#0a0b0d]">{user?.fullName || 'Admin'}</p>
+                <p className="text-xs text-[#5b616e]">Administrator</p>
               </div>
             </button>
           </div>
@@ -150,7 +150,7 @@ export default function AdminDashboard() {
       />
       <div className="flex w-full justify-center">
         <main className={`flex-1 min-w-0 transition-all duration-300 ${sidebarOpen ? 'lg:pl-64' : ''}`}>
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+          <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
             {renderView()}
           </div>
         </main>

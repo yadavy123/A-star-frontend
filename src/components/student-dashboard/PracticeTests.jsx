@@ -92,38 +92,38 @@ export default function PracticeTests() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-3xl font-bold" style={{ color: '#1e3a8a' }}>Practice Tests</h2>
-        <p className="text-gray-600 mt-2">Improve your skills with practice tests</p>
+        <h2 className="text-2xl font-normal text-[#0a0b0d]" style={{ lineHeight: 1.15, letterSpacing: '-0.5px' }}>Practice Tests</h2>
+        <p className="text-[#5b616e] mt-2">Improve your skills with practice tests</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4" style={{ borderLeftColor: '#1e3a8a' }}>
-          <h3 className="text-sm font-semibold text-gray-600 mb-2">Total Tests</h3>
+        <div className="bg-white border border-[#dee1e6] rounded-[24px] p-6 border-l-4" style={{ borderLeftColor: '#1e3a8a' }}>
+          <h3 className="text-sm font-semibold text-[#5b616e] mb-2">Total Tests</h3>
           <p className="text-4xl font-bold" style={{ color: '#1e3a8a' }}>{tests.length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4" style={{ borderLeftColor: '#28a745' }}>
-          <h3 className="text-sm font-semibold text-gray-600 mb-2">Completed</h3>
+        <div className="bg-white border border-[#dee1e6] rounded-[24px] p-6 border-l-4" style={{ borderLeftColor: '#28a745' }}>
+          <h3 className="text-sm font-semibold text-[#5b616e] mb-2">Completed</h3>
           <p className="text-4xl font-bold" style={{ color: '#28a745' }}>{completedCount}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4" style={{ borderLeftColor: '#f59e0b' }}>
-          <h3 className="text-sm font-semibold text-gray-600 mb-2">Average Score</h3>
+        <div className="bg-white border border-[#dee1e6] rounded-[24px] p-6 border-l-4" style={{ borderLeftColor: '#f59e0b' }}>
+          <h3 className="text-sm font-semibold text-[#5b616e] mb-2">Average Score</h3>
           <p className="text-4xl font-bold" style={{ color: '#f59e0b' }}>{avgScore}%</p>
         </div>
       </div>
 
       {/* Subject Filter */}
-      <div className="bg-white rounded-xl shadow-md p-4">
+      <div className="bg-white border border-[#dee1e6] rounded-[24px] p-4">
         <div className="flex flex-wrap gap-3">
           <button onClick={() => setSelectedSubject('all')}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all ${selectedSubject === 'all' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-gray-50'}`}
-            style={{ backgroundColor: selectedSubject === 'all' ? '#1e3a8a' : 'transparent' }}>
+            className={`px-4 py-2 rounded-[12px] font-semibold transition-all ${selectedSubject === 'all' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'}`}
+            style={{ backgroundColor: selectedSubject === 'all' ? '#0052ff' : 'transparent' }}>
             All Subjects
           </button>
           {subjects.map(s => (
             <button key={s} onClick={() => setSelectedSubject(s)}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all ${selectedSubject === s ? 'text-white shadow-md' : 'text-gray-700 hover:bg-gray-50'}`}
-              style={{ backgroundColor: selectedSubject === s ? '#1e3a8a' : 'transparent' }}>
+              className={`px-4 py-2 rounded-[12px] font-semibold transition-all ${selectedSubject === s ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'}`}
+              style={{ backgroundColor: selectedSubject === s ? '#0052ff' : 'transparent' }}>
               {s}
             </button>
           ))}
@@ -131,18 +131,18 @@ export default function PracticeTests() {
       </div>
 
       {/* Tests Table */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white border border-[#dee1e6] rounded-[24px] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2" style={{ borderBottomColor: '#1e3a8a' }}>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Test Name</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Subject</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Difficulty</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Questions</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Duration</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Best Score</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Action</th>
+              <tr className="border-b border-[#dee1e6]">
+                <th className="text-left px-5 py-3 font-semibold text-[#5b616e]">Test Name</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#5b616e]">Subject</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#5b616e]">Difficulty</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#5b616e]">Questions</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#5b616e]">Duration</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#5b616e]">Best Score</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#5b616e]">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -150,8 +150,8 @@ export default function PracticeTests() {
                 <tr>
                   <td colSpan={7} className="px-5 py-12 text-center">
                     <p className="text-4xl mb-3">📋</p>
-                    <p className="text-gray-600 font-medium">No practice tests available yet.</p>
-                    <p className="text-gray-400 mt-1 text-xs">Tests will appear here once the admin adds them.</p>
+                    <p className="text-[#5b616e] font-medium">No practice tests available yet.</p>
+                    <p className="text-[#a8acb3] mt-1 text-xs">Tests will appear here once the admin adds them.</p>
                   </td>
                 </tr>
               ) : paged.map((test) => {
@@ -159,40 +159,42 @@ export default function PracticeTests() {
                 const hasQs  = getQs(test.id).length > 0
                 const dColor = diffColor[test.difficulty] || '#196d83'
                 return (
-                  <tr key={test.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <tr key={test.id} className="border-b border-[#dee1e6] hover:bg-[#f7f7f7] transition-colors">
                     <td className="px-5 py-4">
-                      <p className="font-semibold text-gray-800">{test.name}</p>
+                      <p className="font-semibold text-[#0a0b0d]">{test.name}</p>
                       {!hasQs && <p className="text-xs text-amber-600 mt-0.5">⚠️ No questions yet</p>}
                     </td>
                     <td className="px-5 py-4">
-                      <span className="px-2 py-1 rounded-full text-xs font-bold text-white" style={{ backgroundColor: '#1e3a8a' }}>{test.subject}</span>
+                      <span className="px-2 py-1 rounded-[100px] text-xs font-semibold text-white" style={{ backgroundColor: '#0052ff' }}>{test.subject}</span>
                     </td>
                     <td className="px-5 py-4">
                       {test.difficulty && (
-                        <span className="px-2 py-1 rounded-full text-xs font-bold text-white" style={{ backgroundColor: dColor }}>{test.difficulty}</span>
+                        <span className="px-2 py-1 rounded-[100px] text-xs font-semibold text-white" style={{ backgroundColor: dColor }}>{test.difficulty}</span>
                       )}
                     </td>
-                    <td className="px-5 py-4 text-gray-700 font-semibold">{test.questions || '—'}</td>
-                    <td className="px-5 py-4 text-gray-700">{test.duration} min</td>
+                    <td className="px-5 py-4 text-[#5b616e] font-semibold">{test.questions || '—'}</td>
+                    <td className="px-5 py-4 text-[#5b616e]">{test.duration} min</td>
                     <td className="px-5 py-4">
                       {done ? (
                         <div>
                           <p className="font-bold" style={{ color: '#28a745' }}>{done.score}%</p>
-                          <p className="text-xs text-gray-500">{done.date}</p>
+                          <p className="text-xs text-[#7c828a]">{done.date}</p>
                         </div>
-                      ) : <span className="text-gray-400 text-xs">Not attempted</span>}
+                      ) : <span className="text-[#a8acb3] text-xs">Not attempted</span>}
                     </td>
                     <td className="px-5 py-4">
                       <button
                         onClick={() => startTest(test)}
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 transition-all whitespace-nowrap hover:text-white"
+                        className="px-3 py-1.5 rounded-[100px] text-xs font-semibold border transition-all whitespace-nowrap hover:text-white"
                         style={{
-                          borderColor: done ? '#f59e0b' : '#1e3a8a',
-                          color: done ? '#f59e0b' : '#1e3a8a',
+                          borderColor: done ? '#f59e0b' : '#0052ff',
+                          color: done ? '#f59e0b' : '#0052ff',
                           backgroundColor: 'white',
+                          height: 32,
+                          lineHeight: 1.15
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = done ? '#f59e0b' : '#1e3a8a'; e.currentTarget.style.color = 'white' }}
-                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.color = done ? '#f59e0b' : '#1e3a8a' }}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = done ? '#f59e0b' : '#0052ff'; e.currentTarget.style.color = 'white' }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.color = done ? '#f59e0b' : '#0052ff' }}
                       >
                         {done ? '🔄 Retake' : '▶ Start'}
                       </button>
@@ -218,16 +220,16 @@ export default function PracticeTests() {
       {/* ── TEST PLAYER MODAL ── */}
       {activeTest && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-[#dee1e6] rounded-[24px] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
 
             {/* Modal Header */}
             <div className="sticky top-0 bg-white px-6 py-4 border-b flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold" style={{ color: '#1e3a8a' }}>{activeTest.name}</h2>
-                {!showResult && <p className="text-sm text-gray-500">Question {currentQ + 1} of {questions.length}</p>}
+                {!showResult && <p className="text-sm text-[#7c828a]">Question {currentQ + 1} of {questions.length}</p>}
               </div>
               {!showResult && (
-                <span className="text-sm text-gray-400">{Object.keys(answers).length}/{questions.length} answered</span>
+                <span className="text-sm text-[#a8acb3]">{Object.keys(answers).length}/{questions.length} answered</span>
               )}
             </div>
 
@@ -242,7 +244,7 @@ export default function PracticeTests() {
                   style={{ color: completed[activeTest.id]?.score >= 75 ? '#28a745' : completed[activeTest.id]?.score >= 50 ? '#ddaa2c' : '#dc3545' }}>
                   {completed[activeTest.id]?.score}%
                 </p>
-                <p className="text-gray-600 mb-6">
+                <p className="text-[#5b616e] mb-6">
                   You answered <strong>{completed[activeTest.id]?.raw}</strong> out of <strong>{completed[activeTest.id]?.total}</strong> correctly.
                 </p>
 
@@ -250,11 +252,11 @@ export default function PracticeTests() {
                 <div className="text-left space-y-3 mb-6">
                   <h4 className="font-bold text-lg" style={{ color: '#1e3a8a' }}>Review Answers</h4>
                   {questions.map((q, i) => (
-                    <div key={i} className={`p-4 rounded-xl border-l-4 ${answers[i] === q.correct ? 'border-green-500 bg-green-50' : 'border-red-400 bg-red-50'}`}>
-                      <p className="font-semibold text-sm mb-2 text-gray-800">{i + 1}. {q.text}</p>
+                    <div key={i} className={`p-4 rounded-[12px] border-l-4 ${answers[i] === q.correct ? 'border-green-500 bg-green-50' : 'border-red-400 bg-red-50'}`}>
+                      <p className="font-semibold text-sm mb-2 text-[#0a0b0d]">{i + 1}. {q.text}</p>
                       <div className="grid grid-cols-2 gap-1 mb-1">
                         {q.options.map((opt, oi) => (
-                          <p key={oi} className={`text-xs px-2 py-1 rounded ${q.correct === oi ? 'bg-green-200 text-green-900 font-bold' : answers[i] === oi ? 'bg-red-200 text-red-800' : 'text-gray-600'}`}>
+                          <p key={oi} className={`text-xs px-2 py-1 rounded ${q.correct === oi ? 'bg-green-200 text-green-900 font-bold' : answers[i] === oi ? 'bg-red-200 text-red-800' : 'text-[#5b616e]'}`}>
                             {String.fromCharCode(65 + oi)}. {opt}
                           </p>
                         ))}
@@ -265,8 +267,8 @@ export default function PracticeTests() {
                 </div>
 
                 <button onClick={closeTest}
-                  className="px-10 py-3 rounded-xl text-white font-bold hover:bg-blue-800 transition-all"
-                  style={{ backgroundColor: '#1e3a8a' }}>
+                  className="px-5 py-3 bg-[#0052ff] text-white text-sm font-semibold rounded-[100px] hover:bg-[#003ecc] transition"
+                  style={{ height: 44, lineHeight: 1.15 }}>
                   Close
                 </button>
               </div>
@@ -274,21 +276,21 @@ export default function PracticeTests() {
               /* ── Question Screen ── */
               <div className="px-6 py-6">
                 {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
-                  <div className="h-2 rounded-full transition-all duration-300"
+                <div className="w-full bg-[#f7f7f7] rounded-[100px] h-2 mb-6">
+                  <div className="h-2 rounded-[100px] transition-all duration-300"
                     style={{ width: `${((currentQ + 1) / questions.length) * 100}%`, backgroundColor: '#1e3a8a' }} />
                 </div>
 
-                <p className="text-lg font-bold mb-5 text-gray-800 leading-relaxed">{questions[currentQ].text}</p>
+                <p className="text-lg font-semibold mb-5 text-[#0a0b0d] leading-relaxed">{questions[currentQ].text}</p>
 
                 <div className="space-y-3 mb-6">
                   {questions[currentQ].options.map((opt, i) => (
                     <button key={i} onClick={() => selectAnswer(i)}
-                      className="w-full text-left px-4 py-3 rounded-xl font-semibold border-2 transition-all"
+                      className="w-full text-left px-4 py-3 rounded-[12px] font-semibold border transition-all"
                       style={{
-                        borderColor: answers[currentQ] === i ? '#1e3a8a' : '#e5e7eb',
-                        backgroundColor: answers[currentQ] === i ? '#eff6ff' : 'white',
-                        color: answers[currentQ] === i ? '#1e3a8a' : '#374151'
+                        borderColor: answers[currentQ] === i ? '#0052ff' : '#dee1e6',
+                        backgroundColor: answers[currentQ] === i ? '#f0f5ff' : 'white',
+                        color: answers[currentQ] === i ? '#0052ff' : '#5b616e'
                       }}>
                       <span className="mr-3 font-bold">{String.fromCharCode(65 + i)}.</span>{opt}
                     </button>
@@ -299,20 +301,20 @@ export default function PracticeTests() {
                 <div className="flex gap-3 mb-4">
                   {currentQ > 0 && (
                     <button onClick={() => setCurrentQ(q => q - 1)}
-                      className="px-5 py-2.5 rounded-lg font-semibold border-2 transition-all hover:bg-gray-50"
-                      style={{ borderColor: '#1e3a8a', color: '#1e3a8a' }}>
+                      className="px-5 py-2.5 rounded-[12px] font-semibold border transition-all hover:bg-[#f7f7f7]"
+                      style={{ borderColor: '#0052ff', color: '#0052ff' }}>
                       ← Previous
                     </button>
                   )}
                   {currentQ < questions.length - 1 ? (
                     <button onClick={() => setCurrentQ(q => q + 1)}
-                      className="flex-1 py-2.5 rounded-lg font-bold text-white hover:bg-blue-800 transition-all"
-                      style={{ backgroundColor: '#1e3a8a' }}>
+                      className="flex-1 py-2.5 rounded-[12px] font-semibold text-white hover:bg-[#003ecc] transition-all"
+                      style={{ backgroundColor: '#0052ff' }}>
                       Next →
                     </button>
                   ) : (
                     <button onClick={submitTest}
-                      className="flex-1 py-2.5 rounded-lg font-bold text-white hover:bg-green-700 transition-all"
+                      className="flex-1 py-2.5 rounded-[12px] font-semibold text-white hover:bg-[#1a8c3a] transition-all"
                       style={{ backgroundColor: '#28a745' }}>
                       ✓ Submit Test
                     </button>
@@ -323,11 +325,11 @@ export default function PracticeTests() {
                 <div className="flex flex-wrap gap-2">
                   {questions.map((_, i) => (
                     <button key={i} onClick={() => setCurrentQ(i)}
-                      className="w-9 h-9 rounded-full text-sm font-semibold transition-all"
+                      className="w-9 h-9 rounded-[100px] text-sm font-semibold transition-all"
                       style={{
-                        backgroundColor: answers[i] !== undefined ? '#1e3a8a' : 'white',
-                        color: answers[i] !== undefined ? 'white' : '#374151',
-                        border: i === currentQ ? '2px solid #1e3a8a' : '2px solid #d1d5db'
+                        backgroundColor: answers[i] !== undefined ? '#0052ff' : 'white',
+                        color: answers[i] !== undefined ? 'white' : '#5b616e',
+                        border: i === currentQ ? '2px solid #0052ff' : '2px solid #dee1e6'
                       }}>
                       {i + 1}
                     </button>

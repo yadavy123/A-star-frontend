@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Clock, Target, BookOpen, Award, CheckCircle, TrendingUp, Users, FileText } from 'lucide-react';
 

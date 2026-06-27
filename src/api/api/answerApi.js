@@ -112,6 +112,24 @@ export const rejectAnswer = async (id, reason) => {
   }
 };
 
+export const submitAdminAnswer = async (data) => {
+  try {
+    const response = await api.post('/api/admin/answers', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const markAnswerCorrect = async (id) => {
+  try {
+    const response = await api.patch(`/api/admin/answers/${id}/correct`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 // Hard deletes an answer (Admin)
 export const deleteAnswer = async (id) => {
   try {

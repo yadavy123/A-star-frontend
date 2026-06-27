@@ -3,26 +3,42 @@ import React, { useRef, useEffect } from 'react'
 export default function ScrollableCard({ children, className = '' }) {
   const mainRef = useRef(null)
   const bottomRef = useRef(null)
+  const rafRef = useRef(null)
 
   useEffect(() => {
     const main = mainRef.current
     const bottom = bottomRef.current
     if (!main || !bottom) return
 
-    const onMainScroll = () => { bottom.scrollLeft = main.scrollLeft }
-    const onBottomScroll = () => { main.scrollLeft = bottom.scrollLeft }
+    const syncScroll = (source, target) => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(() => {
+        target.scrollLeft = source.scrollLeft
+        rafRef.current = null
+      })
+    }
 
-    main.addEventListener('scroll', onMainScroll)
-    bottom.addEventListener('scroll', onBottomScroll)
+    const onMainScroll = () => syncScroll(main, bottom)
+    const onBottomScroll = () => syncScroll(bottom, main)
+
+    main.addEventListener('scroll', onMainScroll, { passive: true })
+    bottom.addEventListener('scroll', onBottomScroll, { passive: true })
 
     const ro = new ResizeObserver(() => {
-      if (bottom.firstChild) bottom.firstChild.style.width = `${main.scrollWidth}px`
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(() => {
+        if (bottom.firstChild) bottom.firstChild.style.width = `${main.scrollWidth}px`
+        rafRef.current = null
+      })
     })
     ro.observe(main)
 
-    try { if (bottom.firstChild) bottom.firstChild.style.width = `${main.scrollWidth}px` } catch (e) {}
+    if (bottom.firstChild) {
+      bottom.firstChild.style.width = `${main.scrollWidth}px`
+    }
 
     return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
       main.removeEventListener('scroll', onMainScroll)
       bottom.removeEventListener('scroll', onBottomScroll)
       ro.disconnect()

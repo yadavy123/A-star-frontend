@@ -28,7 +28,7 @@ export const submitContactForm = async (data) => {
  * Admin Endpoints
  */
 
-const ADMIN_CONTACT_BASE_URL = '/admin/api/contact';
+const ADMIN_CONTACT_BASE_URL = '/api/admin/contact';
 
 // Admin - List All Messages
 export const getAdminMessages = async (params = { page: 0, size: 10 }) => {

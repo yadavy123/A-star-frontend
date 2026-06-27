@@ -46,7 +46,6 @@ export const SubscribersPage = ({ setCurrentView }) => {
             
             const response = await Promise.race([
                 adminApi.getSubscribers({
-                    status: params.status !== undefined ? params.status : statusFilter,
                     page: params.page || 0,
                     size: currentSize,
                 }),
@@ -134,41 +133,44 @@ export const SubscribersPage = ({ setCurrentView }) => {
 
             {loading ? (
                 <div className="py-20 text-center"><Spinner size="lg" /></div>
-            ) : subscribers.length === 0 ? (
-                <Card className="text-center py-12">
-                    <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No subscribers found</p>
-                </Card>
-            ) : (
-                <div className="space-y-3">
-                    {subscribers.map((sub) => (
-                        <Card key={sub.id} className="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                            {/* Email */}
-                            <div className="col-span-1 md:col-span-6 flex items-center gap-3">
-                                <div
-                                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0 bg-blue-900"
-                                >
-                                    {(sub.email || 'S').charAt(0).toUpperCase()}
-                                </div>
-                                <p className="text-sm truncate text-blue-900">{sub.email}</p>
-                            </div>
-
-                            {/* Status */}
-                            <div className="col-span-1 md:col-span-3">
-                                <Badge variant={sub.status === 'ACTIVE' ? 'success' : 'error'}>
-                                    {sub.status}
-                                </Badge>
-                            </div>
-
-                            {/* Subscription Date */}
-                            <div className="col-span-1 md:col-span-3 flex items-center gap-2 text-xs text-gray-600">
-                                <Clock className="w-4 h-4 shrink-0" />
-                                {formatDate(sub.subscribedAt || sub.createdAt || sub.date)}
-                            </div>
+            ) : (() => {
+                const filtered = statusFilter
+                    ? subscribers.filter(sub => statusFilter === 'ACTIVE' ? sub.active : !sub.active)
+                    : subscribers;
+                if (filtered.length === 0) {
+                    return (
+                        <Card className="text-center py-12">
+                            <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600">No subscribers found</p>
                         </Card>
-                    ))}
-                </div>
-            )}
+                    );
+                }
+                return (
+                    <div className="space-y-3">
+                        {filtered.map((sub) => (
+                            <Card key={sub.id} className="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                                <div className="col-span-1 md:col-span-6 flex items-center gap-3">
+                                    <div
+                                        className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0 bg-blue-900"
+                                    >
+                                        {(sub.email || 'S').charAt(0).toUpperCase()}
+                                    </div>
+                                    <p className="text-sm truncate text-blue-900">{sub.email}</p>
+                                </div>
+                                <div className="col-span-1 md:col-span-3">
+                                    <Badge variant={sub.active ? 'success' : 'error'}>
+                                        {sub.active ? 'ACTIVE' : 'UNSUBSCRIBED'}
+                                    </Badge>
+                                </div>
+                                <div className="col-span-1 md:col-span-3 flex items-center gap-2 text-xs text-gray-600">
+                                    <Clock className="w-4 h-4 shrink-0" />
+                                    {formatDate(sub.subscribedAt || sub.createdAt || sub.date)}
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                );
+            })()}
 
             {pagination.totalPages > 1 && (
                 <div className="mt-8 flex items-center justify-between">

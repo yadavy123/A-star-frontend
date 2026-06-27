@@ -4,28 +4,13 @@ import { getApiBaseCandidates, setActiveApiBaseUrl } from './runtimeApiBase.ts';
 
 const STORAGE_KEY = 'icfy_running_classes';
 
-const defaultClasses: RunningClass[] = [
-    {
-        id: 1,
-        subject: 'UG Mathematics',
-        level: 'Undergraduate',
-        instructor: 'Ms. Neha Aggarwal',
-        schedule: 'Mon, Wed, Fri - 6:00 PM IST',
-        students: '12-15',
-        description: 'Comprehensive mathematics coverage for B.Sc and B.Tech students',
-        image: '',
-        status: 'Active',
-        enrolledStudents: [],
-    },
-];
-
 function readClasses(): RunningClass[] {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         const parsed = raw ? (JSON.parse(raw) as RunningClass[]) : null;
-        return parsed && parsed.length > 0 ? parsed : defaultClasses;
+        return parsed && parsed.length > 0 ? parsed : [];
     } catch {
-        return defaultClasses;
+        return [];
     }
 }
 
@@ -59,7 +44,7 @@ async function tryRequest(path: string, options?: RequestInit) {
                     throw new Error(`Request failed with status ${response.status}`);
                 }
 
-                setActiveApiBaseUrl(baseUrl);
+                setActiveApiBaseUrl();
                 return response.json();
             } catch (error) {
                 lastError = error instanceof Error ? error : new Error('Network error');
@@ -73,16 +58,16 @@ async function tryRequest(path: string, options?: RequestInit) {
 export const runningClassesApi = {
     async getAll() {
         try {
-            const data = await tryRequest('/running-classes', { method: 'GET' });
+            const data = await tryRequest('/api/classes', { method: 'GET' });
             return { data };
         } catch {
-            return { data: readClasses() };
+            return { data: [] };
         }
     },
 
     async create(payload: Omit<RunningClass, 'id'>) {
         try {
-            const data = await tryRequest('/running-classes', {
+            const data = await tryRequest('/admin/api/classes', {
                 method: 'POST',
                 body: JSON.stringify(payload),
             });
@@ -98,7 +83,7 @@ export const runningClassesApi = {
 
     async update(id: number | string, payload: Partial<RunningClass>) {
         try {
-            const data = await tryRequest(`/running-classes/${id}`, {
+            const data = await tryRequest(`/admin/api/classes/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify(payload),
             });
@@ -112,7 +97,7 @@ export const runningClassesApi = {
 
     async delete(id: number | string) {
         try {
-            const data = await tryRequest(`/running-classes/${id}`, { method: 'DELETE' });
+            const data = await tryRequest(`/admin/api/classes/${id}`, { method: 'DELETE' });
             return { data };
         } catch {
             const updated = readClasses().filter((item) => item.id !== id);

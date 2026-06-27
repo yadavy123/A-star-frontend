@@ -1,4 +1,3 @@
-import React from 'react';
 import IITJEEQuestionTabs from '../components/IITJEEQuestionTabs';
 
 const IITJEEQuestionsPage: React.FC = () => {

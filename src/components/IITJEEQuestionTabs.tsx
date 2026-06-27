@@ -54,8 +54,8 @@ const IITJEEQuestionTabs: React.FC = () => {
                 delete next[id];
                 return next;
             });
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Failed to submit solution');
+        } catch {
+            toast.error('Failed to submit solution');
         } finally {
             setSubmitting(prev => ({ ...prev, [id]: false }));
         }

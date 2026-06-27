@@ -96,36 +96,37 @@ export default function Notifications() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-blue-900">Notifications</h2>
-          <p className="text-gray-500 text-sm">
+          <h2 className="text-2xl font-normal text-[#0a0b0d]" style={{ lineHeight: 1.15, letterSpacing: '-0.5px' }}>Notifications</h2>
+          <p className="text-[#7c828a] text-sm">
             You have {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
           </p>
         </div>
         <button
           onClick={markAllAsRead}
-          className="px-6 py-3 rounded-lg font-semibold shadow-md hover:opacity-90 transition-all bg-blue-900 text-white"
+          className="px-5 py-3 bg-[#0052ff] text-white text-sm font-semibold rounded-[100px] hover:bg-[#003ecc] transition"
+          style={{ height: 44, lineHeight: 1.15 }}
         >
           Mark All as Read
         </button>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 bg-white p-4 rounded-xl shadow-md">
+      <div className="flex flex-wrap gap-3 bg-white p-4 rounded-[24px] border border-[#dee1e6]">
         <button
           onClick={() => setFilter('all')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-            filter === 'all' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+          className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+            filter === 'all' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
           }`}
-          style={{ backgroundColor: filter === 'all' ? '#1e3a8a' : 'transparent' }}
+          style={{ backgroundColor: filter === 'all' ? '#0052ff' : 'transparent' }}
         >
           All ({notifications.length})
         </button>
         <button
           onClick={() => setFilter('unread')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-            filter === 'unread' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+          className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+            filter === 'unread' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
           }`}
           style={{ backgroundColor: filter === 'unread' ? '#dc3545' : 'transparent' }}
         >
@@ -133,8 +134,8 @@ export default function Notifications() {
         </button>
         <button
           onClick={() => setFilter('assignment')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-            filter === 'assignment' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+          className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+            filter === 'assignment' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
           }`}
           style={{ backgroundColor: filter === 'assignment' ? '#f59e0b' : 'transparent' }}
         >
@@ -142,17 +143,17 @@ export default function Notifications() {
         </button>
         <button
           onClick={() => setFilter('class')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-            filter === 'class' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+          className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+            filter === 'class' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
           }`}
-          style={{ backgroundColor: filter === 'class' ? '#1e3a8a' : 'transparent' }}
+          style={{ backgroundColor: filter === 'class' ? '#0052ff' : 'transparent' }}
         >
           Classes
         </button>
         <button
           onClick={() => setFilter('announcement')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-            filter === 'announcement' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+          className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+            filter === 'announcement' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
           }`}
           style={{ backgroundColor: filter === 'announcement' ? '#dc3545' : 'transparent' }}
         >
@@ -166,7 +167,7 @@ export default function Notifications() {
           paginatedNotifications.map((notification) => (
             <div
               key={notification.id}
-              className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all p-6 border-l-4 ${
+              className={`bg-white border border-[#dee1e6] rounded-[24px] transition-all p-6 border-l-4 ${
                 !notification.read ? 'border-l-4' : ''
               }`}
               style={{
@@ -178,25 +179,25 @@ export default function Notifications() {
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold mb-1" style={{ color: '#1e3a8a' }}>
+                      <h3 className="text-lg font-semibold mb-1 text-[#0a0b0d]">
                         {notification.title}
                         {!notification.read && (
                           <span
-                            className="ml-3 px-2 py-1 rounded-full text-xs font-bold text-white"
+                            className="ml-3 px-2 py-1 rounded-[100px] text-xs font-semibold text-white"
                             style={{ backgroundColor: '#dc3545' }}
                           >
                             NEW
                           </span>
                         )}
                       </h3>
-                      <p className="text-gray-700 mb-2">{notification.message}</p>
-                      <p className="text-sm text-gray-500">{notification.time}</p>
+                      <p className="text-[#5b616e] mb-2">{notification.message}</p>
+                      <p className="text-sm text-[#7c828a]">{notification.time}</p>
                     </div>
                   </div>
                   {!notification.read && (
                     <button
                       onClick={() => markAsRead(notification.id)}
-                      className="mt-3 px-4 py-2 rounded-lg text-sm font-semibold transition-all border-2"
+                      className="mt-3 px-4 py-2 rounded-[12px] text-sm font-semibold transition-all border"
                       style={{
                         borderColor: notification.color,
                         color: notification.color,
@@ -211,11 +212,11 @@ export default function Notifications() {
             </div>
           ))
         ) : (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center">
-            <h3 className="text-2xl font-bold mb-2" style={{ color: '#1e3a8a' }}>
+          <div className="bg-white border border-[#dee1e6] rounded-[24px] p-12 text-center">
+            <h3 className="text-2xl font-semibold mb-2 text-[#0a0b0d]">
               No Notifications
             </h3>
-            <p className="text-gray-600">You're all caught up! No notifications to show.</p>
+            <p className="text-[#5b616e]">You're all caught up! No notifications to show.</p>
           </div>
         )}
       </div>

@@ -1,8 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Quote, Loader2 } from 'lucide-react';
 import * as reviewApi from '../api/api/reviewApi';
 import toast from 'react-hot-toast';
+
+interface Review {
+    id: string;
+    studentName: string;
+    parentName: string;
+    gradeOrClass: string;
+    reviewText: string;
+    overallRating: number;
+    teachingQuality?: number;
+    personalAttention?: number;
+    testSystem?: number;
+    overallExperience?: number;
+    conceptClarity?: number;
+    doubtSolving?: number;
+    studyMaterial?: number;
+    improvementInConfidence?: number;
+    structuredPlanning?: number;
+    examOrientedPractice?: number;
+    reinforcementClasses?: number;
+    overallSatisfaction?: number;
+    batchSizeAdvantage?: number;
+    individualMonitoring?: number;
+    teacherExperience?: number;
+    resultImprovement?: number;
+    status?: string;
+    submittedAt?: string;
+    publishedAt?: string;
+    createdAt?: string;
+}
 
 const ratingLabels = {
     teachingQuality: "Teaching Quality",
@@ -57,10 +86,13 @@ const Reviews = () => {
     };
 
     const getRatingsArray = (review: Review) => {
-        return Object.entries(ratingLabels).map(([key, label]) => ({
-            label,
-            score: review[key] || 0
-        })).filter(r => r.score > 0);
+        return (Object.keys(ratingLabels) as Array<keyof Review>)
+            .filter((key) => typeof review[key] === 'number')
+            .map((key) => ({
+                label: ratingLabels[key as keyof typeof ratingLabels],
+                score: (review[key] as number) || 0
+            }))
+            .filter(r => r.score > 0);
     };
 
     const chunkArray = (array: Review[], size: number) => {
@@ -141,7 +173,7 @@ const Reviews = () => {
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                                 {reviewGroups.map((group, groupIndex) => (
-                                    <React.Fragment key={`group-${groupIndex}`}>
+                                    <Fragment key={`group-${groupIndex}`}>
                                         {group.map((review, index) => (
                                             <div key={review.id || `${groupIndex}-${index}`} className="bg-white rounded-xl md:rounded-[24px] border border-gray-100 shadow-lg shadow-gray-200/50 flex flex-col h-full overflow-hidden group hover:border-blue-100 transition-colors">
                                                 {/* Card Content Top */}
@@ -163,7 +195,7 @@ const Reviews = () => {
                                                     </h4>
                                                     <div>
                                                         {getRatingsArray(review).map((rating, idx) => (
-                                                            <React.Fragment key={`rating-${idx}`}>
+                                                             <Fragment key={`rating-${idx}`}>
                                                                 <div className="grid grid-cols-[1fr_auto] items-center gap-1.5 sm:gap-2 group/item py-1 sm:py-1.5">
                                                                     <span className="text-[#444] text-[11px] sm:text-sm font-semibold leading-tight group-hover/item:text-[#1e3a8a] transition-colors text-left">
                                                                         {rating.label}:
@@ -182,7 +214,7 @@ const Reviews = () => {
                                                                 {(idx + 1) % 4 === 0 && idx !== getRatingsArray(review).length - 1 && (
                                                                     <div className="h-px bg-gray-200 my-1" />
                                                                 )}
-                                                            </React.Fragment>
+                                                             </Fragment>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -212,7 +244,7 @@ const Reviews = () => {
                                         {groupIndex !== reviewGroups.length - 1 && (
                                             <div key={`group-divider-${groupIndex}`} className="col-span-full h-px border-t border-gray-300 my-4 sm:my-6" />
                                         )}
-                                    </React.Fragment>
+                                    </Fragment>
                                 ))}
                             </div>
                             

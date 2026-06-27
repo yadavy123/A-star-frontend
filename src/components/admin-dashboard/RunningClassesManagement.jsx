@@ -14,29 +14,14 @@ import toast from 'react-hot-toast';
 import Pagination from '../ui/Pagination';
 import { Eye, BookOpen, Edit, Trash2, Check, X, Users } from 'lucide-react';
 
-const DEFAULT_CLASSES = [
-  {
-    id: '664300000000000000000001',
-    title: 'Advanced Calculus 101',
-    category: 'UNDERGRADUATE',
-    instructorName: 'Prof. Alan Math',
-    schedule: 'Mon, Wed, Fri - 6:00 PM IST',
-    maxCapacity: 20,
-    enrolledCount: 2,
-    availableSeats: 18,
-    description: 'A comprehensive course on multivariable calculus.',
-    startDate: '2026-05-23T19:01:48.557',
-    endDate: '2026-08-13T19:01:48.557',
-    feeInfo: '₹5,000 / month',
-    status: 'ACTIVE',
-    approvedEnrollments: [],
-    allEnrollments: []
-  },
-];
+const DEFAULT_CLASSES = [];
+
+const CATEGORY_TO_ENUM = { IGCSE: 'UNDERGRADUATE', 'AS Level': 'POST_GRADUATE', 'A Level': 'PROFESSIONAL' };
+const ENUM_TO_CATEGORY = { UNDERGRADUATE: 'IGCSE', POST_GRADUATE: 'AS Level', PROFESSIONAL: 'A Level' };
 
 const EMPTY_FORM = {
   title: '',
-  category: 'UNDERGRADUATE',
+  category: 'IGCSE',
   instructorName: '',
   schedule: '',
   maxCapacity: 20,
@@ -93,11 +78,11 @@ export default function RunningClassesManagement() {
       });
 
       const classList = data.content || (Array.isArray(data) ? data : []);
-      setClasses(classList.length > 0 ? classList : DEFAULT_CLASSES);
+      setClasses(classList);
     } catch (error) {
       console.error('Failed to fetch classes:', error);
       toast.error('Failed to load classes from server');
-      setClasses(DEFAULT_CLASSES);
+      setClasses([]);
     } finally {
       setLoading(false);
     }
@@ -141,7 +126,7 @@ export default function RunningClassesManagement() {
     const payload = {
       title: form.title || '',
       description: form.description || '',
-      category: form.category || 'UNDERGRADUATE',
+      category: CATEGORY_TO_ENUM[form.category] || form.category || 'UNDERGRADUATE',
       schedule: form.schedule || '',
       batchSize: form.batchSize || '',
       instructorName: form.instructorName || '',
@@ -178,7 +163,7 @@ export default function RunningClassesManagement() {
   const handleEdit = (c) => {
     setForm({
       title: c.title,
-      category: c.category,
+      category: ENUM_TO_CATEGORY[c.category] || c.category,
       instructorName: c.instructorName,
       schedule: c.schedule,
       maxCapacity: Number(c.maxCapacity || 20),
@@ -293,9 +278,9 @@ export default function RunningClassesManagement() {
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
                 required
               >
-                <option value="UNDERGRADUATE">Undergraduate</option>
-                <option value="POST_GRADUATE">Post-Graduate</option>
-                <option value="PROFESSIONAL">Professional</option>
+                <option value="IGCSE">IGCSE</option>
+                <option value="AS Level">AS Level</option>
+                <option value="A Level">A Level</option>
               </select>
             </div>
 
@@ -496,7 +481,7 @@ export default function RunningClassesManagement() {
                       </td>
                       <td className="px-4 py-4">
                         <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full text-[10px] font-bold border border-blue-100 uppercase">
-                          {c.category?.replace('_', ' ')}
+                          {ENUM_TO_CATEGORY[c.category] || c.category?.replace('_', ' ')}
                         </span>
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-600 font-medium">{c.instructorName}</td>
@@ -566,23 +551,36 @@ export default function RunningClassesManagement() {
 
       {showClassDetailsModal && selectedClassForDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto">
-            <div className="sticky top-0 bg-linear-to-r from-blue-900 to-blue-800 text-white p-6 rounded-t-xl">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold">{selectedClassForDetails.title}</h2>
-                  <p className="text-white/80 mt-1 font-semibold">{selectedClassForDetails.category} | {selectedClassForDetails.status}</p>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+            {/* Fixed Header */}
+            <div className="shrink-0 bg-white border-b border-gray-200 rounded-t-xl p-6">
+              <div className="flex justify-between items-start">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-xl font-bold text-gray-900 truncate">{selectedClassForDetails.title}</h2>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="text-sm font-semibold text-gray-600">
+                      {ENUM_TO_CATEGORY[selectedClassForDetails.category] || selectedClassForDetails.category}
+                    </span>
+                    <span className={`px-3 py-0.5 rounded-full text-xs font-bold ${
+                      selectedClassForDetails.status === 'ACTIVE'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {selectedClassForDetails.status}
+                    </span>
+                  </div>
                 </div>
                 <button
                   onClick={() => setShowClassDetailsModal(false)}
-                  className="text-white hover:text-blue-200 text-3xl font-bold"
+                  className="shrink-0 ml-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 text-xl font-bold transition-colors"
                 >
                   ×
                 </button>
               </div>
             </div>
 
-            <div className="p-6">
+            {/* Scrollable Body */}
+            <div className="overflow-y-auto p-6 pt-4">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <BookOpen size={20} className="text-blue-600" />
@@ -590,61 +588,61 @@ export default function RunningClassesManagement() {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-600">Title</p>
-                    <p className="font-semibold">{selectedClassForDetails.title}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Title</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.title}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Category</p>
-                    <p className="font-semibold">{selectedClassForDetails.category}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Category</p>
+                    <p className="font-semibold text-gray-900">{ENUM_TO_CATEGORY[selectedClassForDetails.category] || selectedClassForDetails.category}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Instructor</p>
-                    <p className="font-semibold">{selectedClassForDetails.instructorName}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Instructor</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.instructorName}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Schedule</p>
-                    <p className="font-semibold">{selectedClassForDetails.schedule}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Schedule</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.schedule}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Enrollment</p>
-                    <p className="font-semibold">
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Enrollment</p>
+                    <p className="font-semibold text-gray-900">
                       {getClassEnrollmentCount(selectedClassForDetails)} / {selectedClassForDetails.maxCapacity || 20}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Fee Info</p>
-                    <p className="font-semibold">{selectedClassForDetails.feeInfo || 'N/A'}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Fee Info</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.feeInfo || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Status</p>
-                    <p className="font-semibold">{selectedClassForDetails.status}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Status</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.status}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Start Date</p>
-                    <p className="font-semibold">{selectedClassForDetails.startDate || 'N/A'}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Start Date</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.startDate || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">End Date</p>
-                    <p className="font-semibold">{selectedClassForDetails.endDate || 'N/A'}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">End Date</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.endDate || 'N/A'}</p>
                   </div>
                 </div>
 
                 <div className="mt-6 space-y-4">
                   <div>
-                    <p className="text-sm text-gray-600">Batch Size</p>
-                    <p className="font-semibold">{selectedClassForDetails.batchSize || 'N/A'}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Batch Size</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.batchSize || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Instructor Bio</p>
-                    <p className="font-semibold">{selectedClassForDetails.instructorBio || 'N/A'}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Instructor Bio</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.instructorBio || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Description</p>
-                    <p className="font-semibold">{selectedClassForDetails.description || 'N/A'}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Description</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.description || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Additional Info</p>
-                    <p className="font-semibold">{selectedClassForDetails.additionalInfo || 'N/A'}</p>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">Additional Info</p>
+                    <p className="font-semibold text-gray-900">{selectedClassForDetails.additionalInfo || 'N/A'}</p>
                   </div>
                 </div>
               </div>

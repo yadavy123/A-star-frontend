@@ -2,7 +2,7 @@
 import Pagination from '../ui/Pagination';
 
 const DEFAULT_ANNOUNCEMENTS = [
-  { id: 1, title: 'Welcome to    iThinkLearn!', message: 'We are glad to have you on board. Explore your dashboard to access courses, homework and more.', category: 'general', priority: 'medium', createdAt: '2026-02-20' },
+  { id: 1, title: 'Welcome to    A-star class!', message: 'We are glad to have you on board. Explore your dashboard to access courses, homework and more.', category: 'general', priority: 'medium', createdAt: '2026-02-20' },
   { id: 2, title: 'Fee Payment Reminder', message: 'Last date for Term 2 fee payment is Feb 28, 2026. Please clear dues before the deadline.', category: 'payment', priority: 'high', createdAt: '2026-02-18' },
 ]
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.tsx';
 import { X, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -7,10 +7,9 @@ import logoImage from '../assets/AStarClasses logo (31 March).png';
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from?: string })?.from || '/';
+  const [searchParams] = useSearchParams();
   const { login, requestOtp, verifyOtp } = useAuth();
-  const [useOtpLogin, setUseOtpLogin] = useState(false);
+  const [useOtpLogin, setUseOtpLogin] = useState(searchParams.get('otp') === 'true');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -72,7 +71,8 @@ const Login = () => {
     }
 
     toast.success('✅ Login successful! Welcome back.');
-    navigate(result.isAdmin ? '/admin-dashboard' : from);
+    const redirectTarget = searchParams.get('redirect') || (result.isAdmin ? '/admin-dashboard' : '/student-dashboard');
+    setTimeout(() => navigate(redirectTarget, { replace: true }), 0);
   };
 
   const handleSendOtp = async (e: FormEvent) => {
@@ -129,8 +129,9 @@ const Login = () => {
 
   const handleVerifyOtp = async (e: FormEvent) => {
     e.preventDefault();
-    if (!otp || otp.length < 4) {
-      setErrors({ otp: 'Please enter a valid OTP.' });
+    if (!otp || otp.length !== 6) {
+      setErrors({ otp: 'Please enter a valid 6-digit OTP.' });
+      toast.error('Please enter a valid 6-digit OTP.');
       return;
     }
 
@@ -146,7 +147,8 @@ const Login = () => {
     }
 
     toast.success('✅ Login successful!');
-    navigate(result.isAdmin ? '/admin-dashboard' : from);
+    const redirectTarget = searchParams.get('redirect') || '/student-dashboard';
+    setTimeout(() => navigate(redirectTarget, { replace: true }), 0);
   };
 
   return (
@@ -221,6 +223,11 @@ const Login = () => {
                     </div>
                   </div>
                 )}
+                <div className="text-center mt-4">
+                  <Link to="/reset-password" className="text-sm sm:text-[15px] text-[#1e3a8a] font-bold hover:underline">
+                    Forgot Password?
+                  </Link>
+                </div>
               </>
             ) : (
               <div>
@@ -279,7 +286,7 @@ const Login = () => {
 
               <p className="text-sm sm:text-[16px] font-medium text-gray-500">
                 Don't have an account?{' '}
-                <Link to="/signup" className="text-[#1e3a8a] font-black hover:underline">
+                <Link to={`/signup${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(searchParams.get('redirect')!)}` : ''}`} className="text-[#1e3a8a] font-black hover:underline">
                   Sign Up
                 </Link>
               </p>

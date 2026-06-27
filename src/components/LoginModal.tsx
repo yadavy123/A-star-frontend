@@ -1,5 +1,5 @@
 import React, { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.tsx';
 import { X, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -11,6 +11,7 @@ interface LoginModalProps {
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -42,7 +43,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             if (result.success) {
                 toast.success('Logged in successfully!');
                 onClose();
-                navigate(result.isAdmin ? '/admin-dashboard' : '/');
+                const redirectTarget = searchParams.get('redirect') || (result.isAdmin ? '/admin-dashboard' : '/student-dashboard');
+                setTimeout(() => navigate(redirectTarget, { replace: true }), 0);
             } else {
                 setErrors({ form: result.message || 'Invalid credentials' });
             }
@@ -65,7 +67,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         <X size={24} />
                     </button>
                     <h2 className="text-[42px] font-black mb-1">Login</h2>
-                    <p className="text-blue-100 text-[17px] font-medium opacity-80">Welcome back to iThinkLearn</p>
+                    <p className="text-blue-100 text-[17px] font-medium opacity-80">Welcome back to A-star class</p>
                 </div>
 
                 <div className="p-10 pt-8">

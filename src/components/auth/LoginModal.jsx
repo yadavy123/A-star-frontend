@@ -67,11 +67,12 @@ export default function LoginModal({ isOpen, onClose, onOpenSignup, onOpenForgot
       let result;
       if (loginMode === 'password') {
          result = await login(loginData.email, loginData.password)
-         if (result.success) {
-            setLoginData({ email: '', password: '', otp: '' })
-            onClose()
-            if (result.isAdmin) navigate('/admin-dashboard')
-            else navigate('/student-dashboard')
+          if (result.success) {
+             setLoginData({ email: '', password: '', otp: '' })
+             onClose()
+             const params = new URLSearchParams(window.location.search)
+             const redirect = params.get('redirect') || (result.isAdmin ? '/admin-dashboard' : '/student-dashboard')
+             setTimeout(() => navigate(redirect, { replace: true }), 0)
          } else {
             setError(result.message || 'Invalid email or password')
          }
@@ -108,7 +109,7 @@ export default function LoginModal({ isOpen, onClose, onOpenSignup, onOpenForgot
             <h2 className="text-3xl font-black text-white">Login</h2>
             <button onClick={onClose} className="text-white hover:text-blue-200 text-3xl font-bold transition">×</button>
           </div>
-          <p className="text-blue-200 mt-2">Welcome back to iThinkLearn</p>
+          <p className="text-blue-200 mt-2">Welcome back to A-star class</p>
           
           <div className="flex gap-2 mt-6">
              <button type="button" onClick={() => { setLoginMode('password'); setOtpSent(false); setError(''); }}

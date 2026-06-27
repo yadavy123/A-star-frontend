@@ -3,10 +3,10 @@ import React from 'react'
 
 export default function DashboardHome({ studentData, setCurrentView }) {
   const stats = [
-    { label: 'Enrolled Courses',     value: '5',  border: 'border-blue-700',   text: 'text-blue-900',   change: '+2 this month' },
-    { label: 'Pending Assignments',  value: '4',  border: 'border-yellow-400', text: 'text-yellow-600', change: 'Due this week' },
-    { label: 'Completed Tasks',      value: '8',  border: 'border-green-500',  text: 'text-green-700',  change: '67% completion' },
-    { label: 'Upcoming Classes',     value: '3',  border: 'border-indigo-500', text: 'text-indigo-700', change: 'This week' },
+    { label: 'Enrolled Courses',     value: '5',  change: '+2 this month' },
+    { label: 'Pending Assignments',  value: '4',  change: 'Due this week' },
+    { label: 'Completed Tasks',      value: '8',  change: '67% completion' },
+    { label: 'Upcoming Classes',     value: '3',  change: 'This week' },
   ]
 
   const upcomingClasses = [
@@ -32,19 +32,21 @@ export default function DashboardHome({ studentData, setCurrentView }) {
     <div className="space-y-6">
 
       {/* Welcome Banner */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-2xl font-bold text-blue-900 mb-1">Welcome back, {studentData.name.split(' ')[0]}!</h2>
-        <p className="text-gray-500 text-sm mb-4">Ready to continue your learning journey with iThinkLearn?</p>
+      <div className="bg-white rounded-[24px] border border-[#dee1e6] p-6">
+        <h2 className="text-2xl font-normal text-[#0a0b0d] mb-1" style={{ lineHeight: 1.15, letterSpacing: '-0.5px' }}>Welcome back, {studentData.name.split(' ')[0]}!</h2>
+        <p className="text-[#5b616e] text-sm mb-4">Ready to continue your learning journey with A-star classes?</p>
         <div className="flex flex-wrap gap-3">
           <button
             onClick={() => setCurrentView('courses')}
-            className="bg-blue-900 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition"
+            className="px-5 py-3 bg-[#0052ff] text-white text-sm font-semibold rounded-[100px] hover:bg-[#003ecc] transition"
+            style={{ height: 44, lineHeight: 1.15 }}
           >
             Browse Courses
           </button>
           <button
             onClick={() => setCurrentView('runningClasses')}
-            className="border border-blue-900 text-blue-900 px-5 py-2 rounded-lg text-sm font-semibold hover:bg-white transition"
+            className="px-5 py-3 border border-[#dee1e6] text-[#0a0b0d] text-sm font-semibold rounded-[100px] hover:bg-[#f7f7f7] transition"
+            style={{ height: 44, lineHeight: 1.15 }}
           >
             Running Classes
           </button>
@@ -54,10 +56,10 @@ export default function DashboardHome({ studentData, setCurrentView }) {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
-          <div key={i} className={`bg-white rounded-xl p-5 border border-gray-200 border-l-4 ${stat.border}`}>
-            <p className={`text-3xl font-bold mb-1 ${stat.text}`}>{stat.value}</p>
-            <p className="text-gray-700 text-sm font-medium">{stat.label}</p>
-            <p className="text-gray-400 text-xs mt-1">{stat.change}</p>
+          <div key={i} className="bg-white rounded-[24px] border border-[#dee1e6] p-6">
+            <p className="text-[32px] font-normal text-[#0a0b0d] mb-1" style={{ lineHeight: 1.0, letterSpacing: '-1px' }}>{stat.value}</p>
+            <p className="text-[#5b616e] text-sm font-semibold">{stat.label}</p>
+            <p className="text-[#a8acb3] text-xs mt-1">{stat.change}</p>
           </div>
         ))}
       </div>
@@ -66,19 +68,19 @@ export default function DashboardHome({ studentData, setCurrentView }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <button
           onClick={() => setCurrentView('assignments')}
-          className="bg-white border border-gray-200 text-blue-900 p-4 rounded-xl font-semibold text-sm hover:bg-white transition text-left"
+          className="bg-[#f7f7f7] border border-[#dee1e6] text-[#0a0b0d] p-5 rounded-[24px] font-semibold text-sm hover:bg-white transition text-left"
         >
           Submit Assignment
         </button>
         <button
           onClick={() => setCurrentView('askQuestion')}
-          className="bg-white border border-gray-200 text-blue-900 p-4 rounded-xl font-semibold text-sm hover:bg-white transition text-left"
+          className="bg-[#f7f7f7] border border-[#dee1e6] text-[#0a0b0d] p-5 rounded-[24px] font-semibold text-sm hover:bg-white transition text-left"
         >
           Ask a Question
         </button>
         <button
           onClick={() => setCurrentView('support')}
-          className="bg-white border border-gray-200 text-blue-900 p-4 rounded-xl font-semibold text-sm hover:bg-white transition text-left"
+          className="bg-[#f7f7f7] border border-[#dee1e6] text-[#0a0b0d] p-5 rounded-[24px] font-semibold text-sm hover:bg-white transition text-left"
         >
           Get Support
         </button>
@@ -86,21 +88,19 @@ export default function DashboardHome({ studentData, setCurrentView }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Classes */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-white rounded-[24px] border border-[#dee1e6] p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-800">Upcoming Classes</h3>
-            <button onClick={() => setCurrentView('runningClasses')} className="text-sm font-semibold text-yellow-500 hover:text-orange-500 transition">View All →</button>
+            <h3 className="text-base font-semibold text-[#0a0b0d]">Upcoming Classes</h3>
+            <button onClick={() => setCurrentView('runningClasses')} className="text-sm font-semibold text-[#0052ff] hover:text-[#003ecc] transition">View All →</button>
           </div>
           <div className="space-y-3">
             {upcomingClasses.map((cls, i) => (
-              <div key={i} className={`p-4 rounded-lg border-l-4 bg-white ${cls.status === 'upcoming' ? 'border-yellow-400' : 'border-blue-700'}`}>
-                <h4 className="font-bold text-blue-900 text-sm mb-1">{cls.subject}</h4>
-                <p className="text-xs text-gray-600 mb-2">Tutor: {cls.tutor}</p>
+              <div key={i} className="p-4 bg-[#f7f7f7] rounded-[12px] border border-[#dee1e6]">
+                <h4 className="font-semibold text-[#0a0b0d] text-sm mb-1">{cls.subject}</h4>
+                <p className="text-xs text-[#5b616e] mb-2">Tutor: {cls.tutor}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-700">{cls.time}</span>
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold text-white ${cls.status === 'upcoming' ? 'bg-blue-900 text-white' : 'bg-blue-900'}`}>
-                    {cls.duration}
-                  </span>
+                  <span className="text-xs text-[#5b616e]">{cls.time}</span>
+                  <span className="px-3 py-1 rounded-[100px] text-xs font-semibold bg-[#f7f7f7] text-[#0a0b0d]">{cls.duration}</span>
                 </div>
               </div>
             ))}
@@ -108,21 +108,21 @@ export default function DashboardHome({ studentData, setCurrentView }) {
         </div>
 
         {/* Recent Assignments */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-white rounded-[24px] border border-[#dee1e6] p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-800">Recent Assignments</h3>
-            <button onClick={() => setCurrentView('assignments')} className="text-sm font-semibold text-yellow-500 hover:text-orange-500 transition">View All →</button>
+            <h3 className="text-base font-semibold text-[#0a0b0d]">Recent Assignments</h3>
+            <button onClick={() => setCurrentView('assignments')} className="text-sm font-semibold text-[#0052ff] hover:text-[#003ecc] transition">View All →</button>
           </div>
           <div className="space-y-3">
             {recentAssignments.map((a, i) => (
-              <div key={i} className={`p-4 rounded-lg border-l-4 ${a.status === 'completed' ? 'bg-white border-green-500' : a.priority === 'high' ? 'bg-white border-red-400' : 'bg-white border-yellow-400'}`}>
+              <div key={i} className="p-4 bg-[#f7f7f7] rounded-[12px] border border-[#dee1e6]">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h4 className="font-bold text-blue-900 text-sm">{a.title}</h4>
-                    <p className="text-xs text-gray-500 mt-0.5">{a.course} · Due: {a.dueDate}</p>
+                    <h4 className="font-semibold text-[#0a0b0d] text-sm">{a.title}</h4>
+                    <p className="text-xs text-[#5b616e] mt-0.5">{a.course} · Due: {a.dueDate}</p>
                   </div>
-                  <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-xs font-bold text-white ${
-                    a.status === 'completed' ? 'bg-green-500' : a.priority === 'high' ? 'bg-red-400' : 'bg-blue-900'
+                  <span className={`shrink-0 px-3 py-1 rounded-[100px] text-xs font-semibold ${
+                    a.status === 'completed' ? 'bg-[#f7f7f7] text-[#05b169]' : a.priority === 'high' ? 'bg-[#f7f7f7] text-[#cf202f]' : 'bg-[#f7f7f7] text-[#0a0b0d]'
                   }`}>
                     {a.status === 'completed' ? 'Done' : a.priority === 'high' ? 'High' : 'Medium'}
                   </span>
@@ -134,16 +134,16 @@ export default function DashboardHome({ studentData, setCurrentView }) {
       </div>
 
       {/* Recent Notifications */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white rounded-[24px] border border-[#dee1e6] p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-800">Recent Notifications</h3>
-          <button onClick={() => setCurrentView('notifications')} className="text-sm font-semibold text-yellow-500 hover:text-orange-500 transition">View All →</button>
+          <h3 className="text-base font-semibold text-[#0a0b0d]">Recent Notifications</h3>
+          <button onClick={() => setCurrentView('notifications')} className="text-sm font-semibold text-[#0052ff] hover:text-[#003ecc] transition">View All →</button>
         </div>
         <div className="space-y-3">
           {notifications.map((n, i) => (
-            <div key={i} className="py-3 border-b border-gray-100 last:border-0">
-              <p className="text-sm text-gray-700">{n.message}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>
+            <div key={i} className="py-3 border-b border-[#dee1e6] last:border-0">
+              <p className="text-sm text-[#5b616e]">{n.message}</p>
+              <p className="text-xs text-[#a8acb3] mt-0.5">{n.time}</p>
             </div>
           ))}
         </div>

@@ -83,7 +83,7 @@ async function tryRequest(path: string, options?: RequestInit) {
                     throw new Error(`Request failed with status ${response.status}`);
                 }
 
-                setActiveApiBaseUrl(baseUrl);
+                setActiveApiBaseUrl();
                 return response.json();
             } catch (error) {
                 lastError = error instanceof Error ? error : new Error('Network error');

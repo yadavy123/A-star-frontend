@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import TutorCard from '../components/TutorCard';
 import teachers from '../assets/teachers';

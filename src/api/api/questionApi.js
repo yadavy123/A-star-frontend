@@ -1,14 +1,6 @@
 import api from './api';
 
-/**
- * Public Endpoints
- */
-
-/**
- * Returns a Page of questions. Supports pagination and filtering by category.
- * @param {Object} params - { categoryId, page, size, sort, direction }
- */
-export const getQuestions = async (params) => {
+export const getQuestions = async (params = {}) => {
   try {
     const response = await api.get('/api/questions', { params });
     return response.data;
@@ -17,7 +9,15 @@ export const getQuestions = async (params) => {
   }
 };
 
-// Get a single Question object with its parsed HTML
+export const getAdminQuestions = async (params = {}) => {
+  try {
+    const response = await api.get('/api/admin/questions', { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const getQuestionById = async (id) => {
   try {
     const response = await api.get(`/api/questions/${id}`);
@@ -27,7 +27,6 @@ export const getQuestionById = async (id) => {
   }
 };
 
-// Get a Question object by its SEO-friendly slug
 export const getQuestionBySlug = async (slug) => {
   try {
     const response = await api.get(`/api/questions/slug/${slug}`);
@@ -37,14 +36,6 @@ export const getQuestionBySlug = async (slug) => {
   }
 };
 
-/**
- * Admin Endpoints
- */
-
-/**
- * Admin creates a new question.
- * @param {Object} data - { title, descriptionHtml, categoryId }
- */
 export const createQuestion = async (data) => {
   try {
     const response = await api.post('/api/admin/questions', data);
@@ -54,11 +45,6 @@ export const createQuestion = async (data) => {
   }
 };
 
-/**
- * Updates title, HTML, or moves the question to a new category.
- * @param {string} id - Question ID
- * @param {Object} data - { title, descriptionHtml, categoryId }
- */
 export const updateQuestion = async (id, data) => {
   try {
     const response = await api.put(`/api/admin/questions/${id}`, data);
@@ -68,10 +54,31 @@ export const updateQuestion = async (id, data) => {
   }
 };
 
-// Hard delete a question (Admin)
 export const deleteQuestion = async (id) => {
   try {
     const response = await api.delete(`/api/admin/questions/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const approveQuestion = async (id, status) => {
+  try {
+    const response = await api.patch(`/api/admin/questions/${id}/approve`, null, {
+      params: { status }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const changeQuestionStatus = async (id, status) => {
+  try {
+    const response = await api.patch(`/api/admin/questions/${id}/status`, null, {
+      params: { status }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import QuestionList, { Question as UIQuestion } from '../components/QuestionList';
 import QuestionModal from '../components/QuestionModal';
 import { getQuestions, getQuestionById } from '../api/api/questionApi';
@@ -7,11 +7,11 @@ import toast from 'react-hot-toast';
 
 // Transform API question to UI question
 const transformQuestion = (q: { id: string; title: string; descriptionHtml?: string }): UIQuestion => ({
-  id: q.id,
+  id: Number(q.id),
   title: q.title,
-  equation: '', // Equation might be in descriptionHtml
+  equation: '',
   description: q.descriptionHtml?.replace(/<[^>]*>/g, '').slice(0, 100) + '...' || '',
-  isClosed: false, // We'll determine this by checking answers
+  isClosed: false,
   attempts: 0,
 });
 
@@ -139,7 +139,7 @@ const MathQA: React.FC = () => {
         {selected && (
           <QuestionModal
             question={selected}
-            fullQuestion={selectedFull}
+            fullQuestion={selectedFull ?? undefined}
             onClose={handleCloseModal}
             onSubmitSolution={handleSubmitSolution}
             solutions={solutions[selected.id] || []}

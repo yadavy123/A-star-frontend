@@ -5,14 +5,13 @@ import { Card, Input, TextArea, Button } from '../ui/index.tsx';
 import { ContentEditor } from '../editor/ContentEditor';
 import { PenTool, Mail, CheckCircle, ArrowRight, Save, X, Image as ImageIcon, ArrowLeft, Loader } from 'lucide-react';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
-import { requestUserOTP, verifyUserOTP } from '../../api/api/authApi.js';
 import toast from 'react-hot-toast';
 
 const DRAFT_KEY = 'blogpost_draft';
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
-const MAX_IMAGE_SIZE_MB = 1;
-const FEATURED_IMAGE_DIMENSIONS = { width: 1200, height: 630 };
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_IMAGE_SIZE_MB = 5;
+const FEATURED_IMAGE_DIMENSIONS = { width: 1200, height: 675 };
 const TARGET_ASPECT_RATIO = 16 / 9;
 const ASPECT_RATIO_TOLERANCE = 0.15;
 const DEFAULT_FALLBACK_IMAGE_URL = 'https://drive.google.com/uc?export=view&id=16BWUC7BonpEG6n4oIrWVTCwagV5Vsigc';
@@ -251,11 +250,7 @@ export const SubmitBlogPage = () => {
 
     const sendOtp = async (isResend = false) => {
         try {
-            const result = await requestUserOTP(formData.authorEmail, isResend);
-            if (result.success === false) {
-                toast.error(result.message || 'Failed to send OTP');
-                return;
-            }
+            await blogApi.startSubmission({ authorEmail: formData.authorEmail, isResend });
             toast.success('OTP sent to your email!');
             setOtpTimer(300);
         } catch (err) {
@@ -281,12 +276,7 @@ export const SubmitBlogPage = () => {
         }
         setLoading(true);
         try {
-            await verifyUserOTP({
-                email: formData.authorEmail,
-                otp,
-                name: formData.authorName,
-                mobile: formData.authorMobile,
-            });
+            await blogApi.verifySubmission({ authorEmail: formData.authorEmail, otp });
             toast.success('Email verified! You can now upload images.');
             setStep(3);
         } catch (err) {
@@ -612,13 +602,18 @@ export const SubmitBlogPage = () => {
                     <form onSubmit={handleImageStepNext} className="space-y-4">
                         <div className="flex items-center gap-2">
                             <ImageIcon className="w-5 h-5 text-text-secondary" />
-                            <h2 className="text-xl font-bold text-text-primary">Upload Images</h2>
+                            <h2 className="text-xl font-bold text-text-primary">Upload Featured Image</h2>
                         </div>
-                        <p className="text-sm text-text-secondary">Upload one featured image or paste a URL.</p>
+                        <p className="text-sm text-text-secondary">Upload a single featured image for your blog post.</p>
 
                         <div className="space-y-3">
                             <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 font-medium">
-                                Required: <strong>16:9 aspect ratio</strong> (e.g. {FEATURED_IMAGE_DIMENSIONS.width}×{FEATURED_IMAGE_DIMENSIONS.height}px). Only <strong>JPG</strong> / <strong>PNG</strong>, max <strong>{MAX_IMAGE_SIZE_MB}MB</strong> each. One image per blog.
+                                Required: <strong>16:9 aspect ratio</strong> (e.g. {FEATURED_IMAGE_DIMENSIONS.width}×{FEATURED_IMAGE_DIMENSIONS.height}px). Only <strong>JPG</strong> / <strong>PNG</strong> / <strong>WEBP</strong>, max <strong>{MAX_IMAGE_SIZE_MB}MB</strong>.
+                            </div>
+                            
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2.5">
+                                <p className="text-xs font-semibold text-blue-800 mb-1">Recommended Image Size: <strong>1200 × 675 px (16:9)</strong></p>
+                                <p className="text-xs text-blue-700">Supported Formats: JPG, PNG, WEBP &nbsp;|&nbsp; Maximum File Size: 5 MB</p>
                             </div>
 
                             <div className="border border-border-primary rounded-xl p-4 space-y-3">
@@ -742,7 +737,7 @@ export const SubmitBlogPage = () => {
                                             Click to upload or drag and drop
                                         </p>
                                         <p className="text-xs text-text-tertiary mt-1">
-                                            JPG, PNG up to {MAX_IMAGE_SIZE_MB}MB each
+                                            JPG, PNG, WEBP up to {MAX_IMAGE_SIZE_MB}MB
                                         </p>
                                     </div>
                                 </div>
@@ -751,7 +746,7 @@ export const SubmitBlogPage = () => {
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept=".jpg,.jpeg,.png"
+                                accept=".jpg,.jpeg,.png,.webp"
                                 onChange={handleImageUpload}
                                 className="hidden"
                             />

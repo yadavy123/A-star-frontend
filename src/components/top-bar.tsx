@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Phone, LogOut, LayoutDashboard, User } from "lucide-react";
+import { Phone, LogOut, User } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext.tsx";
 import "./component.css";
@@ -82,14 +82,6 @@ const TopBar = () => {
               </button>
               {showUserMenu && (
                 <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 z-50">
-                  {isAdmin && (
-                    <button
-                      onClick={() => { setShowUserMenu(false); navigate('/admin-dashboard'); }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-blue-50 transition"
-                    >
-                      <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
-                    </button>
-                  )}
                   <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-red-50 transition"

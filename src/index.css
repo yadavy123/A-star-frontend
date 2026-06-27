@@ -300,9 +300,20 @@ button,
   }
 
   .blog-img {
-    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
     border-radius: 0.75rem;
     border: 1px solid var(--blog-border-soft);
+  }
+
+  .blog-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.2rem auto;
+    border-radius: 0.75rem;
   }
 
   .blog-figure figcaption {

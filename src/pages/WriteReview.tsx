@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Star, CheckCircle, Loader2, ArrowLeft, Mail } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { submitReview, sendReviewOtp, verifyReviewOtp } from '../api/api/reviewApi'
@@ -106,8 +106,13 @@ export default function WriteReview() {
       setStep('otp');
       setResendTimer(300);
     } catch (error) {
-      const err = error as { data?: { message?: string }; message?: string };
-      toast.error(err?.data?.message || err?.message || 'Failed to send OTP');
+      const err = error as { status?: number; data?: { message?: string }; message?: string };
+      const rawMsg = (err?.data?.message || err?.message || '').toLowerCase();
+      if (rawMsg.includes('too many') || err?.status === 429) {
+        toast.error('Too many requests. Please wait before trying again.');
+      } else {
+        toast.error('Failed to send OTP. Please try again later.');
+      }
     } finally {
       setOtpLoading(false);
     }

@@ -1,6 +1,6 @@
 /** Student dashboard layout with sidebar navigation and view routing. */
 import React, { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import StudentSidebar from './StudentSidebar'
 import DashboardHome from './DashboardHome'
@@ -32,8 +32,8 @@ export default function StudentDashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-900"></div>
-          <p className="mt-4 text-lg font-semibold text-blue-900">Loading...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-[3px] border-b-[3px] border-[#0052ff]"></div>
+          <p className="mt-4 text-lg font-semibold text-[#0a0b0d]">Loading...</p>
         </div>
       </div>
     )
@@ -90,35 +90,45 @@ export default function StudentDashboard() {
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">
       {/* Header - Fixed */}
-      <header className="bg-linear-to-r from-blue-900 via-blue-800 to-indigo-900 shadow-xl flex-shrink-0 z-50">
-        <div className="px-4 py-4 flex items-center justify-between">
+      <header className="bg-white border-b border-[#dee1e6] flex-shrink-0 z-50" style={{ height: 64 }}>
+        <div className="px-4 h-full flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-white p-2 rounded-lg hover:bg-white/10 transition"
+              className="text-[#0a0b0d] p-2 rounded-[8px] hover:bg-[#f7f7f7] transition"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <div>
-              <h1 className="text-xl font-bold text-white">iThinkLearn</h1>
-              <p className="text-xs text-blue-300">Student Portal</p>
+              <h1 className="text-lg font-semibold text-[#0a0b0d]">A-star classes</h1>
+              <p className="text-xs text-[#5b616e]">Student Portal</p>
             </div>
           </div>
           
           <div className="flex items-center gap-4">
+            {/* Back to Home */}
+            <Link
+              to="/"
+              className="text-[#5b616e] hover:text-[#0a0b0d] p-2 rounded-[8px] hover:bg-[#f7f7f7] transition"
+              title="Back to Home"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Link>
             {/* User Profile */}
             <button 
               onClick={() => setCurrentView('profile')}
-              className="flex items-center gap-3 hover:bg-white/10 rounded-lg px-3 py-2 transition cursor-pointer"
+              className="flex items-center gap-3 hover:bg-[#f7f7f7] rounded-[8px] px-3 py-2 transition cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-lg bg-blue-700 shadow-md">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white text-lg bg-[#0052ff]">
                 {(studentData.name || '').split(' ').map(n => n[0]).join('')}
               </div>
-              <div className="hidden md:block text-white">
-                <p className="font-semibold text-sm">{studentData.name}</p>
-                <p className="text-xs text-blue-300">Student</p>
+              <div className="hidden md:block">
+                <p className="font-semibold text-sm text-[#0a0b0d]">{studentData.name}</p>
+                <p className="text-xs text-[#5b616e]">Student</p>
               </div>
             </button>
           </div>

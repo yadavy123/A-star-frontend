@@ -6,7 +6,7 @@ import { submitTestimonial } from '../api/api/testimonialApi';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload';
 
 const TestimonialFormModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const [teachers, setTeachers] = useState<{ id: string; name: string }[]>([]);
+  const [teachers, setTeachers] = useState<{ id: string; name: string; subject?: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -29,7 +29,7 @@ const TestimonialFormModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const fetchTeachers = async () => {
     try {
       const data = await getPublicTeachers();
-      setTeachers(data?.content || (Array.isArray(data) ? data : []));
+      setTeachers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching teachers:', error);
     }
@@ -175,8 +175,8 @@ const TestimonialFormModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
               >
                 <option value="">Select a teacher...</option>
                 {teachers.map(teacher => (
-                  <option key={teacher.id || teacher._id} value={teacher.id || teacher._id}>
-                    {teacher.fullName || teacher.name} {teacher.subject ? `(${teacher.subject})` : ''}
+                  <option key={teacher.id} value={teacher.id}>
+                    {teacher.name} {teacher.subject ? `(${teacher.subject})` : ''}
                   </option>
                 ))}
               </select>
@@ -254,7 +254,7 @@ const TestimonialFormModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
             {!mediaPreview ? (
               <div
                 className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-blue-900 hover:bg-blue-50/50 transition-all cursor-pointer group"
-                onClick={() => document.getElementById('media-upload').click()}
+                onClick={() => document.getElementById('media-upload')?.click()}
               >
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-white transition-colors">

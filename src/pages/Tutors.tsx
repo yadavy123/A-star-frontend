@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, Award, Target, Users, Search, ArrowRight, GraduationCap, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-// @ts-expect-error: importing from JS module without declaration
 import { getPublicTeachers } from '../api/api/teacherApi';
 
 const TutorCard = ({ tutor }: { tutor: { id: string; name: string; photoUrl?: string; image?: string; subject?: string; bio?: string; category?: string } }) => {

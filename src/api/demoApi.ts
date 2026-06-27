@@ -163,6 +163,42 @@ async function getBoards(): Promise<Board[]> {
 }
 
 async function scheduleDemo(demoData: DemoScheduleRequest): Promise<DemoScheduleResponse> {
+    const requiredFields: { key: keyof DemoScheduleRequest; label: string }[] = [
+        { key: 'studentName', label: 'Student Name' },
+        { key: 'parentName', label: 'Parent Name' },
+        { key: 'gradeId', label: 'Grade' },
+        { key: 'boardId', label: 'Board' },
+        { key: 'emailId', label: 'Email' },
+        { key: 'mobileNumber', label: 'Mobile Number' },
+        { key: 'preferredDate', label: 'Preferred Date' },
+        { key: 'preferredTime', label: 'Preferred Time' },
+        { key: 'otp', label: 'OTP' },
+    ];
+    const missing = requiredFields.filter(f => !demoData[f.key]?.toString().trim());
+    if (missing.length > 0) {
+        throw new Error(
+            `Missing required fields: ${missing.map(f => f.label).join(', ')}`
+        );
+    }
+    if (/\d/.test(demoData.studentName)) {
+        throw new Error('Student name should not contain numbers.');
+    }
+    if (/\d/.test(demoData.parentName)) {
+        throw new Error('Parent name should not contain numbers.');
+    }
+    if (!/^\d{10}$/.test(demoData.mobileNumber.replace(/\D/g, ''))) {
+        throw new Error('Mobile number must be exactly 10 digits.');
+    }
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(demoData.emailId)) {
+        throw new Error('Please enter a valid email address.');
+    }
+    if (demoData.preferredDate < new Date().toISOString().split('T')[0]) {
+        throw new Error('Preferred date cannot be in the past.');
+    }
+    if (!demoData.otp || demoData.otp.length !== 6) {
+        throw new Error('OTP must be a 6-digit code.');
+    }
+
     if (USE_LOCAL_MODE) {
         // Simulate successful scheduling
         const response: DemoScheduleResponse = {
@@ -188,12 +224,12 @@ async function scheduleDemo(demoData: DemoScheduleRequest): Promise<DemoSchedule
     }
 }
 
-async function sendDemoOtp(email: string): Promise<OtpResponse> {
+async function sendDemoOtp(email: string, isResend: boolean = false): Promise<OtpResponse> {
     if (USE_LOCAL_MODE) {
-        // Simulate OTP sending
+        // Simulate OTP sending — always succeed, generate fresh timestamp
         return {
             success: true,
-            message: 'OTP sent successfully',
+            message: isResend ? 'OTP resent successfully' : 'OTP sent successfully',
             otpSent: true
         };
     }
@@ -201,7 +237,7 @@ async function sendDemoOtp(email: string): Promise<OtpResponse> {
     try {
         const response = await makeApiCall<OtpResponse>('POST', '/api/public/demo/schedule/send-otp', { 
             email,
-            isResend: false 
+            isResend
         });
         return response;
     } catch (error) {

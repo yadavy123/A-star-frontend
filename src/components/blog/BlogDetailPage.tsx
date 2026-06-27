@@ -137,7 +137,7 @@ export const BlogDetailPage = () => {
 
             <article>
                 {blog.featuredImageUrl && (
-                    <img src={resolveBlogImageUrl(blog.featuredImageUrl)} alt={blog.title} className="w-full h-64 md:h-80 object-cover rounded-xl mb-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <img src={resolveBlogImageUrl(blog.featuredImageUrl)} alt={blog.title} className="w-full aspect-video object-cover rounded-xl mb-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 )}
                 <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4 leading-tight">{blog.title}</h1>
 
@@ -155,8 +155,9 @@ export const BlogDetailPage = () => {
                     ref={(el) => {
                         if (!el) return;
                         el.querySelectorAll('img').forEach(img => {
+                            img.loading = 'lazy';
                             img.onerror = function () {
-                                this.remove();
+                                this.style.display = 'none';
                             };
                         });
                     }}

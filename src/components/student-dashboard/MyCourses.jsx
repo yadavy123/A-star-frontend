@@ -7,25 +7,25 @@ import toast from 'react-hot-toast'
 const ITEMS_PER_PAGE = 100
 
 const AVAILABLE_CLASSES = [
-  { id: 1, subject: 'UG Mathematics', level: 'Undergraduate', schedule: 'Mon, Wed, Fri – 6:00 PM IST', instructor: 'Ms. Neha Aggarwal' },
-  { id: 2, subject: 'UG Physics', level: 'Undergraduate', schedule: 'Tue, Thu – 5:30 PM IST', instructor: 'Mr. Arvind' },
-  { id: 3, subject: 'UG Chemistry', level: 'Undergraduate', schedule: 'Mon, Wed, Fri – 4:30 PM IST', instructor: 'B. Aishwarya' },
-  { id: 4, subject: 'Computer Science Fundamentals', level: 'Undergraduate', schedule: 'Tue, Thu, Sat – 7:00 PM IST', instructor: 'Mr. Ashwin Jain' },
-  { id: 5, subject: 'GRE Preparation', level: 'Post-Graduate', schedule: 'Sat, Sun – 6:00 PM IST', instructor: 'Ms. Ramya Rajamani' },
-  { id: 6, subject: 'CFA Level I', level: 'Professional', schedule: 'Thu, Sat – 8:00 PM IST', instructor: 'Financial Expert' },
-  { id: 7, subject: 'GMAT Coaching', level: 'Post-Graduate', schedule: 'Tue, Thu, Sat – 8:30 PM IST', instructor: 'Expert Coach' },
-  { id: 8, subject: 'Engineering Mathematics', level: 'Undergraduate', schedule: 'Mon, Wed – 6:30 PM IST', instructor: 'Mr. Ram G. Mohan' },
+  { id: 1, subject: 'IGCSE Mathematics', level: 'IGCSE', schedule: 'Mon, Wed, Fri – 6:00 PM IST', instructor: 'Ms. Neha Aggarwal' },
+  { id: 2, subject: 'IGCSE Physics', level: 'IGCSE', schedule: 'Tue, Thu – 5:30 PM IST', instructor: 'Mr. Arvind' },
+  { id: 3, subject: 'IGCSE Chemistry', level: 'IGCSE', schedule: 'Mon, Wed, Fri – 4:30 PM IST', instructor: 'B. Aishwarya' },
+  { id: 4, subject: 'AS Level Mathematics', level: 'AS Level', schedule: 'Tue, Thu, Sat – 7:00 PM IST', instructor: 'Mr. Ashwin Jain' },
+  { id: 5, subject: 'AS Level Physics', level: 'AS Level', schedule: 'Sat, Sun – 6:00 PM IST', instructor: 'Ms. Ramya Rajamani' },
+  { id: 6, subject: 'A Level Chemistry', level: 'A Level', schedule: 'Thu, Sat – 8:00 PM IST', instructor: 'Financial Expert' },
+  { id: 7, subject: 'A Level Mathematics', level: 'A Level', schedule: 'Tue, Thu, Sat – 8:30 PM IST', instructor: 'Expert Coach' },
+  { id: 8, subject: 'IGCSE English', level: 'IGCSE', schedule: 'Mon, Wed – 6:30 PM IST', instructor: 'Mr. Ram G. Mohan' },
 ]
 
-const EMOJI_MAP = { 'Mathematics': '📐', 'Physics': '⚡', 'Chemistry': '🧪', 'Computer Science': '💻', 'GRE': '📝', 'CFA': '💼', 'GMAT': '🎯', 'Engineering': '⚙️' }
+const EMOJI_MAP = { 'Mathematics': '📐', 'Physics': '⚡', 'Chemistry': '🧪', 'English': '📖' }
 const getEmoji = (subject) => { for (const [k, v] of Object.entries(EMOJI_MAP)) { if (subject.includes(k)) return v } return '📚' }
 
 const MOCK_COURSES = [
-  { id: 1, subject: 'UG Mathematics', level: 'Undergraduate', instructor: 'Ms. Neha Aggarwal', progress: 75, totalClasses: 40, completedClasses: 30, nextClass: 'Today, 6:00 PM', status: 'active' },
-  { id: 2, subject: 'UG Physics', level: 'Undergraduate', instructor: 'Mr. Arvind', progress: 60, totalClasses: 35, completedClasses: 21, nextClass: 'Tomorrow, 5:30 PM', status: 'active' },
-  { id: 3, subject: 'UG Chemistry', level: 'Undergraduate', instructor: 'B. Aishwarya', progress: 85, totalClasses: 30, completedClasses: 25, nextClass: 'Jan 22, 5:00 PM', status: 'active' },
-  { id: 4, subject: 'Computer Science Fundamentals', level: 'Undergraduate', instructor: 'Mr. Ashwin Jain', progress: 45, totalClasses: 38, completedClasses: 17, nextClass: 'Jan 23, 7:00 PM', status: 'active' },
-  { id: 5, subject: 'GRE Preparation', level: 'Post-Graduate', instructor: 'Ms. Ramya Rajamani', progress: 100, totalClasses: 25, completedClasses: 25, nextClass: 'Completed', status: 'completed' },
+  { id: 1, subject: 'IGCSE Mathematics', level: 'IGCSE', instructor: 'Ms. Neha Aggarwal', progress: 75, totalClasses: 40, completedClasses: 30, nextClass: 'Today, 6:00 PM', status: 'active' },
+  { id: 2, subject: 'IGCSE Physics', level: 'IGCSE', instructor: 'Mr. Arvind', progress: 60, totalClasses: 35, completedClasses: 21, nextClass: 'Tomorrow, 5:30 PM', status: 'active' },
+  { id: 3, subject: 'IGCSE Chemistry', level: 'IGCSE', instructor: 'B. Aishwarya', progress: 85, totalClasses: 30, completedClasses: 25, nextClass: 'Jan 22, 5:00 PM', status: 'active' },
+  { id: 4, subject: 'AS Level Mathematics', level: 'AS Level', instructor: 'Mr. Ashwin Jain', progress: 45, totalClasses: 38, completedClasses: 17, nextClass: 'Jan 23, 7:00 PM', status: 'active' },
+  { id: 5, subject: 'A Level Chemistry', level: 'A Level', instructor: 'Financial Expert', progress: 100, totalClasses: 25, completedClasses: 25, nextClass: 'Completed', status: 'completed' },
 ]
 
 export default function MyCourses() {
@@ -80,7 +80,7 @@ export default function MyCourses() {
 
   if (loading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#1e3a8a]"></div>
+      <div className="animate-spin rounded-[100px] h-10 w-10 border-t-2 border-b-2 border-[#0052ff]"></div>
     </div>
   )
 
@@ -89,19 +89,20 @@ export default function MyCourses() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold" style={{ color: '#1e3a8a' }}>My Courses</h2>
-          <p className="text-gray-500 text-sm mt-0.5">Track your enrolled courses and progress</p>
+          <h2 className="text-2xl font-normal text-[#0a0b0d]">My Courses</h2>
+          <p className="text-[#5b616e] text-sm mt-0.5">Track your enrolled courses and progress</p>
         </div>
         <button
           onClick={() => setShowEnrollModal(true)}
-          className="px-5 py-2.5 rounded-lg font-semibold text-sm border-2 border-[#1e3a8a] text-[#1e3a8a] bg-white hover:bg-[#1e3a8a] hover:text-white transition-all"
+          className="px-5 py-3 bg-[#0052ff] text-white rounded-[100px] text-sm font-semibold"
+          style={{ height: 44, lineHeight: 1.15 }}
         >
           + Enroll in a Course
         </button>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+      <div className="flex flex-wrap gap-2 bg-white p-3 rounded-[24px] border border-[#dee1e6]">
         {[
           { key: 'all', label: `All (${courses.length})` },
           { key: 'active', label: `Active (${courses.filter(c => c.status === 'active').length})` },
@@ -110,10 +111,10 @@ export default function MyCourses() {
           <button
             key={key}
             onClick={() => handleFilterChange(key)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all border ${
+            className={`px-4 py-1.5 rounded-[12px] text-sm font-semibold transition-all border ${
               filter === key
-                ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-[#1e3a8a] hover:text-[#1e3a8a]'
+                ? 'bg-[#0052ff] text-white border-[#0052ff]'
+                : 'bg-white text-[#5b616e] border-[#dee1e6] hover:border-[#0052ff] hover:text-[#0052ff]'
             }`}
           >
             {label}
@@ -122,19 +123,19 @@ export default function MyCourses() {
       </div>
 
       {/* Courses Table */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white rounded-[24px] border border-[#dee1e6] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2" style={{ borderBottomColor: '#1e3a8a' }}>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Course</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Instructor</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Level</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Progress</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Classes</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Next Class</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Status</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Action</th>
+              <tr className="border-b border-[#dee1e6] bg-[#f7f7f7]">
+                <th className="text-left px-5 py-3 font-semibold text-[#0a0b0d]">Course</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#0a0b0d]">Instructor</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#0a0b0d]">Level</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#0a0b0d]">Progress</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#0a0b0d]">Classes</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#0a0b0d]">Next Class</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#0a0b0d]">Status</th>
+                <th className="text-left px-5 py-3 font-semibold text-[#0a0b0d]">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -142,35 +143,35 @@ export default function MyCourses() {
                 <tr>
                   <td colSpan={8} className="px-5 py-12 text-center">
                     <p className="text-4xl mb-3">📚</p>
-                    <p className="text-gray-600 font-medium">No courses found.</p>
-                    <button onClick={() => setShowEnrollModal(true)} className="mt-4 px-5 py-2 rounded-lg text-sm font-semibold border-2 border-[#1e3a8a] text-[#1e3a8a] bg-white hover:bg-[#1e3a8a] hover:text-white transition-all">
+                    <p className="text-[#5b616e] font-medium">No courses found.</p>
+                    <button onClick={() => setShowEnrollModal(true)} className="mt-4 px-5 py-3 bg-[#0052ff] text-white rounded-[100px] text-sm font-semibold" style={{ height: 44, lineHeight: 1.15 }}>
                       Enroll in a Course
                     </button>
                   </td>
                 </tr>
               ) : paginated.map((course) => (
-                <tr key={course.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <tr key={course.id} className="border-b border-[#dee1e6] hover:bg-[#f7f7f7] transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{getEmoji(course.subject)}</span>
-                      <p className="font-semibold text-gray-800">{course.subject}</p>
+                      <p className="font-semibold text-[#0a0b0d]">{course.subject}</p>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-gray-700">👨‍🏫 {course.instructor}</td>
-                  <td className="px-5 py-4 text-gray-500">{course.level}</td>
+                  <td className="px-5 py-4 text-[#5b616e]">👨‍🏫 {course.instructor}</td>
+                  <td className="px-5 py-4 text-[#7c828a]">{course.level}</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2 min-w-[100px]">
-                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${course.progress}%`, backgroundColor: course.status === 'completed' ? '#28a745' : '#f59e0b' }} />
+                      <div className="flex-1 h-2 bg-[#f7f7f7] rounded-[100px] overflow-hidden">
+                        <div className="h-full rounded-[100px]" style={{ width: `${course.progress}%`, backgroundColor: course.status === 'completed' ? '#28a745' : '#f59e0b' }} />
                       </div>
-                      <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#1e3a8a' }}>{course.progress}%</span>
+                      <span className="text-xs font-semibold text-[#0a0b0d] whitespace-nowrap">{course.progress}%</span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 font-bold text-gray-800">{course.completedClasses}/{course.totalClasses}</td>
-                  <td className="px-5 py-4 text-gray-700 text-xs">{course.nextClass}</td>
+                  <td className="px-5 py-4 font-semibold text-[#0a0b0d]">{course.completedClasses}/{course.totalClasses}</td>
+                  <td className="px-5 py-4 text-[#5b616e] text-xs">{course.nextClass}</td>
                   <td className="px-5 py-4">
                     <span
-                      className="px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap"
+                      className="px-[10px] py-[6px] rounded-[100px] text-xs font-semibold whitespace-nowrap"
                       style={{
                         backgroundColor: course.status === 'completed' ? '#e8f5e9' : '#fff8e1',
                         color: course.status === 'completed' ? '#28a745' : '#b45309',
@@ -182,8 +183,8 @@ export default function MyCourses() {
                   <td className="px-5 py-4">
                     <button
                       onClick={() => setDetailCourse(course)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 hover:bg-[#1e3a8a] hover:text-white transition-all whitespace-nowrap"
-                      style={{ borderColor: '#1e3a8a', color: '#1e3a8a', backgroundColor: 'white' }}
+                      className="px-5 py-3 rounded-[100px] text-xs font-semibold border border-[#dee1e6] text-[#0a0b0d] bg-white"
+                      style={{ height: 44, lineHeight: 1.15 }}
                     >
                       View Details
                     </button>
@@ -208,34 +209,34 @@ export default function MyCourses() {
       {/* ── Enroll Modal ── */}
       {showEnrollModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowEnrollModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setShowEnrollModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
-            <h3 className="text-xl font-bold mb-1" style={{ color: '#1e3a8a' }}>Enroll in a Course</h3>
-            <p className="text-sm text-gray-500 mb-5">Select a running class to join</p>
+          <div className="bg-white rounded-[24px] border border-[#dee1e6] w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowEnrollModal(false)} className="absolute top-4 right-4 text-[#a8acb3] hover:text-[#5b616e] text-xl">✕</button>
+            <h3 className="text-xl font-semibold text-[#0a0b0d] mb-1">Enroll in a Course</h3>
+            <p className="text-sm text-[#5b616e] mb-5">Select a running class to join</p>
             <form onSubmit={handleEnrollSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Name</label>
+                  <label className="block text-xs font-semibold text-[#5b616e] mb-1">Name</label>
                   <input 
                     value={enrollName} 
                     onChange={e => setEnrollName(e.target.value)}
                     placeholder="Your name"
-                    className="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#1e3a8a] bg-white" 
+                    className="w-full px-4 py-3 text-sm border border-[#dee1e6] rounded-[12px] focus:outline-none focus:border-[#0052ff] bg-white" 
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+                  <label className="block text-xs font-semibold text-[#5b616e] mb-1">Email</label>
                   <input 
                     value={enrollEmail} 
                     onChange={e => setEnrollEmail(e.target.value)}
                     placeholder="Your email"
-                    className="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#1e3a8a] bg-white" 
+                    className="w-full px-4 py-3 text-sm border border-[#dee1e6] rounded-[12px] focus:outline-none focus:border-[#0052ff] bg-white" 
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Select Class <span className="text-red-500">*</span></label>
-                <select value={selectedSubject} onChange={e => setSelectedSubject(e.target.value)} required className="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#1e3a8a] bg-white">
+                <label className="block text-xs font-semibold text-[#0a0b0d] mb-1">Select Class <span className="text-red-500">*</span></label>
+                <select value={selectedSubject} onChange={e => setSelectedSubject(e.target.value)} required className="w-full px-4 py-3 text-sm border border-[#dee1e6] rounded-[12px] focus:outline-none focus:border-[#0052ff] bg-white">
                   <option value="">-- Choose a class --</option>
                   {AVAILABLE_CLASSES.map(cls => (
                     <option key={cls.id} value={cls.subject}>{cls.subject} — {cls.level} ({cls.schedule})</option>
@@ -243,12 +244,12 @@ export default function MyCourses() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Message (optional)</label>
-                <textarea value={enrollMessage} onChange={e => setEnrollMessage(e.target.value)} placeholder="Any timing preference or requirements..." rows={2} className="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#1e3a8a] resize-none" />
+                <label className="block text-xs font-semibold text-[#0a0b0d] mb-1">Message (optional)</label>
+                <textarea value={enrollMessage} onChange={e => setEnrollMessage(e.target.value)} placeholder="Any timing preference or requirements..." rows={2} className="w-full px-4 py-3 text-sm border border-[#dee1e6] rounded-[12px] focus:outline-none focus:border-[#0052ff] resize-none" />
               </div>
               <div className="flex gap-3 pt-1">
-                <button type="submit" className="flex-1 py-2.5 rounded-lg font-semibold text-sm bg-[#1e3a8a] text-white hover:bg-blue-800 transition-all">Confirm Enrollment</button>
-                <button type="button" onClick={() => setShowEnrollModal(false)} className="flex-1 py-2.5 rounded-lg font-semibold text-sm border-2 border-gray-200 text-gray-600 bg-white hover:border-gray-400 transition-all">Cancel</button>
+                <button type="submit" className="flex-1 px-5 py-3 bg-[#0052ff] text-white rounded-[100px] text-sm font-semibold" style={{ height: 44, lineHeight: 1.15 }}>Confirm Enrollment</button>
+                <button type="button" onClick={() => setShowEnrollModal(false)} className="flex-1 px-5 py-3 rounded-[100px] text-sm font-semibold border border-[#dee1e6] text-[#5b616e] bg-white" style={{ height: 44, lineHeight: 1.15 }}>Cancel</button>
               </div>
             </form>
           </div>
@@ -258,16 +259,16 @@ export default function MyCourses() {
       {/* ── Course Detail Modal ── */}
       {detailCourse && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setDetailCourse(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setDetailCourse(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
+          <div className="bg-white rounded-[24px] border border-[#dee1e6] w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setDetailCourse(null)} className="absolute top-4 right-4 text-[#a8acb3] hover:text-[#5b616e] text-xl">✕</button>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 rounded-xl bg-gray-50 flex items-center justify-center text-3xl">{getEmoji(detailCourse.subject)}</div>
+              <div className="w-14 h-14 rounded-[12px] bg-[#f7f7f7] flex items-center justify-center text-3xl">{getEmoji(detailCourse.subject)}</div>
               <div>
-                <h3 className="font-bold text-lg" style={{ color: '#1e3a8a' }}>{detailCourse.subject}</h3>
-                <p className="text-gray-500 text-sm">{detailCourse.level}</p>
+                <h3 className="font-semibold text-lg text-[#0a0b0d]">{detailCourse.subject}</h3>
+                <p className="text-[#5b616e] text-sm">{detailCourse.level}</p>
               </div>
             </div>
-            <div className="h-0.5 rounded-full mb-4" style={{ backgroundColor: '#f59e0b' }} />
+            <div className="h-0.5 rounded-[100px] mb-4" style={{ backgroundColor: '#f59e0b' }} />
             <div className="space-y-3 text-sm">
               {[
                 ['Instructor', detailCourse.instructor],
@@ -277,15 +278,15 @@ export default function MyCourses() {
                 ['Status', detailCourse.status === 'completed' ? 'Completed' : 'Active'],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between">
-                  <span className="text-gray-500">{label}</span>
-                  <span className={`font-semibold ${label === 'Status' ? (detailCourse.status === 'completed' ? 'text-green-600' : 'text-amber-600') : 'text-gray-800'}`}>{value}</span>
+                  <span className="text-[#5b616e]">{label}</span>
+                  <span className={`font-semibold ${label === 'Status' ? (detailCourse.status === 'completed' ? 'text-green-600' : 'text-amber-600') : 'text-[#0a0b0d]'}`}>{value}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-4 w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${detailCourse.progress}%`, backgroundColor: detailCourse.status === 'completed' ? '#28a745' : '#f59e0b' }} />
+            <div className="mt-4 w-full h-3 bg-[#f7f7f7] rounded-[100px] overflow-hidden">
+              <div className="h-full rounded-[100px]" style={{ width: `${detailCourse.progress}%`, backgroundColor: detailCourse.status === 'completed' ? '#28a745' : '#f59e0b' }} />
             </div>
-            <button onClick={() => setDetailCourse(null)} className="mt-5 w-full py-2.5 rounded-lg font-semibold text-sm border-2 border-[#1e3a8a] text-[#1e3a8a] bg-white hover:bg-[#1e3a8a] hover:text-white transition-all">Close</button>
+            <button onClick={() => setDetailCourse(null)} className="mt-5 w-full px-5 py-3 rounded-[100px] font-semibold text-sm border border-[#dee1e6] text-[#0a0b0d] bg-white" style={{ height: 44, lineHeight: 1.15 }}>Close</button>
           </div>
         </div>
       )}

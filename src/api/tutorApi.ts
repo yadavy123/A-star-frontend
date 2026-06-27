@@ -102,13 +102,7 @@ function readTutors(): Tutor[] {
         const parsed = raw ? (JSON.parse(raw) as Tutor[]) : null;
 
         if (parsed && parsed.length > 0) {
-            // Migration for categories
-            return parsed.map(t => {
-                if (t.category === 'AS Level' || t.category === 'A Level' || t.category === 'SAT') {
-                    return { ...t, category: 'AS/A Level' };
-                }
-                return t as Tutor;
-            });
+            return parsed as Tutor[];
         }
         return defaultTutors;
     } catch {
@@ -146,7 +140,7 @@ async function tryRequest(path: string, options?: RequestInit) {
                     throw new Error(`Request failed with status ${response.status}`);
                 }
 
-                setActiveApiBaseUrl(baseUrl);
+                setActiveApiBaseUrl();
                 return response.json();
             } catch (error) {
                 lastError = error instanceof Error ? error : new Error('Network error');
@@ -159,7 +153,7 @@ async function tryRequest(path: string, options?: RequestInit) {
 
 export async function getAllTutors() {
     try {
-        return await tryRequest('/tutors/all', { method: 'GET' });
+        return await tryRequest('/api/teachers', { method: 'GET' });
     } catch {
         return readTutors();
     }
@@ -167,7 +161,7 @@ export async function getAllTutors() {
 
 export async function addTutor(tutorData: Omit<Tutor, '_id'>) {
     try {
-        return await tryRequest('/tutors/add', {
+        return await tryRequest('/api/admin/teachers', {
             method: 'POST',
             body: JSON.stringify(tutorData)
         });
@@ -181,7 +175,7 @@ export async function addTutor(tutorData: Omit<Tutor, '_id'>) {
 
 export async function updateTutor(id: string, tutorData: Partial<Tutor>) {
     try {
-        return await tryRequest(`/tutors/${id}`, {
+        return await tryRequest(`/api/admin/teachers/${id}`, {
             method: 'PUT',
             body: JSON.stringify(tutorData)
         });
@@ -195,7 +189,7 @@ export async function updateTutor(id: string, tutorData: Partial<Tutor>) {
 
 export async function deleteTutor(id: string) {
     try {
-        return await tryRequest(`/tutors/${id}`, { method: 'DELETE' });
+        return await tryRequest(`/api/admin/teachers/${id}`, { method: 'DELETE' });
     } catch {
         const tutors = readTutors();
         const updated = tutors.filter(t => t._id !== id);

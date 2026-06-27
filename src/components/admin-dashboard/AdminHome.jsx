@@ -51,33 +51,32 @@ export default function AdminHome({ setCurrentView }) {
   ]
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-      <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6 mb-6">
-        <h1 className="text-2xl font-bold text-blue-900">Admin Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Welcome back! Here's a live overview of A Star Classes.</p>
+    <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6">
+      <div className="mb-8">
+        <h1 className="text-[32px] font-normal text-[#0a0b0d]" style={{ lineHeight: 1.13, letterSpacing: '-0.4px' }}>Admin Dashboard</h1>
+        <p className="text-[#5b616e] text-sm mt-1" style={{ lineHeight: 1.5 }}>Welcome back! Here's a live overview of A Star Classes.</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {statCards.map(s => (
           <button key={s.label} onClick={() => setCurrentView(s.id)}
-            className="rounded-xl shadow-sm p-4 border-l-4 text-left hover:shadow-md transition-all bg-white"
-            style={{ borderLeftColor: s.color }}>
-            <p className="text-xs font-semibold text-gray-500 mb-1">{s.label}</p>
-            <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
+            className="rounded-[24px] border border-[#dee1e6] p-[24px] text-left hover:bg-[#f7f7f7] transition-all bg-white">
+            <p className="text-[12px] font-semibold text-[#7c828a] mb-1 uppercase tracking-wide" style={{ lineHeight: 1.5 }}>{s.label}</p>
+            <p className="text-[32px] font-normal text-[#0a0b0d]" style={{ lineHeight: 1.0, letterSpacing: '-1px' }}>{s.value}</p>
           </button>
         ))}
       </div>
 
-      <h2 className="text-lg font-bold mb-4 text-blue-900">Management Sections</h2>
+      <h2 className="text-[18px] font-semibold mb-[20px] text-[#0a0b0d]" style={{ lineHeight: 1.33 }}>Management Sections</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {menuCards.map(card => (
           <button key={card.id} onClick={() => setCurrentView(card.id)}
-            className="bg-white rounded-xl shadow-sm p-4 text-left hover:shadow-md hover:border-blue-900 border-2 border-transparent transition-all">
-            <div className="p-2 rounded-lg mb-3 w-fit bg-blue-50">
-              <card.icon className="w-5 h-5 text-blue-900" />
+            className="bg-white rounded-[24px] border border-[#dee1e6] p-[24px] text-left hover:border-[#0052ff] transition-all">
+            <div className="p-2 rounded-[12px] mb-3 w-fit bg-[#f7f7f7]">
+              <card.icon className="w-5 h-5 text-[#0052ff]" />
             </div>
-            <h3 className="font-semibold text-sm mb-1 text-blue-900">{card.label}</h3>
-            <p className="text-xs text-gray-500 leading-tight">{card.description}</p>
+            <h3 className="font-semibold text-sm mb-1 text-[#0a0b0d]" style={{ lineHeight: 1.25 }}>{card.label}</h3>
+            <p className="text-xs text-[#5b616e]" style={{ lineHeight: 1.5 }}>{card.description}</p>
           </button>
         ))}
       </div>

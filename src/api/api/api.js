@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.DEV ? window.location.origin : 'https://api.astarclasses.com';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://api.astarclasses.com').replace(/\/$/, '');
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -50,9 +50,9 @@ api.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.error('API Response Error:', error.response?.status, error.config?.url);
-        console.error('Error data:', error.response?.data);
-        console.error('Error message:', error.message);
+        if (error.response?.status !== 500) {
+            console.warn('API Error:', error.response?.status, error.config?.url);
+        }
 
         if (error.response?.status === 401) {
             // Clear stale auth tokens only on 401 (Unauthorized — token missing/invalid).
@@ -61,6 +61,8 @@ api.interceptors.response.use(
             localStorage.removeItem('icfy_user');
             localStorage.removeItem('icfy_role');
             localStorage.removeItem('adminAuth');
+            // Sync React state so UI doesn't show stale user
+            window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         }
 
         // Normalize error object for components to use easily

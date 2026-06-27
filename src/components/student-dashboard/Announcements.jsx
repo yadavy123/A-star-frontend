@@ -77,65 +77,65 @@ export default function Announcements() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-white border-b-2 border-blue-900 rounded-xl p-6">
-        <h2 className="text-2xl font-bold text-blue-900">Announcements</h2>
-        <p className="text-gray-500 text-sm mt-1">Stay updated with important notices and updates</p>
+      <div>
+        <h2 className="text-2xl font-normal text-[#0a0b0d]" style={{ lineHeight: 1.15, letterSpacing: '-0.5px' }}>Announcements</h2>
+        <p className="text-[#7c828a] text-sm mt-1">Stay updated with important notices and updates</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-700">
-          <h3 className="text-sm font-semibold text-gray-600 mb-2">Total Announcements</h3>
+        <div className="bg-white border border-[#dee1e6] rounded-[24px] p-6 border-l-4 border-blue-700">
+          <h3 className="text-sm font-semibold text-[#5b616e] mb-2">Total Announcements</h3>
           <p className="text-4xl font-bold text-blue-900">{announcements.length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-400">
-          <h3 className="text-sm font-semibold text-gray-600 mb-2">High Priority</h3>
+        <div className="bg-white border border-[#dee1e6] rounded-[24px] p-6 border-l-4 border-red-400">
+          <h3 className="text-sm font-semibold text-[#5b616e] mb-2">High Priority</h3>
           <p className="text-4xl font-bold text-red-500">{highPriorityCount}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
-          <h3 className="text-sm font-semibold text-gray-600 mb-2">This Week</h3>
+        <div className="bg-white border border-[#dee1e6] rounded-[24px] p-6 border-l-4 border-green-500">
+          <h3 className="text-sm font-semibold text-[#5b616e] mb-2">This Week</h3>
           <p className="text-4xl font-bold text-green-600">5</p>
         </div>
       </div>
 
       {/* Category Filters */}
-      <div className="bg-white rounded-xl shadow-md p-4">
+      <div className="bg-white border border-[#dee1e6] rounded-[24px] p-4">
         <div className="flex flex-wrap gap-3">
-          <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${filter === 'all' ? 'bg-blue-900 text-white shadow-md' : 'text-gray-700 hover:bg-white'}`}>All</button>
-          <button onClick={() => setFilter('exam')} className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${filter === 'exam' ? 'bg-blue-900 text-white shadow-md' : 'text-gray-700 hover:bg-white'}`}>Exam</button>
+          <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${filter === 'all' ? 'bg-[#0052ff] text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'}`}>All</button>
+          <button onClick={() => setFilter('exam')} className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${filter === 'exam' ? 'bg-[#0052ff] text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'}`}>Exam</button>
           <button
             onClick={() => setFilter('academic')}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-              filter === 'academic' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+            className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+              filter === 'academic' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
             }`}
-            style={{ backgroundColor: filter === 'academic' ? '#1e3a8a' : 'transparent' }}
+            style={{ backgroundColor: filter === 'academic' ? '#0052ff' : 'transparent' }}
           >
             Academic
           </button>
           <button
             onClick={() => setFilter('class')}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-              filter === 'class' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+            className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+              filter === 'class' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
             }`}
-            style={{ backgroundColor: filter === 'class' ? '#1e3a8a' : 'transparent' }}
+            style={{ backgroundColor: filter === 'class' ? '#0052ff' : 'transparent' }}
           >
             Class
           </button>
           <button
             onClick={() => setFilter('event')}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-              filter === 'event' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+            className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+              filter === 'event' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
             }`}
-            style={{ backgroundColor: filter === 'event' ? '#1e3a8a' : 'transparent' }}
+            style={{ backgroundColor: filter === 'event' ? '#0052ff' : 'transparent' }}
           >
             Events
           </button>
           <button
             onClick={() => setFilter('payment')}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
-              filter === 'payment' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-white'
+            className={`px-4 py-2 rounded-[12px] font-semibold transition-all text-sm ${
+              filter === 'payment' ? 'text-white' : 'text-[#5b616e] hover:bg-[#f7f7f7]'
             }`}
-            style={{ backgroundColor: filter === 'payment' ? '#1e3a8a' : 'transparent' }}
+            style={{ backgroundColor: filter === 'payment' ? '#0052ff' : 'transparent' }}
           >
             Payment
           </button>
@@ -147,7 +147,7 @@ export default function Announcements() {
         {paginatedAnnouncements.map((announcement) => (
           <div
             key={announcement.id}
-            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all border-l-4"
+            className="bg-white border border-[#dee1e6] rounded-[24px] p-6 transition-all border-l-4"
             style={{ borderLeftColor: getPriorityColor(announcement.priority) }}
           >
             <div className="flex items-start gap-4">
@@ -155,24 +155,24 @@ export default function Announcements() {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
-                      <h3 className="text-xl font-bold" style={{ color: '#1e3a8a' }}>
+                      <h3 className="text-xl font-semibold text-[#0a0b0d]">
                         {announcement.title}
                       </h3>
                       <span
-                        className="px-3 py-1 rounded-full text-xs font-bold text-white"
+                        className="px-3 py-1 rounded-[100px] text-xs font-semibold text-white"
                         style={{ backgroundColor: getPriorityColor(announcement.priority) }}
                       >
                         {announcement.priority.toUpperCase()}
                       </span>
-                      <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ backgroundColor: '#f59e0b', color: 'white' }}>
+                      <span className="px-3 py-1 rounded-[100px] text-xs font-semibold" style={{ backgroundColor: '#f59e0b', color: 'white' }}>
                         {getCategoryName(announcement.category)}
                       </span>
                     </div>
                   </div>
-                  <span className="text-sm text-gray-600 whitespace-nowrap ml-4">{announcement.date}</span>
+                  <span className="text-sm text-[#5b616e] whitespace-nowrap ml-4">{announcement.date}</span>
                 </div>
-                <p className="text-gray-700 mb-3">{announcement.message}</p>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <p className="text-[#5b616e] mb-3">{announcement.message}</p>
+                <div className="flex items-center gap-2 text-sm text-[#5b616e]">
                   <span className="font-semibold">Posted by:</span>
                   <span>{announcement.postedBy}</span>
                 </div>
@@ -193,11 +193,11 @@ export default function Announcements() {
       />
 
       {filteredAnnouncements.length === 0 && (
-        <div className="bg-white rounded-xl shadow-md p-12 text-center">
-          <h3 className="text-2xl font-bold mb-2" style={{ color: '#1e3a8a' }}>
+        <div className="bg-white border border-[#dee1e6] rounded-[24px] p-12 text-center">
+          <h3 className="text-2xl font-semibold mb-2 text-[#0a0b0d]">
             No Announcements
           </h3>
-          <p className="text-gray-600">No announcements found for this category.</p>
+          <p className="text-[#5b616e]">No announcements found for this category.</p>
         </div>
       )}
     </div>

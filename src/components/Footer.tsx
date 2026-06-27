@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, X, FileText } from 'lucide-react';
 import { FaWhatsapp, FaTwitter } from 'react-icons/fa';
@@ -133,11 +133,11 @@ const Footer = () => {
                   +91 9187 385 124
                 </a>
                 <a
-                  href="https://wa.me/919187385124"
+                  href="https://wa.me/918073982848"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 text-green-500 hover:text-green-400 transition-colors"
-                  title="WhatsApp WebArya"
+                  title="WhatsApp"
                 >
                   <FaWhatsapp size={12} />
                   WhatsApp

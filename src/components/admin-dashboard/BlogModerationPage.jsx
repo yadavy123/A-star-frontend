@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { blogApi, adminApi, getIsLocalMode } from '../../api/blogApi';
-import { CheckCircle, XCircle, Edit3, Eye, X, ArrowLeft, Save, AlertTriangle, Trash2, MessageSquare } from 'lucide-react';
+import { blogApi, adminApi, getIsLocalMode, resolveBlogImageUrl } from '../../api/blogApi';
+import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
+import { CheckCircle, XCircle, Edit3, Eye, X, ArrowLeft, Save, AlertTriangle, Trash2, MessageSquare, Loader2 } from 'lucide-react';
 import React from 'react';
 
 const Card = ({ className = '', children, onClick }) => (
@@ -65,6 +66,7 @@ export const BlogModerationPage = ({ onBack }) => {
     const [comments, setComments] = useState([]);
     const [commentsLoading, setCommentsLoading] = useState(false);
     const [commentsModal, setCommentsModal] = useState(null); // blog object for standalone comments modal
+    const [imageUploading, setImageUploading] = useState(false);
 
     const fetchBlogs = async (params = {}) => {
         setLoading(true);
@@ -214,22 +216,28 @@ export const BlogModerationPage = ({ onBack }) => {
                                     <div className="flex-1">
                                         <Input value={editForm.featuredImageUrl} onChange={(e) => setEditForm({ ...editForm, featuredImageUrl: e.target.value })} placeholder="https://images.unsplash.com/..." />
                                     </div>
-                                    <label className="shrink-0 cursor-pointer">
-                                        <div className="px-4 py-2 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition shadow-sm">
-                                            Upload File
+                                    <label className={`shrink-0 cursor-pointer ${imageUploading ? 'opacity-60 pointer-events-none' : ''}`}>
+                                        <div className="px-4 py-2 bg-blue-900 text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition shadow-sm flex items-center gap-1.5">
+                                            {imageUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                                            {imageUploading ? 'Uploading...' : 'Upload File'}
                                         </div>
                                         <input
                                             type="file"
                                             className="hidden"
-                                            accept="image/*"
-                                            onChange={(e) => {
+                                            accept=".jpg,.jpeg,.png,.webp"
+                                            disabled={imageUploading}
+                                            onChange={async (e) => {
                                                 const file = e.target.files[0];
-                                                if (file) {
-                                                    const reader = new FileReader();
-                                                    reader.onloadend = () => {
-                                                        setEditForm({ ...editForm, featuredImageUrl: reader.result });
-                                                    };
-                                                    reader.readAsDataURL(file);
+                                                if (!file) return;
+                                                setImageUploading(true);
+                                                try {
+                                                    const url = await uploadToCloudinary(file);
+                                                    setEditForm({ ...editForm, featuredImageUrl: url });
+                                                } catch {
+                                                    toast.error('Failed to upload image');
+                                                } finally {
+                                                    setImageUploading(false);
+                                                    e.target.value = '';
                                                 }
                                             }}
                                         />
@@ -276,8 +284,9 @@ export const BlogModerationPage = ({ onBack }) => {
                     ) : (
                         <>
                             {viewBlog.featuredImageUrl && (
-                                <img src={viewBlog.featuredImageUrl} alt={viewBlog.title}
-                                    className="w-full h-64 md:h-80 object-cover rounded-xl mb-8 border border-border-secondary" />
+                                <img src={resolveBlogImageUrl(viewBlog.featuredImageUrl)} alt={viewBlog.title}
+                                    className="w-full aspect-video object-cover rounded-xl mb-8 border border-border-secondary"
+                                    onError={(e) => { e.target.style.display = 'none'; }} />
                             )}
                             <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4 leading-tight">{viewBlog.title}</h1>
                             <p className="text-text-secondary text-lg mb-6 leading-relaxed italic">{viewBlog.excerpt}</p>
@@ -303,8 +312,9 @@ export const BlogModerationPage = ({ onBack }) => {
                                 ref={(el) => {
                                     if (!el) return;
                                     el.querySelectorAll('img').forEach(img => {
+                                        img.loading = 'lazy';
                                         img.onerror = function () {
-                                            this.remove();
+                                            this.style.display = 'none';
                                         };
                                     });
                                 }}

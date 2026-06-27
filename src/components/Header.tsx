@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, Search } from 'lucide-react';
+import { Menu, X, ChevronDown, Search, LogOut } from 'lucide-react';
 import logoImage from '../assets/AStarClasses logo (31 March).png';
 import { searchIndex } from '../data/searchIndex.ts';
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ const Header = () => {
   const [showSearch, setShowSearch] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
 
   const filteredResults = searchQuery.trim()
     ? searchIndex.filter((entry) => {
@@ -277,6 +279,26 @@ const Header = () => {
               >
                 Contact Us
               </Link>
+              {/* Auth - Mobile */}
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => { logout(); navigate('/'); setIsOpen(false); }}
+                    className="flex items-center gap-2 text-red-600 hover:text-red-800 hover:bg-red-50 font-medium px-2 py-2.5 rounded-lg text-sm transition-all w-full"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="block text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 font-medium px-2 py-2.5 rounded-lg text-sm transition-all"
+                >
+                  Login
+                </Link>
+              )}
 
               {/* Mobile Search Bar */}
               <div className="px-2 py-3 mt-2">

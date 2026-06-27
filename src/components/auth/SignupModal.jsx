@@ -87,7 +87,7 @@ export default function SignupModal({ isOpen, onClose, onOpenLogin }) {
               ×
             </button>
           </div>
-          <p className="text-blue-200 mt-2">Create your iThinkLearn account</p>
+          <p className="text-blue-200 mt-2">Create your A-star class account</p>
         </div>
         {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-6">

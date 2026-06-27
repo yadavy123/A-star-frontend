@@ -1,16 +1,22 @@
-import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, type FormEvent } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.tsx';
 import { X, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isAdmin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; form?: string }>({});
+
+  useEffect(() => {
+    if (isAuthenticated && isAdmin) {
+      navigate('/admin-dashboard', { replace: true });
+    }
+  }, [isAuthenticated, isAdmin, navigate]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -42,7 +48,8 @@ const AdminLogin = () => {
       return;
     }
 
-    navigate('/admin-dashboard');
+    // Defer navigation to next task so React commits auth state first
+    setTimeout(() => navigate('/admin-dashboard', { replace: true }), 0);
   };
 
   return (
@@ -64,12 +71,6 @@ const AdminLogin = () => {
         </div>
 
         <div className="p-10 pt-12">
-          {errors.form && (
-            <div className="rounded-2xl bg-red-50 px-4 py-4 text-sm text-red-600 mb-8 border border-red-100 flex items-start gap-3">
-              <span className="shrink-0 mt-0.5">⚠️</span>
-              <p className="font-bold">{errors.form}</p>
-            </div>
-          )}
 
           <form className="space-y-8" onSubmit={handleLogin}>
             <div>
@@ -121,7 +122,19 @@ const AdminLogin = () => {
               {isSubmitting ? 'Authenticating...' : 'Secure Login'}
             </button>
 
-            <div className="text-center mt-8">
+            {errors.form && (
+              <div className="rounded-2xl bg-red-50 px-4 py-4 text-sm text-red-600 mb-8 border border-red-100 flex items-start gap-3">
+                <span className="shrink-0 mt-0.5">⚠️</span>
+                <p className="font-bold">{errors.form}</p>
+              </div>
+            )}
+
+            <div className="text-center mt-6">
+              <Link to="/reset-password" className="text-[14px] font-semibold text-blue-800 hover:text-blue-600 underline underline-offset-2 transition-colors">
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="text-center mt-6">
               <p className="text-[14px] font-medium text-gray-400 italic">
                 Authorized Personnel Only
               </p>

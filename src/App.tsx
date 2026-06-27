@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -27,6 +27,7 @@ import TopBar from './components/top-bar';
 import DemoForm from './components/DemoForm';
 import { SubmitBlogPage } from './components/blog/SubmitBlogPage';
 import { SubscribePage } from './components/blog/SubscribePage';
+import { UnsubscribePage } from './components/blog/UnsubscribePage';
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
 import Signup from './pages/Signup';
@@ -37,6 +38,9 @@ import RunningClasses from './pages/RunningClasses';
 import WriteReview from './pages/WriteReview';
 import Reviews from './pages/Reviews';
 import FeePayment from './pages/FeePayment';
+import IITJEEQuestions from './pages/IITJEEQuestions';
+import MathQA from './pages/MathQA';
+import StudentDashboard from './components/student-dashboard/StudentDashboard.jsx';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -64,14 +68,34 @@ function AdminRoute({ children }: { children: JSX.Element }) {
   return children;
 }
 
+function StudentRoute({ children }: { children: JSX.Element }) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className="text-sm font-semibold text-blue-900">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 function AppLayout() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin-dashboard') || location.pathname === '/admin-login';
+  const isStudentRoute = location.pathname.startsWith('/student-dashboard');
+  const isPublicPage = !isAdminRoute && !isStudentRoute;
 
   return (
-    <div className={isAdminRoute ? 'min-h-screen bg-slate-100' : 'min-h-screen bg-gray-50'}>
-      {!isAdminRoute && <TopBar />}
-      {!isAdminRoute && <Header />}
+    <div className={isAdminRoute ? 'min-h-screen bg-slate-100' : isStudentRoute ? 'min-h-screen bg-white' : 'min-h-screen bg-gray-50'}>
+      {isPublicPage && <TopBar />}
+      {isPublicPage && <Header />}
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -98,6 +122,7 @@ function AppLayout() {
           <Route path="/blog/all" element={<BlogAll />} />
           <Route path="/blog/submit" element={<SubmitBlogPage />} />
           <Route path="/blog/subscribe" element={<SubscribePage />} />
+          <Route path="/unsubscribe" element={<UnsubscribePage />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/ask" element={<Ask />} />
           <Route path="/contact" element={<Contact />} />
@@ -105,6 +130,24 @@ function AppLayout() {
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/write-review" element={<WriteReview />} />
           <Route path="/fee-payment" element={<FeePayment />} />
+          <Route path="/questions" element={<IITJEEQuestions />} />
+          <Route path="/math-qa" element={<MathQA />} />
+          <Route
+            path="/student-dashboard"
+            element={
+              <StudentRoute>
+                <StudentDashboard />
+              </StudentRoute>
+            }
+          />
+          <Route
+            path="/student-dashboard/:section"
+            element={
+              <StudentRoute>
+                <StudentDashboard />
+              </StudentRoute>
+            }
+          />
           <Route
             path="/admin-dashboard"
             element={
@@ -123,8 +166,8 @@ function AppLayout() {
           />
         </Routes>
       </main>
-      {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <WhatsAppButton />}
+      {isPublicPage && <Footer />}
+      {isPublicPage && <WhatsAppButton />}
       <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
     </div>
   );

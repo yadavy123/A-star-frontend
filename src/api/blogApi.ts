@@ -21,7 +21,7 @@ const ADMIN_SUBSCRIBERS_STORAGE_KEY = 'icfy_admin_subscribers';
 const ADMIN_COMMENTS_STORAGE_KEY = 'icfy_admin_comments';
 
 type AdminBlog = {
-    id: number;
+    id: string;
     title: string;
     slug: string;
     excerpt: string;
@@ -36,65 +36,27 @@ type AdminBlog = {
 };
 
 type AdminSubscriber = {
-    id: number;
+    id: string;
     email: string;
-    status: 'ACTIVE' | 'UNSUBSCRIBED';
+    active: boolean;
     createdAt: string;
+    updatedAt?: string;
 };
 
 type AdminComment = {
-    id: number;
-    blogId: number;
+    id: string;
+    blogId: string;
     name: string;
     commentText: string;
     status: 'PENDING' | 'VISIBLE' | 'HIDDEN';
     createdAt: string;
 };
 
-const defaultAdminBlogs: AdminBlog[] = [
-    {
-        id: 101,
-        title: 'How to Build a High-Scoring Study Plan',
-        slug: 'high-scoring-study-plan',
-        excerpt: 'A practical framework students can use to organize weekly revision without burning out.',
-        contentHtml: '<p>Start by defining one measurable weekly outcome for each subject, then break revision into short review loops.</p>',
-        authorName: 'Admin Team',
-        authorEmail: 'admin@astarclasses.com',
-        status: 'PUBLISHED',
-        tags: ['study plan', 'exam prep'],
-        featuredImageUrl: '',
-        createdAt: new Date().toISOString(),
-        commentsCount: 2,
-    },
-    {
-        id: 102,
-        title: 'SAT Reading Mistakes Students Keep Repeating',
-        slug: 'sat-reading-mistakes',
-        excerpt: 'A moderation sample post waiting for admin review.',
-        contentHtml: '<p>Strong reading performance depends on slowing down before answering, not after you miss the question.</p>',
-        authorName: 'Guest Author',
-        authorEmail: 'writer@example.com',
-        status: 'PENDING',
-        tags: ['sat', 'reading'],
-        featuredImageUrl: '',
-        createdAt: new Date().toISOString(),
-        commentsCount: 1,
-    },
-];
+const defaultAdminBlogs: AdminBlog[] = [];
 
-const defaultSubscribers: AdminSubscriber[] = [
-    { id: 1, email: 'rahul.sharma@email.com', status: 'ACTIVE', createdAt: new Date(Date.now() - 86400000 * 30).toISOString() },
-    { id: 2, email: 'priya.singh@email.com', status: 'ACTIVE', createdAt: new Date(Date.now() - 86400000 * 25).toISOString() },
-    { id: 3, email: 'amit.kumar@email.com', status: 'ACTIVE', createdAt: new Date(Date.now() - 86400000 * 20).toISOString() },
-    { id: 4, email: 'neha.gupta@email.com', status: 'UNSUBSCRIBED', createdAt: new Date(Date.now() - 86400000 * 15).toISOString() },
-    { id: 5, email: 'arjun.nair@email.com', status: 'ACTIVE', createdAt: new Date(Date.now() - 86400000 * 10).toISOString() },
-];
+const defaultSubscribers: AdminSubscriber[] = [];
 
-const defaultComments: AdminComment[] = [
-    { id: 501, blogId: 101, name: 'Aarav', commentText: 'Very useful summary.', status: 'VISIBLE', createdAt: new Date().toISOString() },
-    { id: 502, blogId: 101, name: 'Maya', commentText: 'Can you add a printable checklist?', status: 'PENDING', createdAt: new Date().toISOString() },
-    { id: 503, blogId: 102, name: 'Rohit', commentText: 'This draft should definitely be published.', status: 'PENDING', createdAt: new Date().toISOString() },
-];
+const defaultComments: AdminComment[] = [];
 
 function readLocalData<T>(key: string, fallback: T): T {
     try {
@@ -143,7 +105,7 @@ function paginateList<T>(items: T[], page = 0, size = 10) {
 }
 
 type PublicBlog = {
-    id: number;
+    id: string;
     slug: string;
     title: string;
     excerpt: string;
@@ -180,10 +142,10 @@ function buildPublicBlogsFromAdmin(): PublicBlog[] {
         authorName: blog.authorName,
         featuredImageUrl: blog.featuredImageUrl,
         tags: blog.tags || [],
-        likesCount: Math.max(0, 6 + blog.id % 13),
-        dislikesCount: Math.max(0, blog.id % 4),
+        likesCount: Math.max(0, 6 + Math.abs(hashCode(blog.id)) % 13),
+        dislikesCount: Math.max(0, Math.abs(hashCode(blog.id)) % 4),
         commentsCount: comments.filter((comment) => comment.blogId === blog.id).length,
-        viewsCount: 100 + (blog.id % 7) * 37,
+        viewsCount: 100 + (Math.abs(hashCode(blog.id)) % 7) * 37,
         publishedAt: blog.createdAt,
     }));
 }
@@ -240,6 +202,16 @@ function reactionKey(blogId: number | string, visitorKey: string) {
     return `${blogId}__${visitorKey}`;
 }
 
+function hashCode(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash;
+}
+
 function toQueryString(query?: QueryRecord): string {
     if (!query) return '';
     const params = new URLSearchParams();
@@ -258,18 +230,11 @@ const FORCE_LOCAL_BLOG_API = String(import.meta.env.VITE_USE_LOCAL_BLOG_API || '
 // Persistent local mode flag for the session if a remote call fails
 const SESSION_LOCAL_FLAG = 'icfy_blog_session_local';
 
-export function setSessionLocalMode(value: boolean) {
-    if (typeof window !== 'undefined') {
-        if (value) {
-            sessionStorage.setItem(SESSION_LOCAL_FLAG, 'true');
-        } else {
-            sessionStorage.removeItem(SESSION_LOCAL_FLAG);
-        }
-    }
-}
-
 export function getIsLocalMode() {
-    return FORCE_LOCAL_BLOG_API;
+    return FORCE_LOCAL_BLOG_API || !!(
+        typeof sessionStorage !== 'undefined' &&
+        sessionStorage.getItem(SESSION_LOCAL_FLAG) === 'true'
+    );
 }
 
 export function resolveBlogImageUrl(imageUrl?: string): string {
@@ -320,7 +285,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<ApiEnvel
                     lastError = new ApiError('Non-JSON response', response.status, { baseUrl, candidatePath });
                     continue;
                 }
-                setActiveApiBaseUrl(baseUrl);
+                setActiveApiBaseUrl();
                 return { data: (payload ?? ({} as T)) as T };
             }
 
@@ -409,7 +374,8 @@ export const blogApi = {
         ).catch(() => {
             const page = Number(params?.page ?? 0);
             const size = Number(params?.size ?? 20);
-            const comments = getCommentsStore().filter((comment) => comment.blogId === Number(blogId));
+            const strBlogId = String(blogId);
+            const comments = getCommentsStore().filter((comment) => comment.blogId === strBlogId);
             return { data: paginateList(comments, page, size) };
         });
     },
@@ -423,8 +389,8 @@ export const blogApi = {
         } catch {
             const nextComments = [...getCommentsStore()];
             nextComments.unshift({
-                id: Date.now(),
-                blogId: Number(blogId),
+                id: String(Date.now()),
+                blogId: String(blogId),
                 name: String(payload.name || 'Guest'),
                 commentText: String(payload.commentText || ''),
                 status: 'VISIBLE',
@@ -464,7 +430,7 @@ export const blogApi = {
             const userReaction = current === nextType ? null : nextType;
 
             const blogs = buildPublicBlogsFromAdmin();
-            const currentBlog = blogs.find((entry) => entry.id === Number(blogId));
+            const currentBlog = blogs.find((entry) => entry.id === String(blogId));
             const prevLikes = store[key]?.likesCount || (currentBlog?.likesCount || 0);
             const prevDislikes = store[key]?.dislikesCount || (currentBlog?.dislikesCount || 0);
             const likesCount = Math.max(0, prevLikes + (userReaction === 'LIKE' ? 1 : 0) - (current === 'LIKE' ? 1 : 0));
@@ -515,7 +481,7 @@ export const blogApi = {
                 .replace(/\s+/g, '-') || `blog-${id}`;
 
             blogs.unshift({
-                id,
+                id: String(id),
                 title,
                 slug,
                 excerpt: String(payload.excerpt || ''),
@@ -542,7 +508,13 @@ export const blogApi = {
                 method: 'POST',
                 body: JSON.stringify(payload),
             });
-        } catch {
+        } catch (error) {
+            if (error instanceof ApiError && error.response?.data && typeof error.response.data === 'object') {
+                const data = error.response.data as Record<string, unknown>;
+                if (data.message && typeof data.message === 'string' && /already.*(subscribed|registered|exist)/i.test(data.message)) {
+                    throw error;
+                }
+            }
             return { data: { success: true, otpSent: true, email: payload.email } };
         }
     },
@@ -562,10 +534,10 @@ export const blogApi = {
         const existing = getSubscribersStore();
         const index = existing.findIndex((entry) => entry.email.toLowerCase() === email);
         if (index >= 0) {
-            existing[index] = { ...existing[index], status: 'ACTIVE' };
+            existing[index] = { ...existing[index], active: true };
             writeLocalData(ADMIN_SUBSCRIBERS_STORAGE_KEY, existing);
         } else if (email) {
-            existing.unshift({ id: Date.now(), email, status: 'ACTIVE', createdAt: new Date().toISOString() });
+            existing.unshift({ id: String(Date.now()), email, active: true, createdAt: new Date().toISOString() });
             writeLocalData(ADMIN_SUBSCRIBERS_STORAGE_KEY, existing);
         }
 
@@ -591,7 +563,7 @@ export const blogApi = {
         const existing = getSubscribersStore();
         const idx = existing.findIndex((entry) => entry.email.toLowerCase() === email);
         if (idx >= 0) {
-            existing[idx] = { ...existing[idx], status: 'UNSUBSCRIBED' };
+            existing[idx] = { ...existing[idx], active: false };
             writeLocalData(ADMIN_SUBSCRIBERS_STORAGE_KEY, existing);
         }
         return { data: { success: true, unsubscribed: true } };
@@ -615,11 +587,16 @@ export const adminApi = {
     },
 
     async getSubscribers(params?: QueryRecord) {
-        const status = typeof params?.status === 'string' ? params.status : '';
-        const page = Number(params?.page ?? 0);
-        const size = Number(params?.size ?? 10);
-        const subscribers = getSubscribersStore().filter((subscriber) => (status ? subscriber.status === status : true));
-        return { data: paginateList(subscribers, page, size) };
+        try {
+            return await request<{ content: AdminSubscriber[]; page: number; totalPages: number; totalElements: number }>(
+                `/api/v1/admin/blog-subscriptions${toQueryString(params)}`,
+                { method: 'GET' }
+            );
+        } catch {
+            const page = Number(params?.page ?? 0);
+            const size = Number(params?.size ?? 10);
+            return { data: paginateList(getSubscribersStore(), page, size) };
+        }
     },
 
     async getPendingComments(params?: QueryRecord) {
@@ -643,7 +620,7 @@ export const adminApi = {
                 body: JSON.stringify(payload || {}),
             });
         } catch {
-            const updated = getAdminBlogsStore().map((blog) => (blog.id === Number(id) ? { ...blog, status: 'PUBLISHED' as const } : blog));
+            const updated = getAdminBlogsStore().map((blog) => (blog.id === String(id) ? { ...blog, status: 'PUBLISHED' as const } : blog));
             setAdminBlogsStore(updated);
             return { data: { success: true } };
         }
@@ -656,7 +633,7 @@ export const adminApi = {
                 body: JSON.stringify(payload || {}),
             });
         } catch {
-            const updated = getAdminBlogsStore().map((blog) => (blog.id === Number(id) ? { ...blog, status: 'REJECTED' as const } : blog));
+            const updated = getAdminBlogsStore().map((blog) => (blog.id === String(id) ? { ...blog, status: 'REJECTED' as const } : blog));
             setAdminBlogsStore(updated);
             return { data: { success: true } };
         }
@@ -669,7 +646,7 @@ export const adminApi = {
                 body: JSON.stringify(payload),
             });
         } catch {
-            const updated = getAdminBlogsStore().map((blog) => (blog.id === Number(id) ? { ...blog, ...payload } : blog));
+            const updated = getAdminBlogsStore().map((blog) => (blog.id === String(id) ? { ...blog, ...payload } : blog));
             setAdminBlogsStore(updated as AdminBlog[]);
             return { data: { success: true } };
         }
@@ -679,7 +656,7 @@ export const adminApi = {
         try {
             return await request<Record<string, unknown>>(`/admin/api/blogs/${id}`, { method: 'DELETE' });
         } catch {
-            setAdminBlogsStore(getAdminBlogsStore().filter((blog) => blog.id !== Number(id)));
+            setAdminBlogsStore(getAdminBlogsStore().filter((blog) => blog.id !== String(id)));
             return { data: { success: true } };
         }
     },
@@ -721,7 +698,7 @@ export const adminApi = {
         try {
             return await request<Record<string, unknown>>(`/admin/api/comments/${id}`, { method: 'DELETE' });
         } catch {
-            const nextComments = getCommentsStore().filter((comment) => comment.id !== Number(id));
+            const nextComments = getCommentsStore().filter((comment) => comment.id !== String(id));
             setCommentsStore(nextComments);
 
             const updatedBlogs = getAdminBlogsStore().map((blog) => {

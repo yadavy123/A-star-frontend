@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Award, BookOpen, CheckCircle, Clock, Globe, MessageSquare, TrendingUp, Users } from 'lucide-react';
 import DemoForm from '../components/DemoForm';
@@ -28,7 +28,7 @@ const Home = () => {
       try {
         const teachersData = await getPublicTeachers();
 
-        const tutorList = teachersData?.content || (Array.isArray(teachersData) ? teachersData : []);
+        const tutorList = Array.isArray(teachersData) ? teachersData : [];
         setTutors(tutorList.slice(0, 3));
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -341,12 +341,12 @@ const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {tutors.map((tutor) => (
-              <div key={tutor._id || tutor.id} className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+              <div key={tutor.id} className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
                 <div className="h-48 sm:h-64 md:h-80 overflow-hidden relative bg-gray-100 flex items-center justify-center">
                   <img src={getTutorImageUrl(tutor)} alt={tutor.name} className="w-full h-full object-contain" />
                 </div>
                 <div className="p-6 flex-1 flex flex-col text-center">
-                  <h4 className="font-bold text-xl text-gray-900 mb-2">{tutor.fullName || tutor.name}</h4>
+                  <h4 className="font-bold text-xl text-gray-900 mb-2">{tutor.name}</h4>
                   <div className="mb-3 flex justify-center">
                     <span className="px-3 py-1 bg-blue-900 text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg inline-block">
                       {tutor.category}

@@ -179,7 +179,7 @@ export default function MyAssignments() {
     if (!priority) return null
     return (
       <span
-        className="px-3 py-1 rounded-full text-xs font-bold text-white"
+        className="px-3 py-1 rounded-[100px] text-xs font-semibold text-white"
         style={{ backgroundColor: priority === 'high' ? '#dc3545' : '#f59e0b' }}
       >
         {priority === 'high' ? '⚠️ High Priority' : '📌 Medium'}
@@ -191,8 +191,8 @@ export default function MyAssignments() {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: '#1e3a8a', borderTopColor: '#f59e0b' }}></div>
-          <p className="mt-4 text-lg font-semibold" style={{ color: '#1e3a8a' }}>Loading assignments...</p>
+          <div className="inline-block animate-spin rounded-[100px] h-12 w-12 border-t-2 border-b-2" style={{ borderColor: '#0052ff', borderTopColor: '#f59e0b' }}></div>
+          <p className="mt-4 text-lg font-semibold text-[#0a0b0d]">Loading assignments...</p>
         </div>
       </div>
     )
@@ -203,8 +203,8 @@ export default function MyAssignments() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold" style={{ color: '#1e3a8a' }}>📝 My Assignments</h2>
-          <p className="text-gray-600 mt-2">Manage your assignments and submissions</p>
+          <h2 className="text-2xl font-normal text-[#0a0b0d]">📝 My Assignments</h2>
+          <p className="text-[#5b616e] mt-2">Manage your assignments and submissions</p>
         </div>
       </div>
 
@@ -217,109 +217,109 @@ export default function MyAssignments() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-md border-l-4" style={{ borderLeftColor: '#dc3545' }}>
-          <h3 className="text-2xl font-bold" style={{ color: '#dc3545' }}>
+        <div className="border border-[#dee1e6] rounded-[24px] p-4 bg-white border-l-4" style={{ borderLeftColor: '#dc3545' }}>
+          <h3 className="text-2xl font-semibold" style={{ color: '#dc3545' }}>
             {assignments.filter(a => a.status === 'pending').length}
           </h3>
-          <p className="text-gray-600 text-sm">Pending</p>
+          <p className="text-[#5b616e] text-sm">Pending</p>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-md border-l-4" style={{ borderLeftColor: '#28a745' }}>
-          <h3 className="text-2xl font-bold" style={{ color: '#28a745' }}>
+        <div className="border border-[#dee1e6] rounded-[24px] p-4 bg-white border-l-4" style={{ borderLeftColor: '#28a745' }}>
+          <h3 className="text-2xl font-semibold" style={{ color: '#28a745' }}>
             {assignments.filter(a => a.status === 'submitted').length}
           </h3>
-          <p className="text-gray-600 text-sm">Submitted</p>
+          <p className="text-[#5b616e] text-sm">Submitted</p>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-md border-l-4" style={{ borderLeftColor: '#1e3a8a' }}>
-          <h3 className="text-2xl font-bold" style={{ color: '#1e3a8a' }}>
+        <div className="border border-[#dee1e6] rounded-[24px] p-4 bg-white border-l-4" style={{ borderLeftColor: '#0a0b0d' }}>
+          <h3 className="text-2xl font-semibold" style={{ color: '#0a0b0d' }}>
             {assignments.length}
           </h3>
-          <p className="text-gray-600 text-sm">Total</p>
+          <p className="text-[#5b616e] text-sm">Total</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 bg-white p-4 rounded-xl shadow-md">
+      <div className="flex gap-4 border border-[#dee1e6] rounded-[24px] p-6 bg-white">
         <button
           onClick={() => { setFilter('all'); setCurrentPage(1) }}
-          className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-            filter === 'all' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-gray-50'
+          className={`px-5 py-3 text-sm font-semibold rounded-[100px] transition-all ${
+            filter === 'all' ? 'text-white' : 'text-[#5b616e] hover:bg-gray-50'
           }`}
-          style={{ backgroundColor: filter === 'all' ? '#1e3a8a' : 'transparent' }}
+          style={{ backgroundColor: filter === 'all' ? '#0052ff' : 'transparent', height: 44, lineHeight: 1.15 }}
         >
           All
         </button>
         <button
           onClick={() => { setFilter('pending'); setCurrentPage(1) }}
-          className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-            filter === 'pending' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-gray-50'
+          className={`px-5 py-3 text-sm font-semibold rounded-[100px] transition-all ${
+            filter === 'pending' ? 'text-white' : 'text-[#5b616e] hover:bg-gray-50'
           }`}
-          style={{ backgroundColor: filter === 'pending' ? '#dc3545' : 'transparent' }}
+          style={{ backgroundColor: filter === 'pending' ? '#dc3545' : 'transparent', height: 44, lineHeight: 1.15 }}
         >
           Pending
         </button>
         <button
           onClick={() => { setFilter('submitted'); setCurrentPage(1) }}
-          className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-            filter === 'submitted' ? 'text-white shadow-md' : 'text-gray-700 hover:bg-gray-50'
+          className={`px-5 py-3 text-sm font-semibold rounded-[100px] transition-all ${
+            filter === 'submitted' ? 'text-white' : 'text-[#5b616e] hover:bg-gray-50'
           }`}
-          style={{ backgroundColor: filter === 'submitted' ? '#28a745' : 'transparent' }}
+          style={{ backgroundColor: filter === 'submitted' ? '#28a745' : 'transparent', height: 44, lineHeight: 1.15 }}
         >
           Submitted
         </button>
       </div>
 
       {/* Assignments Table */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="border border-[#dee1e6] rounded-[24px] bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2" style={{ borderBottomColor: '#1e3a8a' }}>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Assignment</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Course</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Due Date</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Points</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Priority</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Status</th>
-                <th className="text-left px-5 py-3 font-bold" style={{ color: '#1e3a8a' }}>Action</th>
+              <tr className="border-b border-[#dee1e6] bg-[#f7f7f7]">
+                <th className="text-left px-5 py-3 text-xs font-semibold text-[#0a0b0d]">Assignment</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-[#0a0b0d]">Course</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-[#0a0b0d]">Due Date</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-[#0a0b0d]">Points</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-[#0a0b0d]">Priority</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-[#0a0b0d]">Status</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-[#0a0b0d]">Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedAssignments.map((assignment) => (
-                <tr key={assignment.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <tr key={assignment.id} className="border-b border-[#dee1e6] hover:bg-[#f7f7f7] transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{assignment.courseIcon}</span>
                       <div>
-                        <p className="font-semibold text-gray-800">{assignment.title}</p>
-                        <p className="text-xs text-gray-500 mt-0.5 max-w-[180px] truncate">{assignment.description}</p>
+                        <p className="font-semibold text-[#0a0b0d]">{assignment.title}</p>
+                        <p className="text-xs text-[#7c828a] mt-0.5 max-w-[180px] truncate">{assignment.description}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-gray-700">{assignment.course}</td>
+                  <td className="px-5 py-4 text-[#5b616e]">{assignment.course}</td>
                   <td className="px-5 py-4">
-                    <p className="text-gray-700">{assignment.dueDate}</p>
+                    <p className="text-[#5b616e]">{assignment.dueDate}</p>
                     {assignment.daysLeft && (
                       <p className="text-xs mt-0.5" style={{ color: assignment.daysLeft <= 5 ? '#dc3545' : '#28a745' }}>
                         {assignment.daysLeft} days left
                       </p>
                     )}
                   </td>
-                  <td className="px-5 py-4 font-bold" style={{ color: '#f59e0b' }}>
+                  <td className="px-5 py-4 font-semibold" style={{ color: '#f59e0b' }}>
                     {assignment.grade !== undefined ? `${assignment.grade}/${assignment.points}` : assignment.points}
                   </td>
                   <td className="px-5 py-4">
                     {assignment.priority ? (
                       <span
-                        className="px-2 py-1 rounded-full text-xs font-bold text-white whitespace-nowrap"
+                        className="px-3 py-1 rounded-[100px] text-xs font-semibold text-white whitespace-nowrap"
                         style={{ backgroundColor: assignment.priority === 'high' ? '#dc3545' : '#f59e0b' }}
                       >
                         {assignment.priority === 'high' ? 'High' : 'Medium'}
                       </span>
-                    ) : <span className="text-gray-400 text-xs">—</span>}
+                    ) : <span className="text-[#a8acb3] text-xs">—</span>}
                   </td>
                   <td className="px-5 py-4">
                     <span
-                      className="px-2 py-1 rounded-full text-xs font-bold text-white whitespace-nowrap"
+                      className="px-3 py-1 rounded-[100px] text-xs font-semibold text-white whitespace-nowrap"
                       style={{ backgroundColor: getStatusColor(assignment.status) }}
                     >
                       {assignment.status === 'submitted' ? '✓ Submitted' : 'Pending'}
@@ -331,15 +331,15 @@ export default function MyAssignments() {
                         <>
                           <button
                             onClick={() => handleViewDetails(assignment)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 hover:bg-[#196d83] hover:text-white transition-all whitespace-nowrap"
-                            style={{ borderColor: '#1e3a8a', color: '#1e3a8a', backgroundColor: 'white' }}
+                            className="px-5 py-3 text-xs font-semibold border border-[#dee1e6] hover:bg-[#196d83] hover:text-white transition-all whitespace-nowrap rounded-[100px]"
+                            style={{ borderColor: '#0052ff', color: '#0052ff', backgroundColor: 'white', height: 44, lineHeight: 1.15 }}
                           >
                             Submit
                           </button>
                           <button
                             onClick={() => handleViewOnly(assignment)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 hover:bg-gray-100 transition-all whitespace-nowrap"
-                            style={{ borderColor: '#1e3a8a', color: '#1e3a8a', backgroundColor: 'white' }}
+                            className="px-5 py-3 text-xs font-semibold border border-[#dee1e6] hover:bg-gray-100 transition-all whitespace-nowrap rounded-[100px]"
+                            style={{ borderColor: '#0052ff', color: '#0052ff', backgroundColor: 'white', height: 44, lineHeight: 1.15 }}
                           >
                             View
                           </button>
@@ -348,8 +348,8 @@ export default function MyAssignments() {
                       {assignment.status === 'submitted' && (
                         <button
                           onClick={() => handleViewOnly(assignment)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 hover:bg-gray-100 transition-all whitespace-nowrap"
-                          style={{ borderColor: '#28a745', color: '#28a745', backgroundColor: 'white' }}
+                          className="px-5 py-3 text-xs font-semibold border border-[#dee1e6] hover:bg-gray-100 transition-all whitespace-nowrap rounded-[100px]"
+                          style={{ borderColor: '#28a745', color: '#28a745', backgroundColor: 'white', height: 44, lineHeight: 1.15 }}
                         >
                           View
                         </button>
@@ -375,15 +375,15 @@ export default function MyAssignments() {
 
       {/* Submit Modal */}
       {showSubmitModal && selectedAssignment && (
-        <div className="fixed inset-0  flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <h3 className="text-xl font-bold mb-4" style={{ color: '#1e3a8a' }}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div className="border border-[#dee1e6] rounded-[24px] bg-white max-w-md w-full p-6">
+            <h3 className="text-xl font-semibold mb-4 text-[#0a0b0d]">
               Submit: {selectedAssignment.title}
             </h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-[#5b616e] mb-2">
                   Upload Files
                 </label>
                 <input
@@ -392,16 +392,16 @@ export default function MyAssignments() {
                   onChange={(e) => {
                     setSelectedAssignment({ ...selectedAssignment, files: e.target.files })
                   }}
-                  className="block w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-500"
+                  className="block w-full border border-[#dee1e6] rounded-[12px] p-2 focus:outline-none focus:border-[#0052ff]"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-[#5b616e] mb-2">
                   Comments (Optional)
                 </label>
                 <textarea
-                  className="block w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-500"
+                  className="block w-full border border-[#dee1e6] rounded-[12px] p-2 focus:outline-none focus:border-[#0052ff]"
                   rows="3"
                   placeholder="Add any comments..."
                 ></textarea>
@@ -411,16 +411,16 @@ export default function MyAssignments() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowSubmitModal(false)}
-                className="flex-1 px-4 py-2 rounded-lg font-semibold border-2 transition-all hover:bg-gray-50"
-                style={{ borderColor: '#1e3a8a', color: '#1e3a8a', backgroundColor: 'white' }}
+                className="flex-1 px-5 py-3 text-sm font-semibold border border-[#dee1e6] rounded-[100px] transition-all hover:bg-gray-50"
+                style={{ borderColor: '#0052ff', color: '#0052ff', backgroundColor: 'white', height: 44, lineHeight: 1.15 }}
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleSubmitAssignment(selectedAssignment.id)}
                 disabled={submittingId === selectedAssignment.id}
-                className="flex-1 px-4 py-2 rounded-lg font-semibold border-2 transition-all hover:opacity-90 disabled:opacity-50"
-                style={{ borderColor: '#1e3a8a', backgroundColor: '#1e3a8a', color: 'white' }}
+                className="flex-1 px-5 py-3 text-sm font-semibold border border-[#dee1e6] rounded-[100px] transition-all hover:opacity-90 disabled:opacity-50"
+                style={{ borderColor: '#0052ff', backgroundColor: '#0052ff', color: 'white', height: 44, lineHeight: 1.15 }}
               >
                 {submittingId === selectedAssignment.id ? '⏳ Submitting...' : '✓ Submit'}
               </button>
@@ -431,51 +431,51 @@ export default function MyAssignments() {
 
       {/* View Details Modal */}
       {showViewModal && selectedAssignment && (
-        <div className="fixed inset-0  flex items-center justify-center z-50 p-4" onClick={() => setShowViewModal(false)}>
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4" onClick={() => setShowViewModal(false)}>
+          <div className="border border-[#dee1e6] rounded-[24px] bg-white max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold" style={{ color: '#1e3a8a' }}>Assignment Details</h3>
-              <button onClick={() => setShowViewModal(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
+              <h3 className="text-xl font-semibold text-[#0a0b0d]">Assignment Details</h3>
+              <button onClick={() => setShowViewModal(false)} className="text-[#a8acb3] hover:text-[#5b616e] text-xl font-semibold">✕</button>
             </div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl" style={{ backgroundColor: '#fef9f0' }}>
+              <div className="w-12 h-12 rounded-[12px] flex items-center justify-center text-2xl" style={{ backgroundColor: '#f7f7f7' }}>
                 {selectedAssignment.courseIcon}
               </div>
               <div>
-                <h4 className="font-bold text-base" style={{ color: '#1e3a8a' }}>{selectedAssignment.title}</h4>
-                <p className="text-xs text-gray-500">📚 {selectedAssignment.course}</p>
+                <h4 className="font-semibold text-base text-[#0a0b0d]">{selectedAssignment.title}</h4>
+                <p className="text-xs text-[#7c828a]">📚 {selectedAssignment.course}</p>
               </div>
             </div>
-            <div className="h-px bg-gray-100 mb-4" />
-            <p className="text-sm text-gray-700 mb-4">{selectedAssignment.description}</p>
+            <div className="h-px bg-[#dee1e6] mb-4" />
+            <p className="text-sm text-[#5b616e] mb-4">{selectedAssignment.description}</p>
             <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-              <div className="p-3 rounded-lg" style={{ backgroundColor: '#fef9f0' }}>
-                <p className="text-xs text-gray-500 mb-1">Due Date</p>
-                <p className="font-bold text-gray-800">{selectedAssignment.dueDate}</p>
+              <div className="p-3 border border-[#dee1e6] rounded-[12px] bg-[#f7f7f7]">
+                <p className="text-xs text-[#7c828a] mb-1">Due Date</p>
+                <p className="font-semibold text-[#0a0b0d]">{selectedAssignment.dueDate}</p>
                 {selectedAssignment.daysLeft && (
                   <p className="text-xs mt-1" style={{ color: selectedAssignment.daysLeft <= 5 ? '#dc3545' : '#28a745' }}>
                     {selectedAssignment.daysLeft} days left
                   </p>
                 )}
               </div>
-              <div className="p-3 rounded-lg" style={{ backgroundColor: '#fef9f0' }}>
-                <p className="text-xs text-gray-500 mb-1">Points</p>
-                <p className="font-bold text-gray-800">{selectedAssignment.points}</p>
+              <div className="p-3 border border-[#dee1e6] rounded-[12px] bg-[#f7f7f7]">
+                <p className="text-xs text-[#7c828a] mb-1">Points</p>
+                <p className="font-semibold text-[#0a0b0d]">{selectedAssignment.points}</p>
               </div>
-              <div className="p-3 rounded-lg" style={{ backgroundColor: '#fef9f0' }}>
-                <p className="text-xs text-gray-500 mb-1">Attachments</p>
-                <p className="font-bold text-gray-800">📎 {selectedAssignment.attachments}</p>
+              <div className="p-3 border border-[#dee1e6] rounded-[12px] bg-[#f7f7f7]">
+                <p className="text-xs text-[#7c828a] mb-1">Attachments</p>
+                <p className="font-semibold text-[#0a0b0d]">📎 {selectedAssignment.attachments}</p>
               </div>
-              <div className="p-3 rounded-lg" style={{ backgroundColor: selectedAssignment.status === 'submitted' ? '#e8f5e9' : '#fef9f0' }}>
-                <p className="text-xs text-gray-500 mb-1">Status</p>
-                <p className="font-bold" style={{ color: selectedAssignment.status === 'submitted' ? '#28a745' : '#dc3545' }}>
+              <div className="p-3 border border-[#dee1e6] rounded-[12px]" style={{ backgroundColor: selectedAssignment.status === 'submitted' ? '#e8f5e9' : '#f7f7f7' }}>
+                <p className="text-xs text-[#7c828a] mb-1">Status</p>
+                <p className="font-semibold" style={{ color: selectedAssignment.status === 'submitted' ? '#28a745' : '#dc3545' }}>
                   {selectedAssignment.status === 'submitted' ? '✓ Submitted' : 'Pending'}
                 </p>
               </div>
               {selectedAssignment.grade !== undefined && (
-                <div className="col-span-2 p-3 rounded-lg" style={{ backgroundColor: '#e8f5e9' }}>
-                  <p className="text-xs text-gray-500 mb-1">Grade</p>
-                  <p className="font-bold" style={{ color: '#28a745' }}>
+                <div className="col-span-2 p-3 border border-[#dee1e6] rounded-[12px]" style={{ backgroundColor: '#e8f5e9' }}>
+                  <p className="text-xs text-[#7c828a] mb-1">Grade</p>
+                  <p className="font-semibold" style={{ color: '#28a745' }}>
                     {selectedAssignment.grade}/{selectedAssignment.points} ({Math.round((selectedAssignment.grade / selectedAssignment.points) * 100)}%)
                   </p>
                 </div>
@@ -484,16 +484,16 @@ export default function MyAssignments() {
             <div className="flex gap-3 mt-2">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="flex-1 py-2 rounded-lg font-semibold border-2 transition-all hover:bg-gray-50"
-                style={{ borderColor: '#1e3a8a', color: '#1e3a8a', backgroundColor: 'white' }}
+                className="flex-1 px-5 py-3 text-sm font-semibold border border-[#dee1e6] rounded-[100px] transition-all hover:bg-gray-50"
+                style={{ borderColor: '#0052ff', color: '#0052ff', backgroundColor: 'white', height: 44, lineHeight: 1.15 }}
               >
                 Close
               </button>
               {selectedAssignment.status === 'pending' && (
                 <button
                   onClick={() => { setShowViewModal(false); handleViewDetails(selectedAssignment) }}
-                  className="flex-1 py-2 rounded-lg font-semibold border-2 transition-all hover:opacity-90"
-                  style={{ borderColor: '#1e3a8a', backgroundColor: '#1e3a8a', color: 'white' }}
+                  className="flex-1 px-5 py-3 text-sm font-semibold border border-[#dee1e6] rounded-[100px] transition-all hover:opacity-90"
+                  style={{ borderColor: '#0052ff', backgroundColor: '#0052ff', color: 'white', height: 44, lineHeight: 1.15 }}
                 >
                   📤 Submit
                 </button>

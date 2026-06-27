@@ -1,12 +1,14 @@
-import { useState, useRef, useCallback, useEffect, type ClipboardEvent, type KeyboardEvent, type ReactNode } from 'react';
+import { useState, useRef, useCallback, useEffect, type ClipboardEvent, type KeyboardEvent, type ReactNode, type MouseEvent } from 'react';
 import {
     Bold, Italic, Underline, Strikethrough, Heading1, Heading2, Heading3,
     List, ListOrdered, Code, Quote, Link as LinkIcon, Image as ImageIcon,
     Minus, Eye, Edit3, AlignLeft, AlignCenter, AlignRight, Undo, Redo,
-    Type, Loader2
+    Type, Loader2, Sigma
 } from 'lucide-react';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 import toast from 'react-hot-toast';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 type ToolbarAction = {
     key: string;
@@ -56,6 +58,7 @@ const TOOLBAR: ToolbarItem[] = [
     { key: 'alignCenter', icon: AlignCenter, label: 'Align Center', command: 'justifyCenter' },
     { key: 'alignRight', icon: AlignRight, label: 'Align Right', command: 'justifyRight' },
     { key: 'sep5', separator: true },
+    { key: 'math', icon: Sigma, label: 'Insert Math (Σ)', special: 'math' },
     { key: 'link', icon: LinkIcon, label: 'Insert Link', special: 'link' },
     { key: 'image', icon: ImageIcon, label: 'Insert Image', special: 'image' },
 ];
@@ -73,6 +76,13 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
     const [savedSelection, setSavedSelection] = useState<Range | null>(null);
     const [wordCount, setWordCount] = useState(0);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null);
+    const resizeToolbarRef = useRef<HTMLDivElement | null>(null);
+    const [showMathDialog, setShowMathDialog] = useState(false);
+    const [mathLatex, setMathLatex] = useState('');
+    const [mathIsBlock, setMathIsBlock] = useState(false);
+    const [mathPreviewHtml, setMathPreviewHtml] = useState('');
+    const [editingMathLatex, setEditingMathLatex] = useState<string | null>(null);
 
     // Restore content into editor when switching back to edit mode
     useEffect(() => {
@@ -205,6 +215,15 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
             setShowLinkDialog(true);
             return;
         }
+        if (item.special === 'math') {
+            saveSelection();
+            setEditingMathLatex(null);
+            setMathLatex('');
+            setMathPreviewHtml('');
+            setMathIsBlock(false);
+            setShowMathDialog(true);
+            return;
+        }
         if (item.special === 'code') {
             const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
             if (!range) return;
@@ -264,6 +283,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
         const img = document.createElement('img');
         img.src = imageUrl.trim();
         img.alt = imageAlt.trim() || 'image';
+        img.loading = 'lazy';
         img.className = 'blog-img';
         
         figure.appendChild(img);
@@ -365,6 +385,100 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
         setLinkText('');
     };
 
+    const renderLatex = (latex: string, isBlock: boolean): string => {
+        try {
+            return katex.renderToString(latex, {
+                throwOnError: false,
+                displayMode: isBlock,
+            });
+        } catch {
+            return `<span class="text-red-500">Invalid LaTeX: ${latex}</span>`;
+        }
+    };
+
+    const handleInsertMath = () => {
+        if (!mathLatex.trim()) return;
+        const html = renderLatex(mathLatex.trim(), mathIsBlock);
+        const wrapper = mathIsBlock ? 'div' : 'span';
+        const mathHtml = `<${wrapper} class="${mathIsBlock ? 'math-block' : 'math-inline'}" contenteditable="false" data-latex="${encodeURIComponent(mathLatex.trim())}">${html}</${wrapper}>`;
+
+        editorRef.current?.focus();
+
+        if (editingMathLatex !== null) {
+            const sel = window.getSelection();
+            if (sel) {
+                const mathEl = editorRef.current?.querySelector(`[data-latex="${encodeURIComponent(editingMathLatex)}"]`);
+                if (mathEl) {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = mathHtml;
+                    const newNode = temp.firstChild;
+                    if (newNode) {
+                        mathEl.parentNode?.replaceChild(newNode, mathEl);
+                        handleInput();
+                        setShowMathDialog(false);
+                        setMathLatex('');
+                        setMathPreviewHtml('');
+                        setEditingMathLatex(null);
+                        return;
+                    }
+                }
+            }
+        }
+
+        restoreSelection();
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            const temp = document.createElement('div');
+            temp.innerHTML = mathHtml;
+            const nodes = [...temp.childNodes];
+            nodes.forEach((node, i) => {
+                range.insertNode(node);
+                if (i === 0) {
+                    range.setStartAfter(node);
+                    range.collapse(true);
+                }
+            });
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+        handleInput();
+        setShowMathDialog(false);
+        setMathLatex('');
+        setMathPreviewHtml('');
+        setEditingMathLatex(null);
+    };
+
+    const updateMathPreview = (latex: string, isBlock: boolean) => {
+        if (!latex.trim()) {
+            setMathPreviewHtml('');
+            return;
+        }
+        setMathPreviewHtml(renderLatex(latex, isBlock));
+    };
+
+    const handleMathDoubleClick = (e: globalThis.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const mathEl = target.closest('[data-latex]') as HTMLElement | null;
+        if (mathEl && editorRef.current?.contains(mathEl)) {
+            e.preventDefault();
+            const latex = decodeURIComponent(mathEl.dataset.latex || '');
+            const isBlock = mathEl.tagName === 'DIV';
+            setEditingMathLatex(latex);
+            setMathLatex(latex);
+            setMathIsBlock(isBlock);
+            updateMathPreview(latex, isBlock);
+            setShowMathDialog(true);
+        }
+    };
+
+    useEffect(() => {
+        const editor = editorRef.current;
+        if (!editor) return;
+        editor.addEventListener('dblclick', handleMathDoubleClick);
+        return () => editor.removeEventListener('dblclick', handleMathDoubleClick);
+    }, []);
+
     const handlePaste = (e: ClipboardEvent<HTMLDivElement>) => {
         e.preventDefault();
         const html = e.clipboardData.getData('text/html');
@@ -385,6 +499,49 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
         }
         handleInput();
     };
+
+    const RESIZE_SIZES = [
+        { label: '25%', value: '25%' },
+        { label: '50%', value: '50%' },
+        { label: '75%', value: '75%' },
+        { label: '100%', value: '100%' },
+    ];
+
+    const handleImageResize = (size: string) => {
+        if (!selectedImage) return;
+        if (size === '100%') {
+            selectedImage.style.removeProperty('width');
+            selectedImage.style.removeProperty('display');
+        } else {
+            selectedImage.style.width = size;
+            selectedImage.style.display = 'block';
+        }
+        selectedImage.classList.add('blog-img');
+        handleInput();
+    };
+
+    const handleEditorClick = (e: MouseEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'IMG' && editorRef.current?.contains(target)) {
+            e.stopPropagation();
+            setSelectedImage(target as HTMLImageElement);
+        } else {
+            setSelectedImage(null);
+        }
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (e: globalThis.MouseEvent) => {
+            if (resizeToolbarRef.current && !resizeToolbarRef.current.contains(e.target as Node)) {
+                const target = e.target as HTMLElement;
+                if (target.tagName !== 'IMG') {
+                    setSelectedImage(null);
+                }
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
         if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
@@ -453,7 +610,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
 
             {/* Editor Area */}
             {mode === 'edit' ? (
-                <div className="flex flex-col">
+                <div className="flex flex-col relative">
                     <div
                         ref={editorRef}
                         contentEditable
@@ -462,9 +619,25 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
                         onPaste={handlePaste}
                         onKeyDown={handleKeyDown}
                         onBlur={saveSelection}
+                        onClick={handleEditorClick}
                         className="blog-content p-5 min-h-[400px] max-h-[600px] overflow-y-auto outline-none focus:outline-none"
                         style={{ minHeight: '400px' }}
                     />
+                    {selectedImage && (
+                        <div ref={resizeToolbarRef} className="absolute top-2 right-2 flex items-center gap-1 bg-white border border-gray-200 rounded-lg shadow-lg px-2 py-1.5 z-50">
+                            <span className="text-[11px] font-medium text-gray-500 mr-1">Size:</span>
+                            {RESIZE_SIZES.map((s) => (
+                                <button
+                                    key={s.value}
+                                    type="button"
+                                    onMouseDown={(e) => { e.preventDefault(); handleImageResize(s.value); }}
+                                    className="px-2 py-0.5 text-xs font-medium rounded border border-gray-200 hover:bg-gray-100 text-gray-700 transition-colors"
+                                >
+                                    {s.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                     <div className="flex items-center justify-between px-4 py-2 border-t border-border-secondary text-text-tertiary text-xs">
                         <span>{wordCount} words</span>
                         <span>Select text → click toolbar to format</span>
@@ -520,6 +693,55 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
                             <button type="button" onClick={() => setShowImageDialog(false)} disabled={uploadingImage} className="btn-secondary text-sm py-2 px-4 min-h-0 min-w-0">Cancel</button>
                             <button type="button" onClick={handleInsertImage} disabled={!imageUrl.trim() || uploadingImage} className="btn-primary text-sm py-2 px-6 min-h-0 min-w-0 disabled:opacity-40">
                                 {uploadingImage ? 'Uploading...' : 'Insert'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Math Dialog */}
+            {showMathDialog && (
+                <div className="fixed inset-0 bg-bg-overlay z-[100] flex items-center justify-center p-4" onClick={() => setShowMathDialog(false)}>
+                    <div className="bg-bg-card border border-border-primary rounded-xl p-6 w-full max-w-lg shadow-lg animate-scale-in" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+                            <Sigma size={20} /> {editingMathLatex ? 'Edit Math' : 'Insert Math'}
+                        </h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-text-secondary mb-1.5">LaTeX Expression</label>
+                                <textarea value={mathLatex} onChange={(e) => { setMathLatex(e.target.value); updateMathPreview(e.target.value, mathIsBlock); }}
+                                    placeholder="e.g. \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}"
+                                    className="w-full min-h-[80px] px-3 py-2 text-sm font-mono bg-bg-secondary border border-border-primary rounded-lg outline-none focus:border-blue-500 transition-colors resize-y"
+                                    autoFocus />
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
+                                    <input type="checkbox" checked={mathIsBlock} onChange={(e) => { setMathIsBlock(e.target.checked); updateMathPreview(mathLatex, e.target.checked); }}
+                                        className="rounded border-border-primary" />
+                                    Display math (block, centered)
+                                </label>
+                            </div>
+                            {mathPreviewHtml && (
+                                <div className="border border-border-secondary rounded-lg p-4 bg-bg-secondary">
+                                    <p className="text-xs text-text-tertiary mb-2 font-medium">Preview:</p>
+                                    <div className="flex justify-center" dangerouslySetInnerHTML={{ __html: mathPreviewHtml }} />
+                                </div>
+                            )}
+                            <div className="text-xs text-text-tertiary bg-bg-secondary rounded-lg p-3 space-y-1">
+                                <p className="font-medium">Common LaTeX examples:</p>
+                                <code className="block text-text-secondary">\frac{a}{b} &nbsp; → &nbsp; fraction</code>
+                                <code className="block text-text-secondary">x^{n} &nbsp; → &nbsp; superscript</code>
+                                <code className="block text-text-secondary">x_{n} &nbsp; → &nbsp; subscript</code>
+                                <code className="block text-text-secondary">\sqrt{x} &nbsp; → &nbsp; square root</code>
+                                <code className="block text-text-secondary">\sum_{i=1}^{n} &nbsp; → &nbsp; summation</code>
+                                <code className="block text-text-secondary">\int_{a}^{b} &nbsp; → &nbsp; integral</code>
+                                <code className="block text-text-secondary">\alpha, \beta, \pi &nbsp; → &nbsp; Greek letters</code>
+                            </div>
+                        </div>
+                        <div className="flex justify-end gap-2 mt-6">
+                            <button type="button" onClick={() => { setShowMathDialog(false); setMathLatex(''); setMathPreviewHtml(''); editingMathLatex !== null && setEditingMathLatex(null); }} className="btn-secondary text-sm py-2 px-4 min-h-0 min-w-0">Cancel</button>
+                            <button type="button" onClick={handleInsertMath} disabled={!mathLatex.trim()} className="btn-primary text-sm py-2 px-6 min-h-0 min-w-0 disabled:opacity-40">
+                                {editingMathLatex ? 'Update' : 'Insert'}
                             </button>
                         </div>
                     </div>

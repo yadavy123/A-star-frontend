@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, type FormEvent } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import toast from 'react-hot-toast';
 import { useAuth } from "../context/AuthContext.tsx";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { requestOtp, verifyOtp } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -54,7 +55,7 @@ const Signup = () => {
     return () => clearInterval(interval);
   }, [resendTimer]);
 
-  const handleSendOtp = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: FormEvent) => {
     e.preventDefault();
     setMessage("");
     const validationErrors = validateForm();
@@ -76,16 +77,15 @@ const Signup = () => {
         setStep("verify");
         setResendTimer(300); // 5 minutes
       }
-    } catch (error) {
-      const errorMsg = (error instanceof Error ? error.message : '') || "Failed to send OTP. Please try again.";
-      setErrors({ form: errorMsg });
-      toast.error(errorMsg);
+    } catch {
+      setErrors({ form: "Failed to send OTP. Please try again." });
+      toast.error("Failed to send OTP. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
+  const handleVerifyOtp = async (e: FormEvent) => {
     e.preventDefault();
     const validationErrors: { otp?: string } = {};
 
@@ -109,13 +109,13 @@ const Signup = () => {
         setErrors({ form: errorMsg });
         toast.error(errorMsg);
       } else {
-        toast.success("Signup successful! Welcome aboard.");
-        navigate("/");
+        toast.success("Account created! You are now logged in.");
+        const redirectTarget = searchParams.get('redirect') || '/';
+        navigate(redirectTarget);
       }
-    } catch (error) {
-      const errorMsg = (error instanceof Error ? error.message : '') || "OTP verification failed. Please try again.";
-      setErrors({ form: errorMsg });
-      toast.error(errorMsg);
+    } catch {
+      setErrors({ form: "OTP verification failed. Please try again." });
+      toast.error("OTP verification failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -137,10 +137,9 @@ const Signup = () => {
         toast.success("OTP resent successfully!");
         setResendTimer(300); // 5 minutes
       }
-    } catch (error) {
-      const errorMsg = (error instanceof Error ? error.message : '') || "Unable to resend OTP. Please try again.";
-      setErrors({ form: errorMsg });
-      toast.error(errorMsg);
+    } catch {
+      setErrors({ form: "Unable to resend OTP. Please try again." });
+      toast.error("Unable to resend OTP. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -157,7 +156,7 @@ const Signup = () => {
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
         <h2 className="text-2xl font-bold text-center text-blue-800">Sign Up</h2>
         <p className="text-center text-sm text-gray-600 mb-6">
-          Create your account with OTP verification. Use the same email to login after signup.
+          Create your account with OTP verification. Next time, use <strong>OTP Login</strong> to sign in.
         </p>
 
         {errors.form && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 mb-4">{errors.form}</p>}
@@ -271,7 +270,7 @@ const Signup = () => {
 
         <p className="mt-4 text-sm text-center text-gray-600">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-800 hover:underline">
+          <Link to={`/login${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(searchParams.get('redirect')!)}` : ''}`} className="text-blue-800 hover:underline">
             Login
           </Link>
         </p>

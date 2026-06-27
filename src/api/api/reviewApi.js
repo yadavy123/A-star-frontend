@@ -2,7 +2,7 @@ import api from './api';
 
 const STORAGE_KEY = 'astar_reviews';
 
-const API_BASE = import.meta.env.DEV ? window.location.origin : 'https://api.astarclasses.com';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'https://api.astarclasses.com').replace(/\/$/, '');
 
 function readLocal() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }

@@ -1,4 +1,3 @@
-import React from 'react';
 import TutorCard from '../components/TutorCard';
 import teachers from '../assets/teachers';
 

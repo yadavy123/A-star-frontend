@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 // @ts-expect-error: react-mathquill has no types
 import { EditableMathField } from 'react-mathquill';
 
@@ -13,7 +13,7 @@ const MathEditor: React.FC<MathEditorProps> = ({ onSubmit }) => {
     <div className="mb-4">
       <EditableMathField
         latex={latex}
-        onChange={(_, l) => setLatex(l)}
+        onChange={(mathField: any) => setLatex(mathField.latex())}
         className="border rounded p-2 min-h-[48px] bg-gray-50 text-lg w-full"
       />
       <button

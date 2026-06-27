@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, GraduationCap, CheckCircle } from 'lucide-react';
 
@@ -40,10 +39,10 @@ const CounsellingRegion = () => {
         total: '£18,000 - £55,000 per year'
       },
       timeline: [
-        { phase: 'Year 1 (Grade 11)', tasks: 'Research universities, build profile, prepare for AS levels' },
-        { phase: 'Summer Year 1', tasks: 'University visits, summer programs, standardized tests' },
-        { phase: 'Year 2 (Grade 12)', tasks: 'Complete applications, interviews, A Level exams' },
-        { phase: 'Results Day', tasks: 'Receive offers, make final decision' }
+        { phase: 'Year 1 (Grade 11)', description: 'Research universities, build profile, prepare for AS levels' },
+        { phase: 'Summer Year 1', description: 'University visits, summer programs, standardized tests' },
+        { phase: 'Year 2 (Grade 12)', description: 'Complete applications, interviews, A Level exams' },
+        { phase: 'Results Day', description: 'Receive offers, make final decision' }
       ]
     },
     usa: {
@@ -81,10 +80,10 @@ const CounsellingRegion = () => {
         total: '$45,000 - $85,000 per year'
       },
       timeline: [
-        { phase: 'Year 1 (Grade 11)', tasks: 'Take SAT/ACT, build activity profile, research colleges' },
-        { phase: 'Summer Year 1', tasks: 'Campus visits, summer programs, essay drafting' },
-        { phase: 'Year 2 (Grade 12)', tasks: 'Complete applications, interviews, financial aid forms' },
-        { phase: 'Spring Year 2', tasks: 'Receive decisions, compare offers, enroll' }
+        { phase: 'Year 1 (Grade 11)', description: 'Take SAT/ACT, build activity profile, research colleges' },
+        { phase: 'Summer Year 1', description: 'Campus visits, summer programs, essay drafting' },
+        { phase: 'Year 2 (Grade 12)', description: 'Complete applications, interviews, financial aid forms' },
+        { phase: 'Spring Year 2', description: 'Receive decisions, compare offers, enroll' }
       ]
     },
     singapore: {
@@ -121,10 +120,10 @@ const CounsellingRegion = () => {
         total: 'S$35,000 - S$70,000 per year'
       },
       timeline: [
-        { phase: 'Year 1 (Grade 11)', tasks: 'Research programs, prepare for AS levels' },
-        { phase: 'December Year 1', tasks: 'Early applications open' },
-        { phase: 'March Year 2', tasks: 'Application deadlines, interviews' },
-        { phase: 'May-July Year 2', tasks: 'Receive offers, complete A levels' }
+        { phase: 'Year 1 (Grade 11)', description: 'Research programs, prepare for AS levels' },
+        { phase: 'December Year 1', description: 'Early applications open' },
+        { phase: 'March Year 2', description: 'Application deadlines, interviews' },
+        { phase: 'May-July Year 2', description: 'Receive offers, complete A levels' }
       ]
     },
     india: {
@@ -161,10 +160,10 @@ const CounsellingRegion = () => {
         total: '₹1,50,000 - ₹18,00,000 per year'
       },
       timeline: [
-        { phase: 'Year 1 (Grade 11)', tasks: 'Prepare for entrance exams, choose stream' },
-        { phase: 'Year 2 (Grade 12)', tasks: 'Board exams, entrance exams, applications' },
-        { phase: 'Summer Year 2', tasks: 'Counseling, seat allocation, admission' },
-        { phase: 'July-August', tasks: 'Classes begin' }
+        { phase: 'Year 1 (Grade 11)', description: 'Prepare for entrance exams, choose stream' },
+        { phase: 'Year 2 (Grade 12)', description: 'Board exams, entrance exams, applications' },
+        { phase: 'Summer Year 2', description: 'Counseling, seat allocation, admission' },
+        { phase: 'July-August', description: 'Classes begin' }
       ]
     }
   };

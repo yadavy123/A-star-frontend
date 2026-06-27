@@ -1,17 +1,29 @@
 import { makeApiCall, ApiError, type QueryRecord } from './runtimeApiBase.ts';
+import { LOCAL_GRADES, LOCAL_SUBJECTS } from '../data/askData';
 
 const FORCE_LOCAL_ASK_API = String(import.meta.env.VITE_USE_LOCAL_ASK_API || '').toLowerCase() === 'true';
 const USE_LOCAL_MODE = FORCE_LOCAL_ASK_API;
 
-type AskCategory = { id: string; name: string; slug?: string };
+export type AskCategory = { id: string; name: string; slug?: string };
+
+export type BackendGrade = { id: string; name: string; order: number };
+export type BackendSubject = { id: string; name: string; gradeId: string; order: number };
 
 type AskQuestion = {
     id: string;
-    category?: AskCategory | null;
     title: string;
-    descriptionHtml: string;
-    createdAt: string;
     slug: string;
+    descriptionHtml: string;
+    grade?: BackendGrade | null;
+    subject?: BackendSubject | null;
+    attachments?: string[];
+    status?: string;
+    approvalStatus?: string;
+    viewsCount: number;
+    answersCount: number;
+    adminId?: string;
+    createdAt: string;
+    updatedAt?: string;
 };
 
 export type AskPageResponse = {
@@ -20,19 +32,26 @@ export type AskPageResponse = {
     totalElements: number;
     number: number;
     size: number;
+    first?: boolean;
+    last?: boolean;
 };
 
 type AnswerResponse = {
     id: string;
-    contentHtml: string;
-    authorName: string;
-    createdAt: string;
-    status: string;
-    questionTitle?: string;
     questionId?: string;
+    userId?: string;
+    authorName: string;
+    contentHtml: string;
+    status: string;
+    attachments?: string[];
+    isCorrect?: boolean;
+    createdAt: string;
+    updatedAt?: string;
 };
 
-const STORAGE_KEY = 'astar_ask_questions';
+const FREE_QUESTIONS_KEY = 'astar_free_questions';
+
+const STORAGE_KEY = 'astar_ask_questions_v2';
 
 function readLocalQuestions(): AskQuestion[] {
     try {
@@ -48,18 +67,43 @@ function writeLocalQuestions(data: AskQuestion[]) {
 }
 
 export const askApi = {
+    // ----- Grades & Subjects -----
+    async getGrades() {
+        try {
+            const data = await makeApiCall<BackendGrade[]>('GET', '/api/grades');
+            return { data: Array.isArray(data) ? data : [] };
+        } catch (error) {
+            if (import.meta.env.DEV) return { data: LOCAL_GRADES as BackendGrade[] };
+            throw error;
+        }
+    },
+
+    async getSubjects(gradeId?: string) {
+        try {
+            const params = gradeId ? { gradeId } as Record<string, string> : undefined;
+            const data = await makeApiCall<BackendSubject[]>('GET', '/api/subjects', undefined, params);
+            return { data: Array.isArray(data) ? data : [] };
+        } catch (error) {
+            if (import.meta.env.DEV) {
+                const all = LOCAL_SUBJECTS as BackendSubject[];
+                return { data: gradeId ? all.filter(s => s.gradeId === gradeId) : all };
+            }
+            throw error;
+        }
+    },
+
+    // ----- Questions -----
     async getAll(params?: QueryRecord) {
         if (USE_LOCAL_MODE) {
-            return { data: { content: readLocalQuestions() } };
+            return { data: { content: readLocalQuestions() } as AskPageResponse };
         }
 
         try {
-            // Using /api/questions as per Swagger "Question (Public)" tag
             const data = await makeApiCall<AskPageResponse>('GET', '/api/questions', undefined, params);
             return { data };
         } catch (error) {
             console.error('Failed to fetch questions:', error);
-            if (import.meta.env.DEV) return { data: { content: readLocalQuestions() } };
+            if (import.meta.env.DEV) return { data: { content: readLocalQuestions(), totalPages: 0, totalElements: 0, number: 0, size: 10 } as AskPageResponse };
             throw error;
         }
     },
@@ -92,34 +136,51 @@ export const askApi = {
         }
     },
 
-    async create(payload: { title: string; descriptionHtml: string; categoryId: string }) {
+    async create(payload: Record<string, string>, role?: string) {
         if (USE_LOCAL_MODE) {
             const existing = readLocalQuestions();
             const next: AskQuestion = {
-                ...payload,
                 id: `${Date.now()}`,
+                title: payload.title,
+                slug: payload.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+                descriptionHtml: payload.descriptionHtml,
+                status: 'PENDING',
+                approvalStatus: 'PENDING',
+                viewsCount: 0,
+                answersCount: 0,
                 createdAt: new Date().toISOString(),
-                slug: payload.title.toLowerCase().replace(/ /g, '-'),
-                category: { id: payload.categoryId, name: 'Local Category' }
+                grade: payload.gradeId ? { id: payload.gradeId, name: payload.gradeId, order: 0 } : null,
+                subject: payload.subjectId ? { id: payload.subjectId, name: payload.subjectId, gradeId: '', order: 0 } : null,
             };
             const updated = [next, ...existing];
             writeLocalQuestions(updated);
             return { data: next };
         }
 
+        const endpoint = role === 'admin' ? '/api/admin/questions' : '/api/user/questions';
+
         try {
-            const data = await makeApiCall<AskQuestion>('POST', '/api/admin/questions', payload);
+            const data = await makeApiCall<AskQuestion>('POST', endpoint, {
+                title: payload.title,
+                descriptionHtml: payload.descriptionHtml,
+                gradeId: payload.gradeId,
+                subjectId: payload.subjectId,
+                attachments: payload.attachments ? JSON.parse(payload.attachments) : undefined,
+            });
             return { data };
         } catch (err: unknown) {
             const apiErr = err as { status?: number; message?: string };
-            if (apiErr.status === 401 || apiErr.status === 403) {
-                throw new ApiError('Please log in to submit a question', apiErr.status || 401, null);
+            if (apiErr.status === 401) {
+                throw new ApiError('Please log in to submit a question.', apiErr.status, null);
+            }
+            if (apiErr.status === 403) {
+                throw new ApiError('You do not have permission to submit questions. Please contact support.', apiErr.status, null);
             }
             throw err;
         }
     },
 
-    async update(id: string, payload: { title: string; descriptionHtml: string; categoryId: string }) {
+    async update(id: string, payload: Record<string, string>) {
         if (USE_LOCAL_MODE) {
             const existing = readLocalQuestions();
             const updated = existing.map((item) => (item.id === id ? { ...item, ...payload } : item));
@@ -128,7 +189,12 @@ export const askApi = {
         }
 
         try {
-            const data = await makeApiCall<AskQuestion>('PUT', `/api/admin/questions/${id}`, payload);
+            const data = await makeApiCall<AskQuestion>('PUT', `/api/admin/questions/${id}`, {
+                title: payload.title,
+                descriptionHtml: payload.descriptionHtml,
+                gradeId: payload.gradeId,
+                subjectId: payload.subjectId,
+            });
             return { data };
         } catch (error) {
             console.error('Failed to update question:', error);
@@ -223,6 +289,11 @@ export const askApi = {
         return { success: true };
     },
 
+    async markAnswerCorrect(id: string) {
+        const data = await makeApiCall<AnswerResponse>('PATCH', `/api/admin/answers/${id}/correct`);
+        return { data };
+    },
+
     // ----- Admin Categories -----
     async adminGetCategories() {
         const data = await makeApiCall<AskCategory[]>('GET', '/api/admin/categories');
@@ -242,5 +313,93 @@ export const askApi = {
     async deleteCategory(id: string) {
         await makeApiCall('DELETE', `/api/admin/categories/${id}`);
         return { success: true };
+    },
+
+    // ----- User Endpoints -----
+    async getMyQuestions(params?: QueryRecord) {
+        const data = await makeApiCall<AskPageResponse>('GET', '/api/user/questions/me', undefined, params);
+        return { data };
+    },
+
+    async getMyAnswers(params?: QueryRecord) {
+        const data = await makeApiCall<AskPageResponse>('GET', '/api/user/answers/me', undefined, params);
+        return { data };
+    },
+
+    async submitAdminAnswer(payload: Record<string, string>) {
+        const data = await makeApiCall<AnswerResponse>('POST', '/api/admin/answers', {
+            questionId: payload.questionId,
+            contentHtml: payload.contentHtml,
+        });
+        return { data };
+    },
+
+    // ----- Leads -----
+    async submitLead(payload: { name: string; mobile: string; email: string; grade: string; otp: string }) {
+        try {
+            const data = await makeApiCall<{ success: boolean; message: string }>('POST', '/api/leads/submit', payload);
+            return data;
+        } catch (error) {
+            console.error('Failed to submit lead:', error);
+            throw error;
+        }
+    },
+
+    async sendLeadOtp(email: string, resend = false) {
+        try {
+            const data = await makeApiCall<{ success: boolean; message: string }>('POST', '/api/leads/send-otp', { email, resend });
+            return data;
+        } catch (error) {
+            console.error('Failed to send lead OTP:', error);
+            throw error;
+        }
+    },
+
+    // ----- File Upload (Minio for Ask module) -----
+    async uploadFile(file: File): Promise<string> {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const token = localStorage.getItem('icfy_token');
+        const baseUrl = typeof import.meta.env !== 'undefined'
+            ? (import.meta.env.VITE_API_BASE_URL || 'https://api.astarclasses.com').replace(/\/$/, '')
+            : 'https://api.astarclasses.com';
+
+        const res = await fetch(`${baseUrl}/api/media/minio/upload`, {
+            method: 'POST',
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+            body: formData,
+        });
+
+        if (!res.ok) {
+            const errText = await res.text().catch(() => 'Upload failed');
+            throw new Error(errText);
+        }
+
+        const data = await res.json();
+        return data.url as string;
+    },
+
+    // ----- Free Question Tracking -----
+    getRemainingQuestions(userId: string): number {
+        try {
+            const raw = localStorage.getItem(FREE_QUESTIONS_KEY);
+            const data: Record<string, number> = raw ? JSON.parse(raw) : {};
+            const asked = data[userId] || 0;
+            return Math.max(0, 3 - asked);
+        } catch {
+            return 3;
+        }
+    },
+
+    markQuestionUsed(userId: string): void {
+        try {
+            const raw = localStorage.getItem(FREE_QUESTIONS_KEY);
+            const data: Record<string, number> = raw ? JSON.parse(raw) : {};
+            data[userId] = (data[userId] || 0) + 1;
+            localStorage.setItem(FREE_QUESTIONS_KEY, JSON.stringify(data));
+        } catch {
+            // fail silently
+        }
     },
 };
