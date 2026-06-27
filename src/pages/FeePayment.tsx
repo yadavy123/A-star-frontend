@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Building2, CheckCircle, Copy, CreditCard, Mail, MapPin, MessageCircle, Phone, QrCode, Shield, Smartphone, ChevronDown, ChevronUp, IndianRupee, Loader2, ExternalLink } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { paymentApi, type PaymentReceipt } from '../api/paymentApi'
+import qrCodeImg from '../assets/code.jpeg'
 
 const bankDetails = {
   bankName: 'HDFC Bank',
@@ -305,7 +306,7 @@ export default function FeePayment() {
                   <div className="inline-block bg-white rounded-xl p-3 sm:p-4 shadow-md border-2 border-yellow-400">
                     <div className="w-44 h-44 sm:w-52 sm:h-52 md:w-56 md:h-56 bg-white flex items-center justify-center rounded-lg relative overflow-hidden mx-auto">
                       {!qrError ? (
-                        <img src="/qr.jpeg" alt="UPI QR Code"
+                        <img src={qrCodeImg} alt="UPI QR Code"
                           className="w-full h-full object-contain"
                           onError={() => setQrError(true)} />
                       ) : (

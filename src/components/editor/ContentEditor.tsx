@@ -739,7 +739,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
                             </div>
                         </div>
                         <div className="flex justify-end gap-2 mt-6">
-                            <button type="button" onClick={() => { setShowMathDialog(false); setMathLatex(''); setMathPreviewHtml(''); editingMathLatex !== null && setEditingMathLatex(null); }} className="btn-secondary text-sm py-2 px-4 min-h-0 min-w-0">Cancel</button>
+                            <button type="button" onClick={() => { setShowMathDialog(false); setMathLatex(''); setMathPreviewHtml(''); if (editingMathLatex !== null) setEditingMathLatex(null); }} className="btn-secondary text-sm py-2 px-4 min-h-0 min-w-0">Cancel</button>
                             <button type="button" onClick={handleInsertMath} disabled={!mathLatex.trim()} className="btn-primary text-sm py-2 px-6 min-h-0 min-w-0 disabled:opacity-40">
                                 {editingMathLatex ? 'Update' : 'Insert'}
                             </button>

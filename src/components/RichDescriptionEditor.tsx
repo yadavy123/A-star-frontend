@@ -88,7 +88,7 @@ const MathFormulaModal: React.FC<MathFormulaModalProps> = ({ isOpen, onClose, on
                         <div className={'border-2 border-purple-100 rounded-2xl p-4 bg-purple-50 focus-within:border-purple-400 transition-all'}>
                             <EditableMathField
                                 latex={latex}
-                                onChange={(mathField: any) => setLatex(mathField.latex())}
+                                onChange={(mathField: { latex: () => string }) => setLatex(mathField.latex())}
                                 className={'w-full min-h-[60px] text-xl'}
                             />
                         </div>

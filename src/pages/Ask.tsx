@@ -190,10 +190,6 @@ const Ask: React.FC = () => {
             if (error instanceof ApiError) {
                 errMsg = (error.response?.data as { message?: string })?.message || error.message;
                 if (errMsg.toLowerCase().includes('free quota')) {
-                    const q = questions.find(q => q.id === qId);
-                    const name = user?.name || user?.email?.split('@')[0] || 'Guest';
-                    const email = user?.email || 'N/A';
-                    const title = q?.title || qId;
                     const msg = 'Hello Astar Classes, I have a doubt regarding a question I am working on. Could you please help me with it?';
                     setShowLeadForm(true);
                     window.open(`https://wa.me/918073982848?text=${encodeURIComponent(msg)}`, '_blank');

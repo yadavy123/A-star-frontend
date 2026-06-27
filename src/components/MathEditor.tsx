@@ -13,7 +13,7 @@ const MathEditor: React.FC<MathEditorProps> = ({ onSubmit }) => {
     <div className="mb-4">
       <EditableMathField
         latex={latex}
-        onChange={(mathField: any) => setLatex(mathField.latex())}
+        onChange={(mathField: { latex: () => string }) => setLatex(mathField.latex())}
         className="border rounded p-2 min-h-[48px] bg-gray-50 text-lg w-full"
       />
       <button
