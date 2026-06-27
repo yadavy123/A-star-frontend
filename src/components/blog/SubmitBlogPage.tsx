@@ -164,6 +164,24 @@ export const SubmitBlogPage = () => {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const saveDraft = useCallback((silent = false) => {
+        try {
+            const draft: SavedDraft = { formData, savedAt: new Date().toISOString() };
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+            setDraftSavedAt(new Date());
+            if (!silent) toast.success('Draft saved!');
+        } catch {
+            if (!silent) toast.error('Could not save draft');
+        }
+    }, [formData]);
+
+    const getCloudinaryUrls = useCallback((items: ImagePreviewItem[]): string => {
+        return items
+            .map(item => item.cloudinaryUrl)
+            .filter((url): url is string => url !== null)
+            .join(',');
+    }, []);
+
     useEffect(() => {
         if (step !== 1) return;
         autoSaveTimer.current = setInterval(() => {
@@ -179,13 +197,6 @@ export const SubmitBlogPage = () => {
         };
     }, [step, formData, saveDraft]);
 
-    const getCloudinaryUrls = useCallback((items: ImagePreviewItem[]): string => {
-        return items
-            .map(item => item.cloudinaryUrl)
-            .filter((url): url is string => url !== null)
-            .join(',');
-    }, []);
-
     useEffect(() => {
         const cloudUrls = getCloudinaryUrls(imagePreviews);
         const currentFeatured = formData.featuredImageUrl;
@@ -193,17 +204,6 @@ export const SubmitBlogPage = () => {
             setFormData(f => ({ ...f, featuredImageUrl: cloudUrls }));
         }
     }, [imagePreviews, getCloudinaryUrls, formData.featuredImageUrl]);
-
-    const saveDraft = useCallback((silent = false) => {
-        try {
-            const draft: SavedDraft = { formData, savedAt: new Date().toISOString() };
-            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-            setDraftSavedAt(new Date());
-            if (!silent) toast.success('Draft saved!');
-        } catch {
-            if (!silent) toast.error('Could not save draft');
-        }
-    }, [formData]);
 
     const clearDraft = () => {
         localStorage.removeItem(DRAFT_KEY);

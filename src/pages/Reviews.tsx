@@ -60,10 +60,6 @@ const Reviews = () => {
     const [totalElements, setTotalElements] = useState(0);
     const [avgRating, setAvgRating] = useState(0);
 
-    useEffect(() => {
-        fetchReviews();
-    }, [fetchReviews]);
-
     const fetchReviews = useCallback(async () => {
         setLoading(true);
         try {
@@ -84,6 +80,10 @@ const Reviews = () => {
             setLoading(false);
         }
     }, [page]);
+
+    useEffect(() => {
+        fetchReviews();
+    }, [fetchReviews]);
 
     const getRatingsArray = (review: Review) => {
         return (Object.keys(ratingLabels) as Array<keyof Review>)
