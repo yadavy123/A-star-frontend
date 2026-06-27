@@ -93,6 +93,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
             if (!htmlContent) setHtmlContent(content);
             updateWordCount();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mode]);
 
     // Set initial content on first mount
@@ -105,7 +106,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
         }
     }, [initialContent]);
 
-    const saveSelection = () => {
+    const saveSelection = useCallback(() => {
         const sel = window.getSelection();
         if (sel && sel.rangeCount > 0) {
             const range = sel.getRangeAt(0);
@@ -114,7 +115,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
                 setSavedSelection(range.cloneRange());
             }
         }
-    };
+    }, []);
 
     const restoreSelection = () => {
         if (savedSelection && editorRef.current) {
@@ -154,7 +155,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
         setMode(newMode);
     };
 
-    const restoreSelectionRange = (range?: Range | null) => {
+    const restoreSelectionRange = useCallback((range?: Range | null) => {
         const editor = editorRef.current;
         if (!editor) return;
         const sel = window.getSelection();
@@ -164,9 +165,9 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
 
         sel.removeAllRanges();
         sel.addRange(finalRange.cloneRange());
-    };
+    }, [savedSelection]);
 
-    const execCommand = (command: string, value: string | null = null) => {
+    const execCommand = useCallback((command: string, value: string | null = null) => {
         const editor = editorRef.current;
         if (!editor) return;
 
@@ -188,7 +189,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
 
         saveSelection();
         handleInput();
-    };
+    }, [restoreSelectionRange, saveSelection, handleInput]);
 
     const handleToolbar = useCallback((item: ToolbarAction) => {
         const editor = editorRef.current;
@@ -270,7 +271,7 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
         if (item.command) {
             execCommand(item.command, item.value || null);
         }
-    }, [handleInput, savedSelection]);
+    }, [handleInput, savedSelection, execCommand, restoreSelectionRange, saveSelection]);
 
     const handleInsertImage = () => {
         if (!imageUrl.trim()) { setShowImageDialog(false); return; }
@@ -449,15 +450,15 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
         setEditingMathLatex(null);
     };
 
-    const updateMathPreview = (latex: string, isBlock: boolean) => {
+    const updateMathPreview = useCallback((latex: string, isBlock: boolean) => {
         if (!latex.trim()) {
             setMathPreviewHtml('');
             return;
         }
         setMathPreviewHtml(renderLatex(latex, isBlock));
-    };
+    }, []);
 
-    const handleMathDoubleClick = (e: globalThis.MouseEvent) => {
+    const handleMathDoubleClick = useCallback((e: globalThis.MouseEvent) => {
         const target = e.target as HTMLElement;
         const mathEl = target.closest('[data-latex]') as HTMLElement | null;
         if (mathEl && editorRef.current?.contains(mathEl)) {
@@ -470,14 +471,14 @@ export const ContentEditor = ({ initialContent, onChange }: ContentEditorProps) 
             updateMathPreview(latex, isBlock);
             setShowMathDialog(true);
         }
-    };
+    }, [updateMathPreview]);
 
     useEffect(() => {
         const editor = editorRef.current;
         if (!editor) return;
         editor.addEventListener('dblclick', handleMathDoubleClick);
         return () => editor.removeEventListener('dblclick', handleMathDoubleClick);
-    }, []);
+    }, [handleMathDoubleClick]);
 
     const handlePaste = (e: ClipboardEvent<HTMLDivElement>) => {
         e.preventDefault();

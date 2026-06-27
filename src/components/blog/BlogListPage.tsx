@@ -65,13 +65,13 @@ export const BlogListPage = () => {
         } catch (err) { console.error('Failed to load blogs', err); }
         finally { setLoading(false); }
     }, [sort, search, pageSize, year, month]);
-    const fetchArchive = async () => {
+    const fetchArchive = useCallback(async () => {
         try {
             const response = await blogApi.getArchive();
             setArchive(response.data as ArchiveEntry[]);
         } catch (err) { console.error('Failed to load archive', err); }
-    };
-    useEffect(() => { fetchBlogs(); fetchArchive(); }, []);
+    }, []);
+    useEffect(() => { fetchBlogs(); fetchArchive(); }, [fetchBlogs, fetchArchive]);
     const handleSearch = (e: FormEvent<HTMLFormElement>) => { e.preventDefault(); fetchBlogs({ search, page: 0 }); };
     const handleSortChange = (nextSort: string) => { setSort(nextSort); fetchBlogs({ sort: nextSort, page: 0 }); };
     const handlePageChange = (page: number) => { fetchBlogs({ page }); };

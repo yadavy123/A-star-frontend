@@ -256,7 +256,7 @@ const Testimonials = () => {
                       <div className="relative h-full flex flex-col px-6 pt-10 pb-4 justify-between z-10">
                         {/* Primary Badge */}
                         {testimonial.primary && (
-                          <div className="absolute top-3 left-4 flex items-center gap-2 bg-[#ffb800] text-white px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/30 shadow-xl z-20">
+                          <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-[#ffb800] text-white px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/30 shadow-xl z-20">
                             <Star size={12} className="fill-white" />
                             <span>Primary</span>
                           </div>

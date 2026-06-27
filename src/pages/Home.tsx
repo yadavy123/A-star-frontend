@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Award, BookOpen, CheckCircle, Clock, Globe, MessageSquare, TrendingUp, Users } from 'lucide-react';
+import { ArrowRight, Award, BookOpen, CheckCircle, Clock, Globe, MessageSquare, TrendingUp, Star, Quote, ChevronLeft, ChevronRight, Users } from 'lucide-react';
 import DemoForm from '../components/DemoForm';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -8,28 +8,41 @@ import { Slider } from './slider';
 // import Neha from '../assets/Neha.jpg';
 // import RohitGupta from '../assets/Rohit-Gupta.jpg';
 
-import { getPublicTeachers } from '../api/api/teacherApi.js';
+import { getApprovedTestimonials } from '../api/api/testimonialApi.js';
+
+type HomeTestimonial = {
+  id: string;
+  _id?: string;
+  name: string;
+  reviewerName?: string;
+  text?: string;
+  quote?: string;
+  message?: string;
+  content?: string;
+  subject?: string;
+  achievement?: string;
+  primary?: boolean;
+  rating?: number;
+};
 
 const Home = () => {
-  const [tutors, setTutors] = useState<{ id: string; name: string; photoUrl?: string; image?: string; subject?: string; category?: string; bio?: string; status?: string }[]>([]);
   const [showDemoModal, setShowDemoModal] = useState(false);
-
-  // Determine the best image URL to show for tutors
-  const getTutorImageUrl = (tutor: { photoUrl?: string; image?: string }) => {
-    const photoUrl = tutor.photoUrl || tutor.image;
-    if (!photoUrl) return 'https://images.unsplash.com/photo-1544717305-27a734ef1904?auto=format&fit=crop&q=80&w=400';
-    if (photoUrl.startsWith('http')) return photoUrl;
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.astarclasses.com';
-    return `${baseUrl}${photoUrl.startsWith('/') ? '' : '/'}${photoUrl}`;
-  };
+  const [homeTestimonials, setHomeTestimonials] = useState<HomeTestimonial[]>([]);
+  const [activeTestimonialIndex, setActiveTestimonialIndex] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const teachersData = await getPublicTeachers();
-
-        const tutorList = Array.isArray(teachersData) ? teachersData : [];
-        setTutors(tutorList.slice(0, 3));
+        const testimonialData = await getApprovedTestimonials();
+        const testimonialList: HomeTestimonial[] = testimonialData?.content || (Array.isArray(testimonialData) ? testimonialData : []);
+        // Sort: primary first, then rest
+        testimonialList.sort((a, b) => {
+          if (a.primary && b.primary) return 0;
+          if (a.primary) return -1;
+          if (b.primary) return 1;
+          return 0;
+        });
+        setHomeTestimonials(testimonialList.slice(0, 10));
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -327,54 +340,132 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-10 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Meet Our Expert Faculty
-            </h2>
-            <p className="text-xl text-gray-600">
-              Learn from the best educators dedicated to your success.
-            </p>
-          </div>
+      {/* Testimonials Carousel */}
+      {homeTestimonials.length > 0 && (
+        <section className="py-10 md:py-20 bg-gradient-to-br from-indigo-50 via-white to-blue-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+                <Star className="h-3.5 w-3.5 fill-indigo-700" />
+                Student Testimonials
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                What Our Students Say
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Real stories from real students who achieved their academic goals with us.
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {tutors.map((tutor) => (
-              <div key={tutor.id} className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
-                <div className="h-48 sm:h-64 md:h-80 overflow-hidden relative bg-gray-100 flex items-center justify-center">
-                  <img src={getTutorImageUrl(tutor)} alt={tutor.name} className="w-full h-full object-contain" />
+            {/* Primary Testimonial - Top Center */}
+            {homeTestimonials.filter(t => t.primary).slice(0, 1).map((t, idx) => {
+              const testimonialText = t.text || t.quote || t.message || '';
+              const studentName = t.name || t.reviewerName || 'Student';
+              return (
+                <div key={t.id || t._id || idx} className="flex justify-center mb-10">
+                  <div className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-50 via-white to-yellow-50 shadow-xl border-2 border-yellow-300">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400" />
+                    <div className="pt-8 pb-6 px-8 flex flex-col items-center text-center">
+                      <div className="inline-flex items-center gap-1.5 bg-yellow-200 text-yellow-900 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider mb-5 shadow-sm">
+                        <Star className="h-3.5 w-3.5 fill-yellow-900" />
+                        Featured Story
+                      </div>
+                      <div className="text-yellow-400 mb-3">
+                        <Quote className="h-10 w-10 mx-auto" />
+                      </div>
+                      <p className="text-lg md:text-xl text-gray-800 leading-relaxed mb-5 font-semibold italic max-w-2xl mx-auto">
+                        &ldquo;{testimonialText}&rdquo;
+                      </p>
+                      <div>
+                        <p className="font-bold text-gray-900">{studentName}</p>
+                        {t.subject && <p className="text-sm text-yellow-700 font-semibold">{t.subject}</p>}
+                        {t.achievement && (
+                          <span className="inline-block mt-1.5 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
+                            {t.achievement}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-6 flex-1 flex flex-col text-center">
-                  <h4 className="font-bold text-xl text-gray-900 mb-2">{tutor.name}</h4>
-                  <div className="mb-3 flex justify-center">
-                    <span className="px-3 py-1 bg-blue-900 text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg inline-block">
-                      {tutor.category}
-                    </span>
-                  </div>
-                  <p className="text-sm text-blue-600 font-semibold mb-3 uppercase tracking-wide">{tutor.subject}</p>
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-6 italic">"{tutor.bio}"</p>
-                  <div className="mt-auto pt-4 border-t border-gray-50 flex justify-center">
-                    <Link to="/tutors" className="text-blue-900 font-bold text-sm inline-flex items-center gap-2 hover:gap-3 transition-all">
-                      VIEW FULL PROFILE <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+              );
+            })}
+
+            <div className="relative max-w-4xl mx-auto">
+              <div className="overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-100">
+                <div className="relative p-8 md:p-12">
+                  {homeTestimonials.map((t, idx) => {
+                    const testimonialText = t.text || t.quote || t.message || '';
+                    const studentName = t.name || t.reviewerName || 'Student';
+                    return (
+                      <div
+                        key={t.id || t._id || idx}
+                        className={`transition-all duration-500 ${idx === activeTestimonialIndex ? 'block' : 'hidden'}`}
+                      >
+                        <div className="text-indigo-200 mb-4">
+                          <Quote className="h-10 w-10" />
+                        </div>
+                        <p className="text-lg md:text-xl text-gray-800 leading-relaxed mb-6 italic">
+                          &ldquo;{testimonialText}&rdquo;
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-bold text-gray-900">{studentName}</p>
+                            {t.subject && <p className="text-sm text-indigo-600 font-medium">{t.subject}</p>}
+                          </div>
+                          {t.achievement && (
+                            <span className="hidden sm:inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
+                              {t.achievement}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            ))}
-          </div>
 
-          <div className="text-center mt-12">
-            <Link
-              to="/tutors"
-              className="inline-flex items-center px-8 py-3 bg-blue-900 text-white rounded-xl font-bold hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/20"
-            >
-              Meet All Tutors
-              <Users className="ml-2 h-5 w-5" />
-            </Link>
+              {homeTestimonials.length > 1 && (
+                <div className="flex items-center justify-center gap-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTestimonialIndex(prev => (prev - 1 + homeTestimonials.length) % homeTestimonials.length)}
+                    className="p-2 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-50 transition-all text-gray-600 hover:text-indigo-600"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <div className="flex gap-2">
+                    {homeTestimonials.slice(0, Math.min(homeTestimonials.length, 7)).map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setActiveTestimonialIndex(idx)}
+                        className={`h-2 rounded-full transition-all duration-300 ${idx === activeTestimonialIndex ? 'w-8 bg-indigo-600' : 'w-2 bg-gray-300 hover:bg-gray-400'}`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTestimonialIndex(prev => (prev + 1) % homeTestimonials.length)}
+                    className="p-2 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-50 transition-all text-gray-600 hover:text-indigo-600"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
+              )}
+
+              <div className="text-center mt-8">
+                <Link
+                  to="/testimonials"
+                  className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold transition-all"
+                >
+                  View All Student Stories <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Demo Form Section */}
       <section id="demo-form" className="py-10 md:py-20 bg-gradient-to-br from-blue-50 to-indigo-50">

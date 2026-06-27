@@ -177,7 +177,7 @@ export const SubmitBlogPage = () => {
                 clearInterval(autoSaveTimer.current);
             }
         };
-    }, [step, formData]);
+    }, [step, formData, saveDraft]);
 
     const getCloudinaryUrls = useCallback((items: ImagePreviewItem[]): string => {
         return items

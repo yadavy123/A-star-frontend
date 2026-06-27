@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Quote, Loader2 } from 'lucide-react';
 import * as reviewApi from '../api/api/reviewApi';
@@ -62,9 +62,9 @@ const Reviews = () => {
 
     useEffect(() => {
         fetchReviews();
-    }, [page]);
+    }, [fetchReviews]);
 
-    const fetchReviews = async () => {
+    const fetchReviews = useCallback(async () => {
         setLoading(true);
         try {
             const data = await reviewApi.getPublishedReviews({ page, size: 9 });
@@ -83,7 +83,7 @@ const Reviews = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [page]);
 
     const getRatingsArray = (review: Review) => {
         return (Object.keys(ratingLabels) as Array<keyof Review>)
