@@ -43,7 +43,7 @@ interface DemoFormProps {
   onSuccess?: () => void;
 }
 
-const validateField = (name: string, value: string): string | undefined => {
+const validateField = (name: string, value: string, formData?: FormData): string | undefined => {
   switch (name) {
     case 'studentName':
       if (!value.trim()) return 'Student name is required.';
@@ -67,6 +67,13 @@ const validateField = (name: string, value: string): string | undefined => {
       return undefined;
     case 'preferredTime':
       if (!value) return 'Preferred time is required.';
+      if (formData?.preferredDate === new Date().toISOString().split('T')[0]) {
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const [hours, minutes] = value.split(':').map(Number);
+        const selectedMinutes = hours * 60 + minutes;
+        if (selectedMinutes <= currentMinutes) return 'Time cannot be in the past. Please select a future time.';
+      }
       return undefined;
     case 'mobileNumber': {
       const digits = value.replace(/\D/g, '');
@@ -90,7 +97,7 @@ const validateForm = (data: FormData): FormErrors => {
   const errors: FormErrors = {};
   const fields: (keyof FormData)[] = ['studentName', 'parentName', 'grade', 'board', 'preferredDate', 'preferredTime', 'mobileNumber', 'email'];
   fields.forEach(field => {
-    const err = validateField(field, data[field]);
+    const err = validateField(field, data[field], data);
     if (err) errors[field] = err;
   });
   return errors;
@@ -121,6 +128,7 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
   const [loadingGrades, setLoadingGrades] = useState(true);
   const [loadingBoards, setLoadingBoards] = useState(true);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [consent, setConsent] = useState(false);
 
   const preOtpErrors = useMemo(() => {
     const errs = validateForm(formData);
@@ -131,7 +139,7 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    const err = validateField(name, value);
+    const err = validateField(name, value, formData);
     setFormErrors(prev => {
       const next = { ...prev };
       if (err) next[name as keyof FormErrors] = err;
@@ -156,6 +164,7 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
     setOtp('');
     setIsOtpVerified(false);
     setIsSubmitted(false);
+    setConsent(false);
   };
 
   // Load grades and boards on component mount
@@ -301,6 +310,11 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
 
     if (!otpStep) {
       toast.error('Please request an OTP first');
+      return;
+    }
+
+    if (!consent) {
+      toast.error('Please agree to be contacted for demo scheduling');
       return;
     }
 
@@ -637,6 +651,8 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
                   <input
                     type="checkbox"
                     id="consent"
+                    checked={consent}
+                    onChange={(e) => setConsent(e.target.checked)}
                     required
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
@@ -647,7 +663,7 @@ const DemoForm: React.FC<DemoFormProps> = ({ onSuccess }) => {
 
                 <button
                   type="submit"
-                  disabled={loading || !otp || otp.length !== 6 || !isPreOtpValid}
+                  disabled={loading || !otp || otp.length !== 6 || !isPreOtpValid || !consent}
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-4 rounded-lg font-black text-sm hover:from-blue-700 hover:to-blue-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 uppercase tracking-widest shadow-lg"
                 >
                   {loading ? (

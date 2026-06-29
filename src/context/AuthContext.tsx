@@ -202,8 +202,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
             const msg = result.message || 'Invalid OTP. Please try again.';
             return { success: false, message: sanitizeOtpMessage(msg) };
-        } catch {
-            return { success: false, message: 'OTP verification failed. Please try again.' };
+        } catch (err) {
+            const e = err as { message?: string; response?: { data?: { message?: string } } };
+            const msg = e?.message || e?.response?.data?.message || 'OTP verification failed. Please try again.';
+            return { success: false, message: msg };
         }
     };
 

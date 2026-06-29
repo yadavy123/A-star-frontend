@@ -55,14 +55,19 @@ api.interceptors.response.use(
         }
 
         if (error.response?.status === 401) {
-            // Clear stale auth tokens only on 401 (Unauthorized — token missing/invalid).
-            // NOT on 403 (Forbidden — user exists but lacks permission for that resource).
-            localStorage.removeItem('icfy_token');
-            localStorage.removeItem('icfy_user');
-            localStorage.removeItem('icfy_role');
-            localStorage.removeItem('adminAuth');
-            // Sync React state so UI doesn't show stale user
-            window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+            // Skip auth endpoints — their 401s are login failures, not expired sessions
+            const requestUrl = String(error.config?.url || '');
+            const isAuthEndpoint = requestUrl.includes('/api/auth/') || requestUrl.includes('/api/admin/auth/');
+            if (!isAuthEndpoint) {
+                // Clear stale auth tokens only on 401 (Unauthorized — token missing/invalid).
+                // NOT on 403 (Forbidden — user exists but lacks permission for that resource).
+                localStorage.removeItem('icfy_token');
+                localStorage.removeItem('icfy_user');
+                localStorage.removeItem('icfy_role');
+                localStorage.removeItem('adminAuth');
+                // Sync React state so UI doesn't show stale user
+                window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+            }
         }
 
         // Normalize error object for components to use easily

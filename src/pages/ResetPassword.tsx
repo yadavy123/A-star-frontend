@@ -89,9 +89,11 @@ const ResetPassword = () => {
                 setStep(2);
                 setResendTimer(300);
             }
-        } catch {
-            setErrors({ form: USER_FRIENDLY_MESSAGE });
-            toast.error(USER_FRIENDLY_MESSAGE);
+        } catch (err: unknown) {
+            const apiErr = err as { message?: string };
+            const errorMsg = sanitize(apiErr?.message || '');
+            setErrors({ form: errorMsg });
+            toast.error(errorMsg);
         } finally {
             setIsSubmitting(false);
         }
@@ -124,9 +126,11 @@ const ResetPassword = () => {
                 toast.success(successMsg);
                 setResendTimer(300);
             }
-        } catch {
-            setErrors({ form: USER_FRIENDLY_MESSAGE });
-            toast.error(USER_FRIENDLY_MESSAGE);
+        } catch (err: unknown) {
+            const apiErr = err as { message?: string };
+            const errorMsg = sanitize(apiErr?.message || '');
+            setErrors({ form: errorMsg });
+            toast.error(errorMsg);
         } finally {
             setIsSubmitting(false);
         }
@@ -175,9 +179,11 @@ const ResetPassword = () => {
                 toast.success(successMsg);
                 setTimeout(() => navigate('/login'), 1200);
             }
-        } catch {
-            setErrors({ form: 'Unable to reset password. Please try again.' });
-            toast.error('Unable to reset password. Please try again.');
+        } catch (err: unknown) {
+            const apiErr = err as { message?: string };
+            const errorMsg = sanitize(apiErr?.message || 'Unable to reset password. Please try again.');
+            setErrors({ form: errorMsg });
+            toast.error(errorMsg);
         } finally {
             setIsSubmitting(false);
         }

@@ -34,6 +34,7 @@ export default function FeePayment() {
   const [email, setEmail] = useState('')
   const [paymentLoading, setPaymentLoading] = useState(false)
   const [receipt, setReceipt] = useState<PaymentReceipt | null>(null)
+  const showPayOnline = false
 
   const handlePayOnline = async () => {
     const amt = parseInt(amount.replace(/,/g, ''), 10)
@@ -202,8 +203,8 @@ export default function FeePayment() {
             </div>
           )}
 
-          {/* Online Payment Card */}
-          <div className="mb-8 bg-white rounded-2xl shadow-lg border border-blue-200 overflow-hidden">
+          {/* --- Pay Online section hidden --- */}
+          {showPayOnline && <div className="mb-8 bg-white rounded-2xl shadow-lg border border-blue-200 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-900 to-indigo-900 p-5 sm:p-6 text-center">
               <div className="flex flex-col items-center gap-2">
                 <div className="bg-white/10 p-2.5 rounded-xl inline-flex">
@@ -241,7 +242,7 @@ export default function FeePayment() {
                 <Shield className="w-3 h-3 inline mr-1" />Secured by Razorpay. Your payment information is encrypted.
               </p>
             </div>
-          </div>
+          </div>}
 
           {/* Two Column Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">

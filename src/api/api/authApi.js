@@ -91,7 +91,8 @@ export const verifyUserOTP = async (data) => {
         }
         return response.data;
     } catch (error) {
-        throw error.response?.data || error;
+        const data = error.response?.data;
+        throw data && typeof data === 'object' ? data : { message: 'Invalid OTP. Please try again.' };
     }
 };
 

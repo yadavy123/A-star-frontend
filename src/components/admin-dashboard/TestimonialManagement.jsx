@@ -32,9 +32,12 @@ export default function TestimonialManagement() {
   const [mediaFile, setMediaFile] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
-    fetchTestimonials();
+    fetchTestimonials(0);
   }, [selectedStatus]);
 
   const fetchTeachers = async () => {
@@ -46,12 +49,15 @@ export default function TestimonialManagement() {
     }
   };
 
-  const fetchTestimonials = async () => {
+  const fetchTestimonials = async (p = 0) => {
     setLoading(true);
     try {
-      const data = await getAllTestimonials();
+      const data = await getAllTestimonials({ page: p, size: 10 });
       const testimonialList = data?.content || (Array.isArray(data) ? data : []);
       setTestimonials(testimonialList);
+      setPage(data?.page ?? 0);
+      setTotalPages(data?.totalPages ?? 0);
+      setTotalElements(data?.totalElements ?? 0);
     } catch (error) {
       console.error('Error fetching testimonials:', error);
       toast.error('Failed to load testimonials');
@@ -59,6 +65,11 @@ export default function TestimonialManagement() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const goToPage = (p) => {
+    if (p < 0 || p >= totalPages) return;
+    fetchTestimonials(p);
   };
 
   const handleInputChange = (e) => {
@@ -120,7 +131,7 @@ export default function TestimonialManagement() {
       setIsAdding(false);
       setEditingId(null);
       resetForm();
-      fetchTestimonials();
+      fetchTestimonials(0);
     } catch (error) {
       console.error('Submission error:', error);
       toast.error(error?.message || 'Failed to save testimonial');
@@ -143,8 +154,7 @@ export default function TestimonialManagement() {
     setActionLoading(id);
     try {
       await approveTestimonial(id);
-      // Re-fetch to get the actual updated data from backend
-      await fetchTestimonials();
+      await fetchTestimonials(page);
       toast.success('Testimonial approved');
     } catch (error) {
       console.error('Error approving testimonial:', error);
@@ -158,8 +168,7 @@ export default function TestimonialManagement() {
     setActionLoading(id);
     try {
       await rejectTestimonial(id);
-      // Re-fetch to get the actual updated data from backend
-      await fetchTestimonials();
+      await fetchTestimonials(page);
       toast.success('Testimonial rejected');
     } catch (error) {
       console.error('Error rejecting testimonial:', error);
@@ -200,7 +209,7 @@ export default function TestimonialManagement() {
         await setPrimaryTestimonial(id);
         toast.success('Testimonial set as primary');
       }
-      await fetchTestimonials();
+      await fetchTestimonials(page);
     } catch (error) {
       console.error('Error updating primary:', error);
       toast.error(wasPrimary ? 'Failed to unset primary' : 'Failed to set primary testimonial');
@@ -225,7 +234,12 @@ export default function TestimonialManagement() {
     setActionLoading(id);
     try {
       await deleteTestimonial(id);
-      setTestimonials((prev) => prev.filter((t) => (t.id !== id && t._id !== id)));
+      const remaining = testimonials.filter((t) => (t.id !== id && t._id !== id));
+      if (remaining.length === 0 && page > 0) {
+        fetchTestimonials(page - 1);
+      } else {
+        setTestimonials(remaining);
+      }
       toast.success('Testimonial deleted');
     } catch (error) {
       console.error('Error deleting testimonial:', error);
@@ -239,6 +253,19 @@ export default function TestimonialManagement() {
     selectedStatus === 'all'
       ? testimonials
       : testimonials.filter((t) => t.status === selectedStatus);
+
+  const pageNumbers = [];
+  if (totalPages <= 7) {
+    for (let i = 0; i < totalPages; i++) pageNumbers.push(i);
+  } else {
+    pageNumbers.push(0);
+    let start = Math.max(1, page - 2);
+    let end = Math.min(totalPages - 2, page + 2);
+    if (start > 1) pageNumbers.push('...');
+    for (let i = start; i <= end; i++) pageNumbers.push(i);
+    if (end < totalPages - 2) pageNumbers.push('...');
+    pageNumbers.push(totalPages - 1);
+  }
 
   const statusBadge = (status) => {
     const s = 'APPROVED';
@@ -418,7 +445,7 @@ export default function TestimonialManagement() {
                 
                 return (
                   <tr key={id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-500">{idx + 1}</td>
+                    <td className="px-4 py-3 text-gray-500">{page * 10 + idx + 1}</td>
                     <td className="px-4 py-3 text-gray-800 font-medium max-w-[300px]">
                       <span className="line-clamp-2">{t.text || t.message || t.quote || t.content}</span>
                     </td>
@@ -461,6 +488,47 @@ export default function TestimonialManagement() {
             </tbody>
           </table>
         </ScrollableCard>
+      )}
+
+      {!loading && totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-4 bg-white rounded-xl border border-gray-200 shadow-sm mt-4">
+          <div className="text-sm text-gray-500">
+            Page {page + 1} of {totalPages} ({totalElements} total)
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => goToPage(page - 1)}
+              disabled={page === 0}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            >
+              Previous
+            </button>
+            {pageNumbers.map((p, i) =>
+              p === '...' ? (
+                <span key={`ellipsis-${i}`} className="px-2 text-gray-400 text-sm">...</span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => goToPage(p)}
+                  className={`w-9 h-9 rounded-lg text-sm font-medium transition ${
+                    p === page
+                      ? 'bg-blue-900 text-white shadow'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {p + 1}
+                </button>
+              )
+            )}
+            <button
+              onClick={() => goToPage(page + 1)}
+              disabled={page >= totalPages - 1}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       )}
 
       {viewModal && (

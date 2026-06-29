@@ -122,30 +122,29 @@ const TopBar = () => {
         <div className="md:hidden bg-[#003366] border-t border-[#002244] px-4 py-3">
           <div className="space-y-3 max-w-md">
             <div className="grid grid-cols-2 gap-3 pb-3 border-b border-[#002244] text-xs">
-              <a href="tel:+918861919000" className="flex flex-col items-center justify-center rounded-lg bg-white/10 px-3 py-2 text-[#FFD600] font-bold">
+              <a href="tel:+918861919000" onClick={() => setOpen(false)} className="flex flex-col items-center justify-center rounded-lg bg-white/10 px-3 py-2 text-[#FFD600] font-bold">
                 <span>📞 Call</span>
                 <span className="mt-1 text-[11px] font-medium">+91 886 191 9000</span>
               </a>
-              <a href="https://wa.me/918073982848" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center rounded-lg bg-white/10 px-3 py-2 text-[#FFD600] font-bold">
+              <a href="https://wa.me/918073982848" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="flex flex-col items-center justify-center rounded-lg bg-white/10 px-3 py-2 text-[#FFD600] font-bold">
                 <span>💬 WhatsApp</span>
                 <span className="mt-1 text-[11px] font-medium">+91 807 398 2848</span>
               </a>
             </div>
-            <Link to="/demoform" className="block bg-[#0056b3] text-white px-3 py-2 rounded text-xs font-semibold text-center">Schedule Demo</Link>
-            <Link to="/fee-payment" className="block bg-[#d5a928] text-white px-3 py-2 rounded text-xs font-semibold text-center">Pay Fees</Link>
-            <Link to="/testimonials" className="block text-white text-xs hover:text-[#FFD600]">Testimonials</Link>
-            <Link to="/contact" className="block text-white text-xs hover:text-[#FFD600]">Contact Us</Link>
-            <Link to="/running-classes" className="block text-white text-xs hover:text-[#FFD600]">Running Classes</Link>
-            <Link to="/blog" className="block text-white text-xs hover:text-[#FFD600]">Blogs</Link>
+            <Link to="/demoform" onClick={() => setOpen(false)} className="block bg-[#0056b3] text-white px-3 py-2 rounded text-xs font-semibold text-center">Schedule Demo</Link>
+            <Link to="/fee-payment" onClick={() => setOpen(false)} className="block bg-[#d5a928] text-white px-3 py-2 rounded text-xs font-semibold text-center">Pay Fees</Link>
+            <Link to="/testimonials" onClick={() => setOpen(false)} className="block text-white text-xs hover:text-[#FFD600]">Testimonials</Link>
+            <Link to="/contact" onClick={() => setOpen(false)} className="block text-white text-xs hover:text-[#FFD600]">Contact Us</Link>
+            <Link to="/running-classes" onClick={() => setOpen(false)} className="block text-white text-xs hover:text-[#FFD600]">Running Classes</Link>
+            <Link to="/blog" onClick={() => setOpen(false)} className="block text-white text-xs hover:text-[#FFD600]">Blogs</Link>
             {isAuthenticated && user ? (
               <>
-                <Link to={isAdmin ? '/admin-dashboard' : '/'} className="block text-[#FFD600] text-xs font-semibold">{user.fullName}</Link>
-                <button onClick={handleLogout} className="block text-white text-xs hover:text-[#FFD600] w-full text-left">Logout</button>
+                <Link to={isAdmin ? '/admin-dashboard' : '/'} onClick={() => setOpen(false)} className="block text-[#FFD600] text-xs font-semibold">{user.fullName}</Link>
+                <button onClick={() => { handleLogout(); setOpen(false); }} className="block text-white text-xs hover:text-[#FFD600] w-full text-left">Logout</button>
               </>
             ) : (
-              <Link to="/login" className="block text-[#FFD600] text-xs font-semibold">Login</Link>
+              <Link to="/login" onClick={() => setOpen(false)} className="block text-[#FFD600] text-xs font-semibold">Login</Link>
             )}
-            {/* Sign Up removed from mobile menu as well */}
           </div>
         </div>
       )}
